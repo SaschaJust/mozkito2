@@ -1,0 +1,14 @@
+.externalToolBuilders
+**/.classpath
+**/.project
+**/.settings
+**/eclipse
+**/bin
+target/
+~$*
+__MACOSX
+*.class
+*-e
+*.log
+.DS_Store
+.svn
