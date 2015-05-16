@@ -4,7 +4,8 @@
 **/.settings
 **/eclipse
 **/bin
-target/
+**/target
+target
 ~$*
 __MACOSX
 *.class
