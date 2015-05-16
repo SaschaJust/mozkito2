@@ -21,25 +21,90 @@ import org.mozkito.skeleton.logging.internal.LogStream;
  * @author Sascha Just
  */
 public class Logger {
-
+	
 	/** The Constant error. */
 	public static final LogStream error        = new LogStream(Level.ERROR);
-
+	
 	/** The Constant warn. */
 	public static final LogStream warn         = new LogStream(Level.WARN);
-
+	
 	/** The Constant info. */
 	public static final LogStream info         = new LogStream(Level.INFO);
-
+	
 	/** The Constant debug. */
 	public static final LogStream debug        = new LogStream(Level.DEBUG);
-
+	
 	/** The Constant trace. */
 	public static final LogStream trace        = new LogStream(Level.TRACE);
-
+	
 	/** The Constant notification. */
 	public static final LogStream notification = new LogStream(Level.INFO, Line.NOTIFICATIONS);
-
+	
+	/** The Constant level. */
+	private static final Level    level        = Level.INFO;
+	
+	/**
+	 * Error.
+	 *
+	 * @param message
+	 *            the message
+	 */
+	public static void debug(final String message) {
+		Bus.notify(Level.DEBUG, Line.LOGS, message);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void debug(final String formatString,
+	                         final Object... arguments) {
+		Bus.notify(Level.DEBUG, Line.LOGS, null, formatString, arguments);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param throwable
+	 *            the throwable
+	 */
+	public static void debug(final Throwable throwable) {
+		Bus.notify(Level.DEBUG, Line.LOGS, throwable, null);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param throwable
+	 *            the throwable
+	 * @param message
+	 *            the message
+	 */
+	public static void debug(final Throwable throwable,
+	                         final String message) {
+		Bus.notify(Level.DEBUG, Line.LOGS, throwable, message);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param throwable
+	 *            the throwable
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void debug(final Throwable throwable,
+	                         final String formatString,
+	                         final Object... arguments) {
+		Bus.notify(Level.DEBUG, Line.LOGS, throwable, formatString, arguments);
+	}
+	
 	/**
 	 * Error.
 	 *
@@ -49,7 +114,7 @@ public class Logger {
 	public static void error(final String message) {
 		Bus.notify(Level.ERROR, Line.LOGS, message);
 	}
-
+	
 	/**
 	 * Error.
 	 *
@@ -62,7 +127,7 @@ public class Logger {
 	                         final Object... arguments) {
 		Bus.notify(Level.ERROR, Line.LOGS, null, formatString, arguments);
 	}
-
+	
 	/**
 	 * Error.
 	 *
@@ -72,7 +137,7 @@ public class Logger {
 	public static void error(final Throwable throwable) {
 		Bus.notify(Level.ERROR, Line.LOGS, throwable, null);
 	}
-
+	
 	/**
 	 * Error.
 	 *
@@ -85,7 +150,7 @@ public class Logger {
 	                         final String message) {
 		Bus.notify(Level.ERROR, Line.LOGS, throwable, message);
 	}
-
+	
 	/**
 	 * Error.
 	 *
@@ -101,7 +166,176 @@ public class Logger {
 	                         final Object... arguments) {
 		Bus.notify(Level.ERROR, Line.LOGS, throwable, formatString, arguments);
 	}
-
+	
+	/**
+	 * Error.
+	 *
+	 * @param message
+	 *            the message
+	 */
+	public static void info(final String message) {
+		Bus.notify(Level.INFO, Line.LOGS, message);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void info(final String formatString,
+	                        final Object... arguments) {
+		Bus.notify(Level.INFO, Line.LOGS, null, formatString, arguments);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param throwable
+	 *            the throwable
+	 */
+	public static void info(final Throwable throwable) {
+		Bus.notify(Level.INFO, Line.LOGS, throwable, null);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param throwable
+	 *            the throwable
+	 * @param message
+	 *            the message
+	 */
+	public static void info(final Throwable throwable,
+	                        final String message) {
+		Bus.notify(Level.INFO, Line.LOGS, throwable, message);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param throwable
+	 *            the throwable
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void info(final Throwable throwable,
+	                        final String formatString,
+	                        final Object... arguments) {
+		Bus.notify(Level.INFO, Line.LOGS, throwable, formatString, arguments);
+	}
+	
+	/**
+	 * Log verbose.
+	 * 
+	 * @return true, if successful
+	 */
+	public static boolean logAlways() {
+		return level.compareTo(Level.OFF) > 0;
+	}
+	
+	/**
+	 * Log debug.
+	 * 
+	 * @return true, if successful
+	 */
+	public static boolean logDebug() {
+		return level.compareTo(Level.DEBUG) >= 0;
+	}
+	
+	/**
+	 * Log error.
+	 * 
+	 * @return true, if successful
+	 */
+	public static boolean logError() {
+		return level.compareTo(Level.ERROR) >= 0;
+	}
+	
+	/**
+	 * Log info.
+	 * 
+	 * @return true, if successful
+	 */
+	public static boolean logInfo() {
+		return level.compareTo(Level.INFO) >= 0;
+	}
+	
+	/**
+	 * Log trace.
+	 * 
+	 * @return true, if successful
+	 */
+	public static boolean logTrace() {
+		return level.compareTo(Level.TRACE) >= 0;
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param message
+	 *            the message
+	 */
+	public static void trace(final String message) {
+		Bus.notify(Level.TRACE, Line.LOGS, message);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void trace(final String formatString,
+	                         final Object... arguments) {
+		Bus.notify(Level.TRACE, Line.LOGS, null, formatString, arguments);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param throwable
+	 *            the throwable
+	 */
+	public static void trace(final Throwable throwable) {
+		Bus.notify(Level.TRACE, Line.LOGS, throwable, null);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param throwable
+	 *            the throwable
+	 * @param message
+	 *            the message
+	 */
+	public static void trace(final Throwable throwable,
+	                         final String message) {
+		Bus.notify(Level.TRACE, Line.LOGS, throwable, message);
+	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param throwable
+	 *            the throwable
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void trace(final Throwable throwable,
+	                         final String formatString,
+	                         final Object... arguments) {
+		Bus.notify(Level.TRACE, Line.LOGS, throwable, formatString, arguments);
+	}
+	
 	/**
 	 * Error.
 	 *
@@ -111,7 +345,7 @@ public class Logger {
 	public static void warn(final String message) {
 		Bus.notify(Level.WARN, Line.LOGS, message);
 	}
-
+	
 	/**
 	 * Error.
 	 *
@@ -124,7 +358,7 @@ public class Logger {
 	                        final Object... arguments) {
 		Bus.notify(Level.WARN, Line.LOGS, null, formatString, arguments);
 	}
-
+	
 	/**
 	 * Error.
 	 *
@@ -134,7 +368,7 @@ public class Logger {
 	public static void warn(final Throwable throwable) {
 		Bus.notify(Level.WARN, Line.LOGS, throwable, null);
 	}
-
+	
 	/**
 	 * Error.
 	 *
@@ -147,7 +381,7 @@ public class Logger {
 	                        final String message) {
 		Bus.notify(Level.WARN, Line.LOGS, throwable, message);
 	}
-
+	
 	/**
 	 * Error.
 	 *
@@ -163,7 +397,7 @@ public class Logger {
 	                        final Object... arguments) {
 		Bus.notify(Level.WARN, Line.LOGS, throwable, formatString, arguments);
 	}
-
+	
 	/**
 	 * Instantiates a new logger.
 	 */
