@@ -16,6 +16,7 @@ package org.mozkito.skeleton.sequel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * The Interface ISequelAdapter.
@@ -25,7 +26,30 @@ import java.util.Iterator;
  *            the generic type
  */
 public interface ISequelAdapter<T> {
-
+	
+	/**
+	 * Gets the next id.
+	 *
+	 * @param type
+	 *            the type
+	 * @param sequenceName
+	 *            the sequence name
+	 * @return the next id
+	 */
+	public static String getNextId(final SequelDatabase.Type type,
+	                               final String sequenceName) {
+		switch (type) {
+			case MSSQL:
+				return "SELECT NEXT VALUE FOR " + sequenceName;
+			case DERBY:
+				return "VALUES (NEXT VALUE FOR " + sequenceName + ")";
+			case POSTGRES:
+				return "SELECT nextval'" + sequenceName + "'";
+		}
+		
+		return "SELECT NEXT VALUE FOR " + sequenceName;
+	}
+	
 	/**
 	 * Creates the.
 	 *
@@ -36,7 +60,23 @@ public interface ISequelAdapter<T> {
 	 *             the SQL exception
 	 */
 	T create(ResultSet result) throws SQLException;
-
+	
+	/**
+	 * Creates the constraints.
+	 *
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	void createConstraints() throws SQLException;
+	
+	/**
+	 * Creates the indexes.
+	 *
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	void createIndexes() throws SQLException;
+	
 	/**
 	 * Creates the scheme.
 	 *
@@ -44,7 +84,7 @@ public interface ISequelAdapter<T> {
 	 *             the SQL exception
 	 */
 	void createScheme() throws SQLException;
-
+	
 	/**
 	 * Delete.
 	 *
@@ -54,7 +94,7 @@ public interface ISequelAdapter<T> {
 	 *             the SQL exception
 	 */
 	void delete(T object) throws SQLException;
-
+	
 	/**
 	 * Load.
 	 *
@@ -63,7 +103,7 @@ public interface ISequelAdapter<T> {
 	 *             the SQL exception
 	 */
 	Iterator<T> load() throws SQLException;
-
+	
 	/**
 	 * Load.
 	 *
@@ -75,19 +115,29 @@ public interface ISequelAdapter<T> {
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
-	T load(Object id,
-	       Object... ids) throws SQLException;
-
+	List<T> load(Object... ids) throws SQLException;
+	
 	/**
-	 * Save.
+	 * Load.
 	 *
-	 * @param object
-	 *            the object
+	 * @param id
+	 *            the id
+	 * @return the t
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
-	void save(T object) throws SQLException;
-
+	T load(Object id) throws SQLException;
+	
+	/**
+	 * Save.
+	 *
+	 * @param objects
+	 *            the objects
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	void save(@SuppressWarnings ("unchecked") T... objects) throws SQLException;
+	
 	/**
 	 * Update.
 	 *
@@ -96,6 +146,6 @@ public interface ISequelAdapter<T> {
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
-	void update(T object) throws SQLException;
-
+	void update(@SuppressWarnings ("unchecked") T... objects) throws SQLException;
+	
 }

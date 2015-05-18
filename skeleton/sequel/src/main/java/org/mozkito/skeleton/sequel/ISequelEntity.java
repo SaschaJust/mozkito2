@@ -21,11 +21,19 @@ import java.io.Serializable;
  * @author Sascha Just
  */
 public interface ISequelEntity extends Serializable {
-
+	
 	/**
 	 * Id.
 	 *
 	 * @return the object[]
 	 */
-	Object[] id();
+	Object id();
+	
+	/**
+	 * Id.
+	 *
+	 * @param id
+	 *            the id
+	 */
+	void id(Object id);
 }

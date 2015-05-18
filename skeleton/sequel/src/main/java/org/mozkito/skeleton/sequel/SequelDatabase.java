@@ -34,12 +34,12 @@ import com.zaxxer.hikari.HikariDataSource;
  * @author Sascha Just
  */
 public class SequelDatabase implements DataSource, Closeable {
-
+	
 	/**
 	 * The Enum Type.
 	 */
 	public static enum Type {
-
+		
 		/** The derby. */
 		DERBY,
 		/** The postgres. */
@@ -47,13 +47,16 @@ public class SequelDatabase implements DataSource, Closeable {
 		/** The mssql. */
 		MSSQL;
 	}
-
+	
 	/** The data source. */
 	private final HikariDataSource dataSource;
-
+	
 	/** The type. */
 	private final Type             type;
-
+	
+	/** The connection. */
+	private final Connection       connection;
+	
 	/**
 	 * Instantiates a new sequel database.
 	 *
@@ -72,17 +75,18 @@ public class SequelDatabase implements DataSource, Closeable {
 		config.addDataSourceProperty("cachePrepStmts", "true");
 		config.addDataSourceProperty("prepStmtCacheSize", "250");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-
+		
 		this.type = Type.DERBY;
-
+		
 		for (final Entry<Object, Object> entry : properties.entrySet()) {
 			config.addDataSourceProperty((String) entry.getKey(), entry.getValue());
 		}
-
+		
 		this.dataSource = new HikariDataSource(config);
 		this.dataSource.getConnection().setAutoCommit(false);
+		this.connection = this.dataSource.getConnection();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -92,7 +96,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	public void close() throws IOException {
 		this.dataSource.close();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -100,9 +104,9 @@ public class SequelDatabase implements DataSource, Closeable {
 	 */
 	@Override
 	public Connection getConnection() throws SQLException {
-		return this.dataSource.getConnection();
+		return this.connection;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -115,7 +119,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	                                final String password) throws SQLException {
 		return this.dataSource.getConnection(username, password);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -125,7 +129,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	public int getLoginTimeout() throws SQLException {
 		return this.dataSource.getLoginTimeout();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -135,7 +139,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	public PrintWriter getLogWriter() throws SQLException {
 		return this.dataSource.getLogWriter();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -145,7 +149,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		return this.dataSource.getParentLogger();
 	}
-
+	
 	/**
 	 * Gets the type.
 	 *
@@ -154,7 +158,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	public Type getType() {
 		return this.type;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -164,7 +168,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	public boolean isWrapperFor(final Class<?> iface) throws SQLException {
 		return this.dataSource.isWrapperFor(iface);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -174,7 +178,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	public void setLoginTimeout(final int seconds) throws SQLException {
 		this.dataSource.setLoginTimeout(seconds);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -184,7 +188,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	public void setLogWriter(final PrintWriter out) throws SQLException {
 		this.dataSource.setLogWriter(out);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -194,5 +198,5 @@ public class SequelDatabase implements DataSource, Closeable {
 	public <T> T unwrap(final Class<T> iface) throws SQLException {
 		return this.dataSource.unwrap(iface);
 	}
-
+	
 }

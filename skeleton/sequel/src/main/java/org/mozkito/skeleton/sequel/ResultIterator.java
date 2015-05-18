@@ -27,16 +27,16 @@ import org.mozkito.skeleton.contracts.Requires;
  *            the generic type
  */
 public class ResultIterator<T extends ISequelEntity> implements Iterator<T> {
-
+	
 	/** The results. */
 	private final ResultSet         results;
-
+	
 	/** The has next. */
 	private boolean                 hasNext;
-
+	
 	/** The adapter. */
 	private final ISequelAdapter<T> adapter;
-
+	
 	/**
 	 * Instantiates a new result iterator.
 	 *
@@ -48,7 +48,7 @@ public class ResultIterator<T extends ISequelEntity> implements Iterator<T> {
 	public ResultIterator(final ISequelAdapter<T> adapter, final ResultSet results) {
 		Requires.notNull(adapter);
 		Requires.notNull(results);
-
+		
 		this.adapter = adapter;
 		this.results = results;
 		try {
@@ -57,7 +57,7 @@ public class ResultIterator<T extends ISequelEntity> implements Iterator<T> {
 			throw new RuntimeException("Failed fetching next set of data for adapter " + this.adapter, e);
 		}
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -67,7 +67,7 @@ public class ResultIterator<T extends ISequelEntity> implements Iterator<T> {
 	public boolean hasNext() {
 		return this.hasNext;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -83,5 +83,5 @@ public class ResultIterator<T extends ISequelEntity> implements Iterator<T> {
 			throw new RuntimeException("Failed fetching next set of data for adapter " + this.adapter, e);
 		}
 	}
-
+	
 }
