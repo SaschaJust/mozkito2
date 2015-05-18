@@ -14,7 +14,6 @@
 package org.mozkito.skeleton.sequel;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -56,66 +55,47 @@ public interface ISequelAdapter<T> {
 	 * @param result
 	 *            the result
 	 * @return the t
-	 * @throws SQLException
-	 *             the SQL exception
 	 */
-	T create(ResultSet result) throws SQLException;
+	T create(ResultSet result);
 	
 	/**
 	 * Creates the constraints.
-	 *
-	 * @throws SQLException
-	 *             the SQL exception
 	 */
-	void createConstraints() throws SQLException;
+	void createConstraints();
 	
 	/**
 	 * Creates the indexes.
-	 *
-	 * @throws SQLException
-	 *             the SQL exception
 	 */
-	void createIndexes() throws SQLException;
+	void createIndexes();
 	
 	/**
 	 * Creates the scheme.
-	 *
-	 * @throws SQLException
-	 *             the SQL exception
 	 */
-	void createScheme() throws SQLException;
+	void createScheme();
 	
 	/**
 	 * Delete.
 	 *
 	 * @param object
 	 *            the object
-	 * @throws SQLException
-	 *             the SQL exception
 	 */
-	void delete(T object) throws SQLException;
+	void delete(T object);
 	
 	/**
 	 * Load.
 	 *
 	 * @return the iterator
-	 * @throws SQLException
-	 *             the SQL exception
 	 */
-	Iterator<T> load() throws SQLException;
+	Iterator<T> load();
 	
 	/**
 	 * Load.
 	 *
-	 * @param id
-	 *            the id
 	 * @param ids
 	 *            the ids
 	 * @return the t
-	 * @throws SQLException
-	 *             the SQL exception
 	 */
-	List<T> load(Object... ids) throws SQLException;
+	List<T> load(Object... ids);
 	
 	/**
 	 * Load.
@@ -123,29 +103,23 @@ public interface ISequelAdapter<T> {
 	 * @param id
 	 *            the id
 	 * @return the t
-	 * @throws SQLException
-	 *             the SQL exception
 	 */
-	T load(Object id) throws SQLException;
+	T load(Object id);
 	
 	/**
 	 * Save.
 	 *
 	 * @param objects
 	 *            the objects
-	 * @throws SQLException
-	 *             the SQL exception
 	 */
-	void save(@SuppressWarnings ("unchecked") T... objects) throws SQLException;
+	void save(@SuppressWarnings ("unchecked") T... objects);
 	
 	/**
 	 * Update.
 	 *
-	 * @param object
-	 *            the object
-	 * @throws SQLException
-	 *             the SQL exception
+	 * @param objects
+	 *            the objects
 	 */
-	void update(@SuppressWarnings ("unchecked") T... objects) throws SQLException;
+	void update(@SuppressWarnings ("unchecked") T... objects);
 	
 }

@@ -169,38 +169,43 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
 	@Override
-	public User create(final ResultSet results) throws SQLException {
+	public User create(final ResultSet results) {
 		Requires.notNull(results);
 		
-		User user = new User();
-		int id;
-		int lastId = -1;
-		Identity identity;
-		final List<User> list = new LinkedList<>();
-		
-		while (results.next()) {
-			id = results.getInt(1);
+		try {
 			
-			if (id != lastId) {
-				if (lastId != -1) {
-					return user;
-				}
-				lastId = id;
-				list.add(user);
-				user = new User();
-				user.id(id);
+			User user = new User();
+			int id;
+			int lastId = -1;
+			Identity identity;
+			final List<User> list = new LinkedList<>();
+			
+			while (results.next()) {
+				id = results.getInt(1);
 				
-				identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
-				identity.id(results.getInt(2));
-				user.addIdentity(identity);
-			} else {
-				identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
-				identity.id(results.getInt(2));
-				user.addIdentity(identity);
+				if (id != lastId) {
+					if (lastId != -1) {
+						return user;
+					}
+					lastId = id;
+					list.add(user);
+					user = new User();
+					user.id(id);
+					
+					identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
+					identity.id(results.getInt(2));
+					user.addIdentity(identity);
+				} else {
+					identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
+					identity.id(results.getInt(2));
+					user.addIdentity(identity);
+				}
 			}
+			
+			return user;
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
 		}
-		
-		return user;
 	}
 	
 	/**
@@ -209,13 +214,18 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
 	 */
 	@Override
-	public void createConstraints() throws SQLException {
-		synchronized (this.database) {
-			final Connection connection = this.database.getConnection();
-			final Statement statement = connection.createStatement();
-			statement.execute("CREATE TABLE " + TABLE_NAME + " (user_id smallint, identity_id smallint)");
-			statement.execute("CREATE SEQUENCE " + ID_SEQUENCE + " MINVALUE 1" + " START WITH 1" + " INCREMENT BY 1");
-			connection.commit();
+	public void createConstraints() {
+		try {
+			synchronized (this.database) {
+				final Connection connection = this.database.getConnection();
+				final Statement statement = connection.createStatement();
+				statement.execute("CREATE TABLE " + TABLE_NAME + " (user_id smallint, identity_id smallint)");
+				statement.execute("CREATE SEQUENCE " + ID_SEQUENCE + " MINVALUE 1" + " START WITH 1"
+				        + " INCREMENT BY 1");
+				connection.commit();
+			}
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -225,14 +235,18 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
 	 */
 	@Override
-	public void createIndexes() throws SQLException {
-		synchronized (this.database) {
-			final Connection connection = this.database.getConnection();
-			final Statement statement = connection.createStatement();
-			statement.execute("CREATE INDEX idx_" + TABLE_NAME + "_user_id_identity_id ON " + TABLE_NAME
-			        + "(user_id, identity_id)");
-			statement.execute("CREATE INDEX idx_" + TABLE_NAME + "_identity_id ON " + TABLE_NAME + "(identity_id)");
-			connection.commit();
+	public void createIndexes() {
+		try {
+			synchronized (this.database) {
+				final Connection connection = this.database.getConnection();
+				final Statement statement = connection.createStatement();
+				statement.execute("CREATE INDEX idx_" + TABLE_NAME + "_user_id_identity_id ON " + TABLE_NAME
+				        + "(user_id, identity_id)");
+				statement.execute("CREATE INDEX idx_" + TABLE_NAME + "_identity_id ON " + TABLE_NAME + "(identity_id)");
+				connection.commit();
+			}
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -242,14 +256,19 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
 	 */
 	@Override
-	public void createScheme() throws SQLException {
-		synchronized (this.database) {
-			final Connection connection = this.database.getConnection();
-			final Statement statement = connection.createStatement();
-			statement.execute("CREATE TABLE " + TABLE_NAME
-			        + " (user_id smallint, identity_id smallint, PRIMARY KEY (user_id, identity_id))");
-			statement.execute("CREATE SEQUENCE " + ID_SEQUENCE + " MINVALUE 1" + " START WITH 1" + " INCREMENT BY 1");
-			connection.commit();
+	public void createScheme() {
+		try {
+			synchronized (this.database) {
+				final Connection connection = this.database.getConnection();
+				final Statement statement = connection.createStatement();
+				statement.execute("CREATE TABLE " + TABLE_NAME
+				        + " (user_id smallint, identity_id smallint, PRIMARY KEY (user_id, identity_id))");
+				statement.execute("CREATE SEQUENCE " + ID_SEQUENCE + " MINVALUE 1" + " START WITH 1"
+				        + " INCREMENT BY 1");
+				connection.commit();
+			}
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -259,7 +278,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
 	@Override
-	public void delete(final User user) throws SQLException {
+	public void delete(final User user) {
 		Requires.notNull(user);
 		
 		final Object idO = user.id();
@@ -267,37 +286,40 @@ public class UserAdapter implements ISequelAdapter<User> {
 		Asserts.notNull(idO);
 		Asserts.isInteger(idO);
 		
-		final int id = (int) idO;
-		
-		if (id > 0) {
-			synchronized (this.database) {
-				final Connection connection = this.database.getConnection();
-				final PreparedStatement statement = connection.prepareStatement("DELETE FROM " + TABLE_NAME
-				        + " WHERE id = ?");
-				statement.setInt(1, id);
-				statement.executeUpdate();
-				
-				try {
-					connection.commit();
-				} catch (final SQLException e) {
-					Logger.error(e, "Executing DELETE failed on user %s.", user);
+		try {
+			final int id = (int) idO;
+			
+			if (id > 0) {
+				synchronized (this.database) {
+					final Connection connection = this.database.getConnection();
+					final PreparedStatement statement = connection.prepareStatement("DELETE FROM " + TABLE_NAME
+					        + " WHERE id = ?");
+					statement.setInt(1, id);
+					statement.executeUpdate();
+					
 					try {
-						connection.rollback();
-					} catch (final SQLException e2) {
-						Logger.error(e2, "Rolling back DELETE attempt failed on user %s.", user);
-						throw e2;
+						connection.commit();
+					} catch (final SQLException e) {
+						Logger.error(e, "Executing DELETE failed on user %s.", user);
+						try {
+							connection.rollback();
+						} catch (final SQLException e2) {
+							Logger.error(e2, "Rolling back DELETE attempt failed on user %s.", user);
+							throw e2;
+						}
+						throw e;
 					}
-					throw e;
+					
 				}
-				
+				user.id(-1);
+			} else {
+				if (Logger.logWarn()) {
+					Logger.warn("Cannot delete user from table " + TABLE_NAME + " with id <= 0.");
+				}
 			}
-			user.id(-1);
-		} else {
-			if (Logger.logWarn()) {
-				Logger.warn("Cannot delete user from table " + TABLE_NAME + " with id <= 0.");
-			}
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
 		}
-		
 	}
 	
 	/**
@@ -306,15 +328,18 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
 	@Override
-	public Iterator<User> load() throws SQLException {
+	public Iterator<User> load() {
 		Asserts.notNull(this.database);
-		
-		final Connection connection = this.database.getConnection();
-		final Statement statement = connection.createStatement();
-		final ResultSet results = statement.executeQuery("SELECT user_id, identity_id, username, email, fullname FROM "
-		        + TABLE_NAME + " ut INNER JOIN " + IdentityAdapter.TABLE_NAME + " it ON (ut.identity_id = it.id)");
-		
-		return new UserIterator(results);
+		try {
+			final Connection connection = this.database.getConnection();
+			final Statement statement = connection.createStatement();
+			final ResultSet results = statement.executeQuery("SELECT user_id, identity_id, username, email, fullname FROM "
+			        + TABLE_NAME + " ut INNER JOIN " + IdentityAdapter.TABLE_NAME + " it ON (ut.identity_id = it.id)");
+			
+			return new UserIterator(results);
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	/**
@@ -323,27 +348,30 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
 	 */
 	@Override
-	public User load(final Object id) throws SQLException {
+	public User load(final Object id) {
 		Asserts.notNull(id);
 		Asserts.isInteger(id);
-		
-		final int theId = (int) id;
-		final Connection connection = this.database.getConnection();
-		final PreparedStatement statement = connection.prepareStatement("SELECT identity_id FROM " + TABLE_NAME
-		        + " WHERE user_id = ?");
-		
-		statement.setInt(1, theId);
-		
-		final User user = new User();
-		final ResultSet results = statement.executeQuery();
-		final ISequelAdapter<Identity> adapter = new IdentityAdapter(this.database);
-		while (results.next()) {
-			user.addIdentity(adapter.load(results.getInt(1)));
+		try {
+			final int theId = (int) id;
+			final Connection connection = this.database.getConnection();
+			final PreparedStatement statement = connection.prepareStatement("SELECT identity_id FROM " + TABLE_NAME
+			        + " WHERE user_id = ?");
+			
+			statement.setInt(1, theId);
+			
+			final User user = new User();
+			final ResultSet results = statement.executeQuery();
+			final ISequelAdapter<Identity> adapter = new IdentityAdapter(this.database);
+			while (results.next()) {
+				user.addIdentity(adapter.load(results.getInt(1)));
+			}
+			
+			user.id(theId);
+			
+			return user;
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
 		}
-		
-		user.id(theId);
-		
-		return user;
 	}
 	
 	/**
@@ -352,63 +380,67 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
 	 */
 	@Override
-	public List<User> load(final Object... ids) throws SQLException {
+	public List<User> load(final Object... ids) {
 		Asserts.notNull(this.database);
 		
-		final Connection connection = this.database.getConnection();
-		
-		final StringBuilder builder = new StringBuilder();
-		builder.append("SELECT user_id, identity_id FROM, username, email, password ");
-		builder.append(TABLE_NAME);
-		builder.append(" ut INNER JOIN ");
-		builder.append(IdentityAdapter.TABLE_NAME);
-		builder.append(" it ON (ut.identity_id = it.id) WHERE user_id IN (");
-		final StringBuilder marks = new StringBuilder();
-		for (@SuppressWarnings ("unused")
-		final Object id : ids) {
-			if (marks.length() != 0) {
-				marks.append(", ");
+		try {
+			final Connection connection = this.database.getConnection();
+			
+			final StringBuilder builder = new StringBuilder();
+			builder.append("SELECT user_id, identity_id FROM, username, email, password ");
+			builder.append(TABLE_NAME);
+			builder.append(" ut INNER JOIN ");
+			builder.append(IdentityAdapter.TABLE_NAME);
+			builder.append(" it ON (ut.identity_id = it.id) WHERE user_id IN (");
+			final StringBuilder marks = new StringBuilder();
+			for (@SuppressWarnings ("unused")
+			final Object id : ids) {
+				if (marks.length() != 0) {
+					marks.append(", ");
+				}
+				marks.append("?");
 			}
-			marks.append("?");
-		}
-		builder.append(")");
-		
-		final String query = builder.toString();
-		final PreparedStatement statement = connection.prepareStatement(query);
-		
-		for (int i = 0; i < ids.length; ++i) {
-			Asserts.validIndex(i, ids);
-			Requires.isInteger(ids[i]);
-			statement.setInt(i + 1, (Integer) ids[i]);
-		}
-		
-		final ResultSet results = statement.executeQuery();
-		
-		User user = new User();
-		int id;
-		int lastId = -1;
-		Identity identity;
-		final List<User> list = new LinkedList<>();
-		
-		while (results.next()) {
-			id = results.getInt(1);
-			if (id != lastId) {
-				lastId = id;
-				list.add(user);
-				user = new User();
-				user.id(id);
-				
-				identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
-				identity.id(results.getInt(2));
-				user.addIdentity(identity);
-			} else {
-				identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
-				identity.id(results.getInt(2));
-				user.addIdentity(identity);
+			builder.append(")");
+			
+			final String query = builder.toString();
+			final PreparedStatement statement = connection.prepareStatement(query);
+			
+			for (int i = 0; i < ids.length; ++i) {
+				Asserts.validIndex(i, ids);
+				Requires.isInteger(ids[i]);
+				statement.setInt(i + 1, (Integer) ids[i]);
 			}
+			
+			final ResultSet results = statement.executeQuery();
+			
+			User user = new User();
+			int id;
+			int lastId = -1;
+			Identity identity;
+			final List<User> list = new LinkedList<>();
+			
+			while (results.next()) {
+				id = results.getInt(1);
+				if (id != lastId) {
+					lastId = id;
+					list.add(user);
+					user = new User();
+					user.id(id);
+					
+					identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
+					identity.id(results.getInt(2));
+					user.addIdentity(identity);
+				} else {
+					identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
+					identity.id(results.getInt(2));
+					user.addIdentity(identity);
+				}
+			}
+			
+			return list;
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
 		}
-		
-		return list;
 	}
 	
 	/**
@@ -417,34 +449,38 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
 	 */
 	@Override
-	public void save(final User... users) throws SQLException {
+	public void save(final User... users) {
 		Requires.notNull(users);
 		
-		synchronized (this.database) {
-			final Connection connection = this.database.getConnection();
-			final PreparedStatement statement = connection.prepareStatement("INSERT INTO " + TABLE_NAME
-			        + " (user_id, identity_id) VALUES (?, ?)");
-			int id = -1;
-			for (final User user : users) {
-				final PreparedStatement idStatement = connection.prepareStatement(ISequelAdapter.getNextId(this.database.getType(),
-				                                                                                           ID_SEQUENCE));
-				final ResultSet idResult = idStatement.executeQuery();
-				Contract.asserts(idResult.next());
-				id = idResult.getInt(1);
-				
-				for (final Identity identity : user.getIdentities()) {
-					statement.setInt(1, id);
-					statement.setInt(2, identity.id());
-					statement.executeUpdate();
+		try {
+			synchronized (this.database) {
+				final Connection connection = this.database.getConnection();
+				final PreparedStatement statement = connection.prepareStatement("INSERT INTO " + TABLE_NAME
+				        + " (user_id, identity_id) VALUES (?, ?)");
+				int id = -1;
+				for (final User user : users) {
+					final PreparedStatement idStatement = connection.prepareStatement(ISequelAdapter.getNextId(this.database.getType(),
+					                                                                                           ID_SEQUENCE));
+					final ResultSet idResult = idStatement.executeQuery();
+					Contract.asserts(idResult.next());
+					id = idResult.getInt(1);
+					
+					for (final Identity identity : user.getIdentities()) {
+						statement.setInt(1, id);
+						statement.setInt(2, identity.id());
+						statement.executeUpdate();
+					}
+					
+					user.id(id);
 				}
-				
-				user.id(id);
+				try {
+					connection.commit();
+				} catch (final SQLException e) {
+					connection.rollback();
+				}
 			}
-			try {
-				connection.commit();
-			} catch (final SQLException e) {
-				connection.rollback();
-			}
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -454,35 +490,42 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
 	@Override
-	public void update(final User... objects) throws SQLException {
-		for (final User user : objects) {
-			final Connection connection = this.database.getConnection();
-			final PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO " + TABLE_NAME
-			        + " (user_id, identity_id) VALUES (?, ?)");
-			final PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM " + TABLE_NAME
-			        + " WHERE id = ?");
-			
-			for (final Identity id : user.getIdentities()) {
-				deleteStatement.setInt(1, user.id());
-				deleteStatement.setInt(2, id.id());
-				
-				deleteStatement.executeUpdate();
-				
-				insertStatement.setInt(1, user.id());
-				insertStatement.setInt(2, id.id());
-				
-				insertStatement.executeUpdate();
-			}
-			
-			try {
-				connection.commit();
-			} catch (final SQLException e) {
-				connection.rollback();
-			}
-		}
+	public void update(final User... objects) {
+		Requires.notNull(objects);
 		
-		for (final User user : objects) {
-			save(user);
+		try {
+			for (final User user : objects) {
+				final Connection connection = this.database.getConnection();
+				final PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO " + TABLE_NAME
+				        + " (user_id, identity_id) VALUES (?, ?)");
+				final PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM " + TABLE_NAME
+				        + " WHERE id = ?");
+				
+				for (final Identity id : user.getIdentities()) {
+					deleteStatement.setInt(1, user.id());
+					deleteStatement.setInt(2, id.id());
+					
+					deleteStatement.executeUpdate();
+					
+					insertStatement.setInt(1, user.id());
+					insertStatement.setInt(2, id.id());
+					
+					insertStatement.executeUpdate();
+				}
+				
+				try {
+					connection.commit();
+				} catch (final SQLException e) {
+					connection.rollback();
+				}
+			}
+			
+			for (final User user : objects) {
+				save(user);
+			}
+			
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
