@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright 2014 Sascha Just
+ * Copyright 2015 mozkito.org
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -26,6 +26,25 @@ import java.util.regex.Pattern;
  * @author Sascha Just
  */
 public class Messages {
+	
+	/** The assertions enabled. */
+	private static boolean        ASSERTIONS_ENABLED;
+	
+	static {
+		try {
+			assert false;
+			ASSERTIONS_ENABLED = false;
+		} catch (final AssertionError ae) {
+			ASSERTIONS_ENABLED = true;
+		}
+	}
+	
+	/** The Constant BUNDLE_NAME. */
+	private static final String   BUNDLE_NAME     = "messages";
+	// Messages.class.getPackage().getName();
+	
+	/** The Constant RESOURCE_BUNDLE. */
+	private static ResourceBundle RESOURCE_BUNDLE = Messages.loadBundle(Locale.getDefault());
 	
 	/**
 	 * Gets the string.
@@ -81,7 +100,9 @@ public class Messages {
 	
 	/**
 	 * Load bundle.
-	 * 
+	 *
+	 * @param locale
+	 *            the locale
 	 * @return the resource bundle
 	 */
 	private static ResourceBundle loadBundle(final Locale locale) {
@@ -110,24 +131,6 @@ public class Messages {
 		
 		RESOURCE_BUNDLE = loadBundle(locale);
 	}
-	
-	private static boolean        ASSERTIONS_ENABLED;
-	
-	static {
-		try {
-			assert false;
-			ASSERTIONS_ENABLED = false;
-		} catch (final AssertionError ae) {
-			ASSERTIONS_ENABLED = true;
-		}
-	}
-	
-	/** The Constant BUNDLE_NAME. */
-	private static final String   BUNDLE_NAME     = "messages";
-	// Messages.class.getPackage().getName();
-	
-	/** The Constant RESOURCE_BUNDLE. */
-	private static ResourceBundle RESOURCE_BUNDLE = Messages.loadBundle(Locale.getDefault());
 	
 	/**
 	 * Instantiates a new messages.
