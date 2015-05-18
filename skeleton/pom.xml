@@ -11,8 +11,11 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>contracts</module>
+		<module>datetime</module>
 		<module>i18n</module>
+		<module>io</module>
 		<module>logging</module>
+		<module>regex</module>
 		<module>settings</module>
 		<module>sequel</module>
 	</modules>
