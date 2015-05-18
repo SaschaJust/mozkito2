@@ -9,7 +9,7 @@
 	<artifactId>core</artifactId>
 	<name>mozkito core [meta]</name>
 	<packaging>pom</packaging>
-	<!-- <modules>
-		<module>logging</module>
-	</modules> -->
+	<modules>
+		<module>libs</module>
+	</modules>
 </project>

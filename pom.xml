@@ -67,8 +67,8 @@
 		<url>http://www.st.cs.uni-saarland.de/</url>
 	</organization>
 	<modules>
-		<!-- <module>core</module>
-		<module>eclipse</module>
+		<module>core</module>
+		<!-- <module>eclipse</module>
 		<module>maven</module>
 		<module>runtime</module>-->
 		<module>skeleton</module>

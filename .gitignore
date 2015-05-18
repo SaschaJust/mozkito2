@@ -13,3 +13,4 @@ __MACOSX
 *.log
 .DS_Store
 .svn
+checkstyle

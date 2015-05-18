@@ -24,6 +24,8 @@ import java.util.Properties;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import org.mozkito.core.libs.users.adapters.IdentityAdapter;
+import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.skeleton.logging.Bus;
 import org.mozkito.skeleton.logging.Level;
 import org.mozkito.skeleton.logging.Logger;
@@ -31,8 +33,6 @@ import org.mozkito.skeleton.logging.consumer.LogConsumer;
 import org.mozkito.skeleton.logging.consumer.appender.TerminalAppender;
 import org.mozkito.skeleton.sequel.ISequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.adapters.UserAdapter;
-import org.mozkito.skeleton.sequel.model.User;
 
 /**
  * The Class Main.
@@ -52,14 +52,14 @@ public class Main {
 		consumer.register(new TerminalAppender(Level.INFO));
 		
 		try {
-			final User user = new User("sjust", "sascha.just@mozkito.org", "Sascha Just");
+			final Identity identity = new Identity("sjust", "sascha.just@mozkito.org", "Sascha Just");
 			final SequelDatabase database = new SequelDatabase("jdbc:derby:simpsons;create=true", new Properties());
-			final ISequelAdapter<User> adapter = new UserAdapter(database);
+			final ISequelAdapter<Identity> adapter = new IdentityAdapter(database);
 			adapter.createScheme();
 			
-			adapter.save(user);
+			adapter.save(identity);
 			
-			final Iterator<User> iterator = adapter.load();
+			final Iterator<Identity> iterator = adapter.load();
 			while (iterator.hasNext()) {
 				Logger.error(iterator.next().toString());
 			}
