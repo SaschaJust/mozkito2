@@ -275,6 +275,15 @@ public class Logger {
 	}
 	
 	/**
+	 * Log error.
+	 * 
+	 * @return true, if successful
+	 */
+	public static boolean logWarn() {
+		return level.compareTo(Level.WARN) >= 0;
+	}
+	
+	/**
 	 * Error.
 	 *
 	 * @param message
