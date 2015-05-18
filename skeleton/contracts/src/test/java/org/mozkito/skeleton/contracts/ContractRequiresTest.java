@@ -32,6 +32,9 @@ import org.mozkito.skeleton.i18n.Messages;
  */
 public class ContractRequiresTest {
 	
+	/** The Constant PRECONDITION_TAG. */
+	private static final String PRECONDITION_TAG = "PRECONDITION VIOLATED";
+	
 	/**
 	 * Sets the locale to US for string comparison.
 	 */
@@ -39,9 +42,6 @@ public class ContractRequiresTest {
 	public static void setUpBeforeClass() {
 		Messages.setLocale(Locale.US);
 	}
-	
-	/** The Constant PRECONDITION_TAG. */
-	private static final String PRECONDITION_TAG = "PRECONDITION VIOLATED";
 	
 	/**
 	 * Test requires.
@@ -64,7 +64,7 @@ public class ContractRequiresTest {
 	@Test
 	public final void testRequiresNotEmpty() {
 		try {
-			Requires.notEmpty(null);
+			Requires.notEmpty((Object[]) null);
 		} catch (final Throwable t) {
 			fail("Empty check should pass on (null) argument.");
 		}

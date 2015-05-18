@@ -50,11 +50,87 @@ public class Asserts {
 	}
 	
 	/**
+	 * Checks if is integer.
+	 *
 	 * @param object
+	 *            the object
 	 */
 	public static void isInteger(final Object object) {
 		assert object == null || object instanceof Integer : Messages.get("skeleton.contract.asserts.isInteger",
 		                                                                  Contract.getCallerString());
+	}
+	
+	/**
+	 * Checks if is null.
+	 *
+	 * @param arg
+	 *            the arg
+	 */
+	public static void isNull(final Object arg) {
+		assert arg == null : Messages.get("skeleton.contract.asserts.isNull", Contract.getCallerString(), "");
+	}
+	
+	/**
+	 * Checks if is null.
+	 *
+	 * @param arg
+	 *            the arg
+	 * @param message
+	 *            the message
+	 */
+	public static void isNull(final Object arg,
+	                          final String message) {
+		assert arg == null : Messages.get("skeleton.contract.asserts.isNull", Contract.getCallerString(), message);
+	}
+	
+	/**
+	 * Checks if is null.
+	 *
+	 * @param arg
+	 *            the arg
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void isNull(final Object arg,
+	                          final String formatString,
+	                          final Object... arguments) {
+		assert arg == null : Messages.get("skeleton.contract.asserts.isNull", Contract.getCallerString(),
+		                                  String.format(formatString, arguments));
+	}
+	
+	/**
+	 * Less.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
+	 * @param message
+	 *            the message
+	 */
+	public static void less(final Integer lhs,
+	                        final Integer rhs,
+	                        final String message) {
+		assert lhs < rhs : Messages.get("skeleton.contract.asserts.less", Contract.getCallerString());
+	}
+	
+	/**
+	 * Not negative.
+	 *
+	 * @param arg
+	 *            the arg
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void notNegative(final Integer arg,
+	                               final String formatString,
+	                               final Object... arguments) {
+		assert arg >= 0 : Messages.get("skeleton.contract.asserts.notNegative", Contract.getCallerString(),
+		                               String.format(formatString, arguments));
 	}
 	
 	/**
@@ -64,7 +140,37 @@ public class Asserts {
 	 *            the arg
 	 */
 	public static void notNull(final Object arg) {
-		assert arg != null : Contract.getCallerString() + "Assertion violated: Object must not be (null).";
+		assert arg != null : Messages.get("skeleton.contract.asserts.notNull", Contract.getCallerString(), "");
+	}
+	
+	/**
+	 * Not null.
+	 *
+	 * @param arg
+	 *            the arg
+	 * @param message
+	 *            the message
+	 */
+	public static void notNull(final Object arg,
+	                           final String message) {
+		assert arg != null : Messages.get("skeleton.contract.asserts.notNull", Contract.getCallerString(), message);
+	}
+	
+	/**
+	 * Not null.
+	 *
+	 * @param arg
+	 *            the arg
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void notNull(final Object arg,
+	                           final String formatString,
+	                           final Object... arguments) {
+		assert arg != null : Messages.get("skeleton.contract.asserts.notNull", Contract.getCallerString(),
+		                                  String.format(formatString, arguments));
 	}
 	
 	/**
@@ -81,6 +187,9 @@ public class Asserts {
 		                                                    Contract.getCallerString());
 	}
 	
+	/**
+	 * Instantiates a new asserts.
+	 */
 	private Asserts() {
 		// avoid instantiation.
 	}

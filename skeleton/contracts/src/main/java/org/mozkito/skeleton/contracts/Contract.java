@@ -69,10 +69,49 @@ public class Contract {
 	 */
 	public static void requires(final boolean value) {
 		if (!value) {
-			throw new RequirementNotMetExeption(Messages.get("skeleton.contract.requires.failed", getCallerString()));
+			throw new RequirementNotMetExeption(
+			                                    Messages.get("skeleton.contract.requires.failed", getCallerString(), ""));
 		}
 	}
 	
+	/**
+	 * Requires.
+	 *
+	 * @param b
+	 *            the b
+	 * @param message
+	 *            the message
+	 */
+	public static void requires(final boolean b,
+	                            final String message) {
+		if (!b) {
+			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.failed", getCallerString(),
+			                                                message));
+		}
+	}
+	
+	/**
+	 * Requires.
+	 *
+	 * @param b
+	 *            the b
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void requires(final boolean b,
+	                            final String formatString,
+	                            final Object... arguments) {
+		if (!b) {
+			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.failed", getCallerString(),
+			                                                String.format(formatString, arguments)));
+		}
+	}
+	
+	/**
+	 * Instantiates a new contract.
+	 */
 	private Contract() {
 		// avoid instantiation.
 	}

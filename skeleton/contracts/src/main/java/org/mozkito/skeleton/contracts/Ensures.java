@@ -13,6 +13,8 @@
 
 package org.mozkito.skeleton.contracts;
 
+import org.mozkito.skeleton.i18n.Messages;
+
 /**
  * The Class Ensures.
  */
@@ -38,10 +40,27 @@ public class Ensures {
 	 */
 	public static void notNull(final Object arg,
 	                           final String message) {
-		assert arg != null : Contract.getCallerString() + "Postcondition violated: Object must not be (null)." + message != null
-		                                                                                                               ? " "
-		                                                                                                                       + message
-		                                                                                                               : "";
+		assert arg != null : Contract.getCallerString() + "Postcondition violated: Object must not be (null)."
+		        + message != null
+		                         ? " " + message
+		                         : "";
+	}
+	
+	/**
+	 * Not null.
+	 *
+	 * @param arg
+	 *            the arg
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void notNull(final Object arg,
+	                           final String formatString,
+	                           final Object... arguments) {
+		assert arg != null : Messages.get("org.mozkito.skeleton.contracts.ensures.notNull",
+		                                  String.format(formatString, arguments));
 	}
 	
 	private Ensures() {
