@@ -209,6 +209,74 @@ public class Requires {
 	}
 	
 	/**
+	 * Not equal to.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
+	 */
+	public static void notEqualTo(final String lhs,
+	                              final String rhs) {
+		if (lhs != null && !lhs.equals(rhs)) {
+			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
+			                                                Contract.getCallerString(), ""));
+		} else if (rhs != null) {
+			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
+			                                                Contract.getCallerString(), ""));
+		}
+	}
+	
+	/**
+	 * Not equal to.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
+	 * @param message
+	 *            the message
+	 */
+	public static void notEqualTo(final String lhs,
+	                              final String rhs,
+	                              final String message) {
+		if (lhs != null && !lhs.equals(rhs)) {
+			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
+			                                                Contract.getCallerString(), message));
+		} else if (rhs != null) {
+			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
+			                                                Contract.getCallerString(), message));
+		}
+	}
+	
+	/**
+	 * Not equal to.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static void notEqualTo(final String lhs,
+	                              final String rhs,
+	                              final String formatString,
+	                              final Object... arguments) {
+		if (lhs != null && !lhs.equals(rhs)) {
+			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
+			                                                Contract.getCallerString(),
+			                                                String.format(formatString, arguments)));
+		} else if (rhs != null) {
+			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
+			                                                Contract.getCallerString(),
+			                                                String.format(formatString, arguments)));
+		}
+	}
+	
+	/**
 	 * Not negative.
 	 *
 	 * @param arg
