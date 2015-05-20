@@ -11,7 +11,7 @@ import org.mozkito.skeleton.contracts.Requires;
 /**
  * The Class NamedPattern.
  * 
- * @author Sascha Just <sascha.just@st.cs.uni-saarland.de>
+ * @author Sascha Just 
  */
 public class NamedPattern extends Pattern {
 	

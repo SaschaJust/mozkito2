@@ -12,15 +12,13 @@
  ******************************************************************************/
 package org.mozkito.skeleton.regex;
 
-import com.sun.istack.internal.NotNull;
-
 /**
  * The Interface MultiMatch.
  * 
  * This interface is used in {@link Regex} when returning multiple {@link Match}es like in {@link Regex#findAll(String)}
  * .
  * 
- * @author Sascha Just <sascha.just@st.cs.uni-saarland.de>
+ * @author Sascha Just 
  */
 public interface MultiMatch extends Iterable<Match> {
 	
@@ -65,7 +63,7 @@ public interface MultiMatch extends Iterable<Match> {
 	 * @param index
 	 *            the index
 	 * @param name
-	 *            the {@link NotNull} name
+	 *            the name
 	 * @return the {@link Group} with name <code>name</code> of the <code>index</code>th match or <code>null</code> if
 	 *         the id is invalid.
 	 * @since 0.2

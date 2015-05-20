@@ -23,7 +23,7 @@ import org.mozkito.skeleton.contracts.Requires;
 /**
  * The Class MultiMatchImpl.
  * 
- * @author Sascha Just <sascha.just@st.cs.uni-saarland.de>
+ * @author Sascha Just 
  */
 public class MultiMatchImpl implements MultiMatch {
 	

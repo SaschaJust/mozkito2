@@ -24,7 +24,7 @@ import org.mozkito.skeleton.contracts.Requires;
 /**
  * The Class MatchImpl.
  * 
- * @author Sascha Just <sascha.just@st.cs.uni-saarland.de>
+ * @author Sascha Just 
  */
 class MatchImpl implements Match {
 	

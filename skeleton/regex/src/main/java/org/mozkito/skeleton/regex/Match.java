@@ -19,7 +19,7 @@ import java.util.Set;
  * 
  * Used when {@link Regex} returns matches like in {@link Regex#find(String)}.
  * 
- * @author Sascha Just <sascha.just@st.cs.uni-saarland.de>
+ * @author Sascha Just 
  */
 public interface Match extends Iterable<Group> {
 	

@@ -9,7 +9,7 @@ import org.mozkito.skeleton.contracts.Requires;
 /**
  * The Class Group.
  * 
- * @author Sascha Just <sascha.just@st.cs.uni-saarland.de>
+ * @author Sascha Just 
  */
 public class Group {
 	

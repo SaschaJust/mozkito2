@@ -25,8 +25,6 @@ import jregex.PatternSyntaxException;
 import jregex.RETokenizer;
 import jregex.Replacer;
 
-import com.sun.istack.internal.NotNull;
-
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
@@ -35,7 +33,7 @@ import org.mozkito.skeleton.logging.Logger;
 /**
  * This class provides regular expression support and as well interfaces as extends JRegex.
  * 
- * @author Sascha Just <sascha.just@st.cs.uni-saarland.de>
+ * @author Sascha Just 
  * 
  */
 public class Regex {
@@ -344,7 +342,9 @@ public class Regex {
 	 *            the text to be analyzed
 	 * @return a {@link List} of {@link Group} representing the matches.
 	 */
-	public Match find(@NotNull final String text) {
+	public Match find(final String text) {
+		Requires.notNull(text);
+		
 		reset();
 		
 		this.matcher = this.pattern.matcher(text);
@@ -371,7 +371,9 @@ public class Regex {
 	 * @return a {@link List} of {@link List}s of {@link Group}
 	 * @see Regex#find(String)
 	 */
-	public MultiMatch findAll(@NotNull final String text) {
+	public MultiMatch findAll(final String text) {
+		Requires.notNull(text);
+		
 		reset();
 		
 		this.matcher = this.pattern.matcher(text);
@@ -407,7 +409,9 @@ public class Regex {
 	 *            the text to be scanned
 	 * @return a list of single element lists containing a {@link Group}
 	 */
-	public MultiMatch findAllPossibleMatches(@NotNull final String text) {
+	public MultiMatch findAllPossibleMatches(final String text) {
+		Requires.notNull(text);
+		
 		reset();
 		
 		this.matcher = this.pattern.matcher(text);
@@ -535,7 +539,9 @@ public class Regex {
 	 *            the text
 	 * @return true, if successful
 	 */
-	public boolean matches(@NotNull final String text) {
+	public boolean matches(final String text) {
+		Requires.notNull(text);
+		
 		reset();
 		
 		find(text);
@@ -549,7 +555,9 @@ public class Regex {
 	 *            the text to be matched
 	 * @return if there is a full match
 	 */
-	public boolean matchesFull(@NotNull final String text) {
+	public boolean matchesFull(final String text) {
+		Requires.notNull(text);
+		
 		reset();
 		
 		this.matcher = this.pattern.matcher(text);
@@ -567,7 +575,9 @@ public class Regex {
 	 *            the text to be analyzed
 	 * @return if the text is a prefix of a matching string
 	 */
-	public boolean prefixMatches(@NotNull final String text) {
+	public boolean prefixMatches(final String text) {
+		Requires.notNull(text);
+		
 		reset();
 		
 		final Matcher matcher = this.pattern.matcher();
@@ -582,7 +592,9 @@ public class Regex {
 	 *            the base text
 	 * @return the reduced string
 	 */
-	public String removeAll(@NotNull final String text) {
+	public String removeAll(final String text) {
+		Requires.notNull(text);
+		
 		reset();
 		
 		this.replacer = this.pattern.replacer("");
