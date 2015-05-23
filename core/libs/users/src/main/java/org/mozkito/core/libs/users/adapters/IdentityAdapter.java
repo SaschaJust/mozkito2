@@ -161,20 +161,6 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 					        + " WHERE id = ?");
 					statement.setInt(1, id);
 					statement.executeUpdate();
-					
-					try {
-						connection.commit();
-					} catch (final SQLException e) {
-						Logger.error(e, "Executing DELETE failed on user %s.", identity);
-						try {
-							connection.rollback();
-						} catch (final SQLException e2) {
-							Logger.error(e2, "Rolling back DELETE attempt failed on user %s.", identity);
-							throw e2;
-						}
-						throw e;
-					}
-					
 				}
 				identity.id(-1);
 			} else {
@@ -312,17 +298,6 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 					Asserts.equalTo(1, updates);
 					identity.id(id);
 				}
-				
-				try {
-					connection.commit();
-				} catch (final SQLException e) {
-					for (final Identity identity : identities) {
-						identity.id(-1);
-					}
-					
-					connection.rollback();
-					
-				}
 			}
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
@@ -379,17 +354,6 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 					final int updates = statement.executeUpdate();
 					
 					Asserts.equalTo(1, updates);
-					
-					try {
-						connection.commit();
-					} catch (final SQLException e) {
-						try {
-							connection.rollback();
-						} catch (final SQLException e2) {
-							throw e2;
-						}
-						throw e;
-					}
 				}
 			}
 		} catch (final SQLException e) {

@@ -18,8 +18,9 @@ import org.mozkito.skeleton.logging.consumer.LogConsumer;
 import org.mozkito.skeleton.logging.consumer.appender.TerminalAppender;
 
 /**
- * @author Sascha Just
+ * The Class Main.
  *
+ * @author Sascha Just
  */
 public class Main {
 	
@@ -30,8 +31,7 @@ public class Main {
 	 *            the arguments
 	 */
 	public static void main(final String[] args) {
-		final LogConsumer consumer = new LogConsumer(Bus.provider);
-		consumer.register(new TerminalAppender(Level.INFO));
+		new LogConsumer(Bus.provider).register(new TerminalAppender(Level.INFO));
 		
 		Logger.error.append('a').append('b').append('\n').append('c').append('\n').append('c');
 		Logger.warn.append("test\nthis\nshit\nasd");

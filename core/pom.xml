@@ -10,6 +10,7 @@
 	<name>mozkito core [meta]</name>
 	<packaging>pom</packaging>
 	<modules>
+		<module>agents</module>
 		<module>libs</module>
 	</modules>
 </project>

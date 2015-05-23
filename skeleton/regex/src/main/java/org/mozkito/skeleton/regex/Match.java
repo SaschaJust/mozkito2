@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright 2012 Kim Herzig, Sascha Just
+/***********************************************************************************************************************
+ * Copyright 2015 mozkito.org
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- ******************************************************************************/
+ **********************************************************************************************************************/
 package org.mozkito.skeleton.regex;
 
 import java.util.Set;
@@ -26,12 +26,12 @@ public interface Match extends Iterable<Group> {
 	/**
 	 * Gets the {@link Group}s that corresponds to the <code>id</code>. Keep in mind that actual groups within a pattern
 	 * are enumerated starting at 1, not at 0. Thus, 0 is not a valid <code>id</code>.
-	 * 
+	 *
 	 * @param id
 	 *            the positive id
 	 * @return the {@link Group}
-	 * @deprecated use {@link Match#getGroup(int)} instead. This will be removed in the 0.2 release.
 	 * @since 0.1
+	 * @deprecated use {@link Match#getGroup(int)} instead. This will be removed in the 0.2 release.
 	 */
 	@Deprecated
 	Group get(final int id);
@@ -144,11 +144,11 @@ public interface Match extends Iterable<Group> {
 	
 	/**
 	 * Checks if is empty.
-	 * 
+	 *
 	 * @return true, if is empty
+	 * @since 0.2
 	 * @deprecated Use {@link Match#hasGroups()} or {@link Match#hasNamedGroups()} instead. This will be removed with
 	 *             the 0.2 release.
-	 * @since 0.2
 	 */
 	@Deprecated
 	boolean isEmpty();

@@ -33,7 +33,7 @@ import org.mozkito.skeleton.logging.Logger;
 /**
  * This class provides regular expression support and as well interfaces as extends JRegex.
  * 
- * @author Sascha Just 
+ * @author Sascha Just
  * 
  */
 public class Regex {
@@ -677,7 +677,8 @@ public class Regex {
 	 * String tokenizing is pretty similar to using a standard StringTokenizer class. The only difference is that this
 	 * one uses a pattern occurrence as a token delimiter. You can refine your search criteria by adding
 	 * backward/forward scanning, e.g. when using a <code>"---"</code> delimiter you can use the pattern
-	 * <code>"(?<!\")---(?!\")"</code>. This makes sure the hyphens are not enclosed by quote marks.
+	 * <code>&quot;(?&lt;!\&quot;)---(?!\&quot;)&quot;</code>. This makes sure the hyphens are not enclosed by quote
+	 * marks.
 	 * 
 	 * @param text
 	 *            to be split using the pattern

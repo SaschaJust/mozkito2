@@ -11,4 +11,11 @@
 	<packaging>jar</packaging>
 	<name>settings [library]</name>
 	<description>Settings/Registry/Environment</description>
+	<dependencies>
+		<dependency>
+			<groupId>org.mozkito.skeleton</groupId>
+			<artifactId>graphs</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 </project>

@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.logging.Level;
 import org.mozkito.skeleton.logging.LogEvent;
 import org.mozkito.skeleton.logging.terminal.Highlighter;
@@ -35,10 +36,10 @@ import org.mozkito.skeleton.logging.terminal.TerminalColor;
  * @author Sascha Just
  */
 public class TerminalAppender extends Appender {
-
+	
 	/** The highlighters. */
 	private final Map<Level, Set<Highlighter>> highlighters = new HashMap<Level, Set<Highlighter>>();
-
+	
 	/**
 	 * Instantiates a new terminal appender.
 	 *
@@ -48,7 +49,7 @@ public class TerminalAppender extends Appender {
 	public TerminalAppender(final Level level) {
 		super(level, System.out, DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
 	}
-
+	
 	/**
 	 * Adds the highlighter.
 	 *
@@ -57,7 +58,7 @@ public class TerminalAppender extends Appender {
 	 */
 	public void addHighlighter(final Highlighter highlighter) {
 		final Level[] values = Level.values();
-
+		
 		for (int i = highlighter.getMin().ordinal(); i <= highlighter.getMax().ordinal(); ++i) {
 			if (!this.highlighters.containsKey(values[i])) {
 				this.highlighters.put(values[i], new HashSet<Highlighter>());
@@ -65,7 +66,7 @@ public class TerminalAppender extends Appender {
 			this.highlighters.get(values[i]).add(highlighter);
 		}
 	}
-
+	
 	/**
 	 * Level to color.
 	 *
@@ -77,25 +78,25 @@ public class TerminalAppender extends Appender {
 		switch (level) {
 			case FATAL:
 				return TerminalColor.isSupported()
-						? TerminalColor.BGRED + TerminalColor.BLACK.getTag()
-						: "";
+				                                  ? TerminalColor.BGRED + TerminalColor.BLACK.getTag()
+				                                  : "";
 			case ERROR:
 				return TerminalColor.isSupported()
-						? TerminalColor.RED.getTag()
-						: "";
+				                                  ? TerminalColor.RED.getTag()
+				                                  : "";
 			case WARN:
 				return TerminalColor.isSupported()
-						? TerminalColor.YELLOW.getTag()
-						: "";
+				                                  ? TerminalColor.YELLOW.getTag()
+				                                  : "";
 			case OFF:
 				return TerminalColor.isSupported()
-						? TerminalColor.NONE.getTag()
-						: "";
+				                                  ? TerminalColor.NONE.getTag()
+				                                  : "";
 			default:
 				return "";
 		}
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -109,45 +110,53 @@ public class TerminalAppender extends Appender {
 		                                   levelToColor(Level.OFF),
 		                                   this.dtFormatter.format(ZonedDateTime.ofInstant(event.timestamp(),
 		                                                                                   ZoneId.systemDefault())),
-		                                                                                   event.threadName(),
-		                                                                                   event.entryPoint() != null
-		                                                                                   ? event.entryPoint()
-		                                                                                   : "",
-		                                                                                   event.arguments().length == 0
-		                                                                                   ? event.message()
-		                                                                                   : String.format(event.message(),
-		                                                                                                   event.arguments()));
-
+		                                   event.threadName(),
+		                                   event.entryPoint() != null
+		                                                             ? event.entryPoint()
+		                                                             : "",
+		                                   event.arguments().length == 0
+		                                                                ? event.message()
+		                                                                : String.format(event.message(),
+		                                                                                event.arguments()));
+		
 		String additionalLines[] = new String[0];
 		if (event.throwable() != null) {
 			final ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
 			event.throwable().printStackTrace(new PrintStream(baoStream));
 			additionalLines = baoStream.toString().split(System.lineSeparator());
 		}
-
+		
 		synchronized (this.stream) {
-			for (final Highlighter highlighter : this.highlighters.get(event.level())) {
-				line = highlighter.highlight(line);
+			Asserts.notNull(event);
+			Asserts.notNull(event.level());
+			Asserts.notNull(this.highlighters);
+			
+			if (this.highlighters.containsKey(event.level())) {
+				for (final Highlighter highlighter : this.highlighters.get(event.level())) {
+					line = highlighter.highlight(line);
+				}
 			}
 			this.stream.println(line);
-
+			
 			for (String additionalLine : additionalLines) {
-				for (final Highlighter highlighter : this.highlighters.get(event.level())) {
-					additionalLine = highlighter.highlight(additionalLine);
+				if (this.highlighters.containsKey(event.level())) {
+					for (final Highlighter highlighter : this.highlighters.get(event.level())) {
+						additionalLine = highlighter.highlight(additionalLine);
+					}
 				}
 				additionalLine = MessageFormat.format("[{0}] [{1}] {2}{3}{4} {5}{6}",
 				                                      this.dtFormatter.format(ZonedDateTime.ofInstant(event.timestamp(),
 				                                                                                      ZoneId.systemDefault())),
-				                                                                                      event.threadName(), levelToColor(event.level()), event.level()
-				                                                                                      .name(),
-				                                                                                      levelToColor(Level.OFF),
-				                                                                                      event.entryPoint() != null
-				                                                                                      ? event.entryPoint()
-				                                                                                      : "", additionalLine);
+				                                      event.threadName(), levelToColor(event.level()), event.level()
+				                                                                                            .name(),
+				                                      levelToColor(Level.OFF),
+				                                      event.entryPoint() != null
+				                                                                ? event.entryPoint()
+				                                                                : "", additionalLine);
 				this.stream.println(additionalLine);
 			}
 		}
-
+		
 	}
-
+	
 }

@@ -168,7 +168,6 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
-	@Override
 	public User create(final ResultSet results) {
 		Requires.notNull(results);
 		
@@ -213,7 +212,6 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
 	 */
-	@Override
 	public void createConstraints() {
 		try {
 			synchronized (this.database) {
@@ -234,7 +232,6 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
 	 */
-	@Override
 	public void createIndexes() {
 		try {
 			synchronized (this.database) {
@@ -255,7 +252,6 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
 	 */
-	@Override
 	public void createScheme() {
 		try {
 			synchronized (this.database) {
@@ -277,7 +273,6 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
-	@Override
 	public void delete(final User user) {
 		Requires.notNull(user);
 		
@@ -327,7 +322,6 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
-	@Override
 	public Iterator<User> load() {
 		Asserts.notNull(this.database);
 		try {
@@ -347,7 +341,6 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
 	 */
-	@Override
 	public User load(final Object id) {
 		Asserts.notNull(id);
 		Asserts.isInteger(id);
@@ -379,7 +372,6 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
 	 */
-	@Override
 	public List<User> load(final Object... ids) {
 		Asserts.notNull(this.database);
 		
@@ -448,7 +440,6 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
 	 */
-	@Override
 	public void save(final User... users) {
 		Requires.notNull(users);
 		
@@ -489,7 +480,6 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
-	@Override
 	public void update(final User... objects) {
 		Requires.notNull(objects);
 		

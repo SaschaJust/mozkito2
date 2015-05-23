@@ -14,13 +14,21 @@
 package org.mozkito.core.libs.versions.model;
 
 /**
- * @author Sascha Just
+ * The Class CodeChange.
  *
+ * @author Sascha Just
  */
 public class CodeChange {
 	
+	/** The id. */
 	private long id;
+	
+	/** The file id. */
 	private long fileId;
+	
+	/** The size. */
 	private int  size;
 	
+	/** The hash. */
+	private long hash;
 }

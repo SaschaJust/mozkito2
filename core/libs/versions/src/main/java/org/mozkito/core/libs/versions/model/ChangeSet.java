@@ -39,7 +39,7 @@ public class ChangeSet implements ISequelEntity {
 	private int                authorId;
 	
 	/** The branch id. */
-	private final Set<Integer> branchIds        = new HashSet<Integer>();
+	private final Set<Integer> branchIds        = new HashSet<>();
 	
 	/** The commit hash. */
 	private String             commitHash;
@@ -65,20 +65,20 @@ public class ChangeSet implements ISequelEntity {
 	/** The id. */
 	private long               id;
 	
-	/** The merged branch ids. */
-	private Set<Integer>       mergedBranchIds  = new HashSet<Integer>();
-	
-	/** The original id. */
-	private String             originalId;
-	
-	/** The parent hashes. */
-	private Set<String>        parentHashes     = new HashSet<String>();
-	
 	/** The patch hash. */
 	private String             patchHash;
 	
 	/** The tree hash. */
 	private String             treeHash;
+	
+	/** The origin. */
+	private int                origin;
+	
+	/** The subject. */
+	private String             subject;
+	
+	/** The body. */
+	private String             body;
 	
 	/**
 	 * Instantiates a new change set.
@@ -87,8 +87,6 @@ public class ChangeSet implements ISequelEntity {
 	 *            the depot id
 	 * @param commitHash
 	 *            the commit hash
-	 * @param parentHashes
-	 *            the parent hashes
 	 * @param treeHash
 	 *            the tree hash
 	 * @param patchHash
@@ -101,25 +99,39 @@ public class ChangeSet implements ISequelEntity {
 	 *            the commit time
 	 * @param committerId
 	 *            the committer id
+	 * @param branchIds
+	 *            the branch ids
 	 */
-	public ChangeSet(final int depotId, final String commitHash, final Set<String> parentHashes, final String treeHash,
-	        final String patchHash, final Instant authoredTime, final int authorId, final Instant commitTime,
-	        final int committerId) {
+	public ChangeSet(final int depotId, final String commitHash, final String treeHash, final String patchHash,
+	        final Instant authoredTime, final int authorId, final Instant commitTime, final int committerId,
+	        final String subject, final String body) {
 		super();
+		Requires.positive(depotId);
+		Requires.notNull(commitHash);
+		Requires.notNull(treeHash);
+		Requires.notNull(patchHash);
+		Requires.notNull(authoredTime);
+		Requires.positive(authorId);
+		Requires.notNull(commitTime);
+		Requires.positive(committerId);
+		Requires.notNull(subject);
+		Requires.notNull(body);
+		
 		this.depotId = depotId;
 		this.commitHash = commitHash;
-		this.parentHashes = parentHashes;
 		this.treeHash = treeHash;
 		this.patchHash = patchHash;
 		this.authoredTime = authoredTime;
 		this.authorId = authorId;
 		this.commitTime = commitTime;
 		this.committerId = committerId;
+		this.subject = subject;
+		this.body = body;
 	}
 	
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -148,12 +160,37 @@ public class ChangeSet implements ISequelEntity {
 	}
 	
 	/**
+	 * Gets the authored time.
+	 *
+	 * @return the authoredTime
+	 */
+	public final Instant getAuthoredTime() {
+		return this.authoredTime;
+	}
+	
+	/**
 	 * Gets the author id.
 	 *
 	 * @return the authorId
 	 */
 	public final int getAuthorId() {
 		return this.authorId;
+	}
+	
+	/**
+	 * @return the body
+	 */
+	public final String getBody() {
+		return this.body;
+	}
+	
+	/**
+	 * Gets the branch ids.
+	 *
+	 * @return the branchIds
+	 */
+	public final Set<Integer> getBranchIds() {
+		return this.branchIds;
 	}
 	
 	/**
@@ -193,30 +230,12 @@ public class ChangeSet implements ISequelEntity {
 	}
 	
 	/**
-	 * Gets the merged branch ids.
+	 * Gets the origin.
 	 *
-	 * @return the mergedBranchIds
+	 * @return the origin
 	 */
-	public final Set<Integer> getMergedBranchIds() {
-		return this.mergedBranchIds;
-	}
-	
-	/**
-	 * Gets the original id.
-	 *
-	 * @return the originalId
-	 */
-	public final String getOriginalId() {
-		return this.originalId;
-	}
-	
-	/**
-	 * Gets the parent hashes.
-	 *
-	 * @return the parentHashes
-	 */
-	public final Set<String> getParentHashes() {
-		return this.parentHashes;
+	public final int getOrigin() {
+		return this.origin;
 	}
 	
 	/**
@@ -226,6 +245,13 @@ public class ChangeSet implements ISequelEntity {
 	 */
 	public final String getPatchHash() {
 		return this.patchHash;
+	}
+	
+	/**
+	 * @return the subject
+	 */
+	public final String getSubject() {
+		return this.subject;
 	}
 	
 	/**
@@ -239,7 +265,7 @@ public class ChangeSet implements ISequelEntity {
 	
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -269,7 +295,7 @@ public class ChangeSet implements ISequelEntity {
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
 	 */
 	@Override
-	public void id(final Object id) {
+	public void id(@SuppressWarnings ("hiding") final Object id) {
 		Requires.notNull(id);
 		Requires.isLong(id);
 		
@@ -284,6 +310,14 @@ public class ChangeSet implements ISequelEntity {
 	 */
 	public final void setAuthorId(final int authorId) {
 		this.authorId = authorId;
+	}
+	
+	/**
+	 * @param body
+	 *            the body to set
+	 */
+	public final void setBody(final String body) {
+		this.body = body;
 	}
 	
 	/**
@@ -327,33 +361,13 @@ public class ChangeSet implements ISequelEntity {
 	}
 	
 	/**
-	 * Sets the merged branch ids.
+	 * Sets the origin.
 	 *
-	 * @param mergedBranchIds
-	 *            the mergedBranchIds to set
+	 * @param origin
+	 *            the origin to set
 	 */
-	public final void setMergedBranchIds(final Set<Integer> mergedBranchIds) {
-		this.mergedBranchIds = mergedBranchIds;
-	}
-	
-	/**
-	 * Sets the original id.
-	 *
-	 * @param originalId
-	 *            the originalId to set
-	 */
-	public final void setOriginalId(final String originalId) {
-		this.originalId = originalId;
-	}
-	
-	/**
-	 * Sets the parent hashes.
-	 *
-	 * @param parentHashes
-	 *            the parentHashes to set
-	 */
-	public final void setParentHashes(final Set<String> parentHashes) {
-		this.parentHashes = parentHashes;
+	public final void setOrigin(final int origin) {
+		this.origin = origin;
 	}
 	
 	/**
@@ -364,6 +378,14 @@ public class ChangeSet implements ISequelEntity {
 	 */
 	public final void setPatchHash(final String patchHash) {
 		this.patchHash = patchHash;
+	}
+	
+	/**
+	 * @param subject
+	 *            the subject to set
+	 */
+	public final void setSubject(final String subject) {
+		this.subject = subject;
 	}
 	
 	/**
@@ -389,46 +411,67 @@ public class ChangeSet implements ISequelEntity {
 		builder.append(this.id);
 		builder.append(", depotId=");
 		builder.append(this.depotId);
-		builder.append(", commitHash=");
-		builder.append(this.commitHash);
-		builder.append(", authorId=");
+		builder.append(", ");
+		if (this.commitHash != null) {
+			builder.append("commitHash=");
+			builder.append(this.commitHash);
+			builder.append(", ");
+		}
+		builder.append("authorId=");
 		builder.append(this.authorId);
-		builder.append(", authoredTime=");
-		builder.append(this.authoredTime);
-		builder.append(", committerId=");
+		builder.append(", ");
+		if (this.authoredTime != null) {
+			builder.append("authoredTime=");
+			builder.append(this.authoredTime);
+			builder.append(", ");
+		}
+		builder.append("committerId=");
 		builder.append(this.committerId);
-		builder.append(", commitTime=");
-		builder.append(this.commitTime);
-		builder.append(", originalId=");
-		builder.append(this.originalId);
-		builder.append(", parentHashes=");
-		builder.append(this.parentHashes != null
-		                                        ? toString(this.parentHashes, maxLen)
-		                                        : null);
-		builder.append(", patchHash=");
-		builder.append(this.patchHash);
-		builder.append(", treeHash=");
-		builder.append(this.treeHash);
-		builder.append(", mergedBranchIds=");
-		builder.append(this.mergedBranchIds != null
-		                                           ? toString(this.mergedBranchIds, maxLen)
-		                                           : null);
-		builder.append(", branchIds=");
-		builder.append(this.branchIds != null
-		                                     ? toString(this.branchIds, maxLen)
-		                                     : null);
+		builder.append(", ");
+		if (this.commitTime != null) {
+			builder.append("commitTime=");
+			builder.append(this.commitTime);
+			builder.append(", ");
+		}
+		builder.append("origin=");
+		builder.append(this.origin);
+		builder.append(", ");
+		if (this.body != null) {
+			builder.append("body=");
+			builder.append(this.body);
+			builder.append(", ");
+		}
+		if (this.patchHash != null) {
+			builder.append("patchHash=");
+			builder.append(this.patchHash);
+			builder.append(", ");
+		}
+		if (this.treeHash != null) {
+			builder.append("treeHash=");
+			builder.append(this.treeHash);
+			builder.append(", ");
+		}
+		if (this.subject != null) {
+			builder.append("subject=");
+			builder.append(this.subject);
+			builder.append(", ");
+		}
+		if (this.branchIds != null) {
+			builder.append("branchIds=");
+			builder.append(toString(this.branchIds, maxLen));
+		}
 		builder.append("]");
 		return builder.toString();
 	}
 	
 	/**
-	 * To string.
+	 * To String.
 	 *
 	 * @param collection
 	 *            the collection
 	 * @param maxLen
 	 *            the max len
-	 * @return the string
+	 * @return the String
 	 */
 	private String toString(final Collection<?> collection,
 	                        final int maxLen) {

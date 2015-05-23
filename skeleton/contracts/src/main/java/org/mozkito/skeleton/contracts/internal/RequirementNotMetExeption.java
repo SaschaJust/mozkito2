@@ -20,6 +20,7 @@ package org.mozkito.skeleton.contracts.internal;
  */
 public class RequirementNotMetExeption extends IllegalArgumentException {
 	
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 3183508622022192717L;
 	
 	/**

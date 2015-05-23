@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright 2014 Sascha Just
+ * Copyright 2015 mozkito.org
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -14,8 +14,9 @@
 package org.mozkito.skeleton.settings;
 
 /**
- * @author Sascha Just
+ * The Class Environment.
  *
+ * @author Sascha Just
  */
 public class Environment {
 	
@@ -28,6 +29,7 @@ public class Environment {
 		return ASSERTIONS_ENABLED;
 	}
 	
+	/** The assertions enabled. */
 	private static boolean ASSERTIONS_ENABLED;
 	
 	static {
@@ -39,6 +41,9 @@ public class Environment {
 		}
 	}
 	
+	/**
+	 * Instantiates a new environment.
+	 */
 	private Environment() {
 		// avoid instantiation
 	}

@@ -16,34 +16,36 @@ package org.mozkito.skeleton.logging;
 import java.time.Instant;
 import java.util.Arrays;
 
+import org.mozkito.skeleton.contracts.Requires;
+
 /**
  * The Class LogEvent.
  *
  * @author Sascha Just
  */
 public class LogEvent {
-
+	
 	/** The thread name. */
 	private final String    threadName;
-
+	
 	/** The entry point. */
 	private String          entryPoint;
-
+	
 	/** The timestamp. */
 	private final Instant   timestamp;
-
+	
 	/** The level. */
 	private final Level     level;
-
+	
 	/** The message. */
 	private final String    message;
-
+	
 	/** The throwable. */
 	private final Throwable throwable;
-
+	
 	/** The arguments. */
 	private final Object[]  arguments;
-
+	
 	/**
 	 * Instantiates a new log event.
 	 *
@@ -59,22 +61,25 @@ public class LogEvent {
 	 *            the args
 	 */
 	public LogEvent(final Instant timestamp, final Level level, final Throwable throwable, final String message,
-	                final Object... args) {
+	        final Object... args) {
+		Requires.notNull(timestamp);
+		Requires.notNull(level);
+		
 		this.timestamp = timestamp;
 		this.level = level;
 		this.message = message;
 		this.throwable = throwable;
 		this.arguments = args;
-
+		
 		if (Bus.DEBUG_ENABLED) {
 			this.entryPoint = Bus.entryPoint().toString() + ' ';
 		} else {
 			this.entryPoint = null;
 		}
-
+		
 		this.threadName = Thread.currentThread().getName();
 	}
-
+	
 	/**
 	 * Arguments.
 	 *
@@ -83,7 +88,7 @@ public class LogEvent {
 	public final Object[] arguments() {
 		return this.arguments;
 	}
-
+	
 	/**
 	 * Entry point.
 	 *
@@ -92,7 +97,7 @@ public class LogEvent {
 	public final String entryPoint() {
 		return this.entryPoint;
 	}
-
+	
 	/**
 	 * Level.
 	 *
@@ -101,7 +106,7 @@ public class LogEvent {
 	public final Level level() {
 		return this.level;
 	}
-
+	
 	/**
 	 * Message.
 	 *
@@ -110,7 +115,7 @@ public class LogEvent {
 	public final String message() {
 		return this.message;
 	}
-
+	
 	/**
 	 * Thread name.
 	 *
@@ -119,7 +124,7 @@ public class LogEvent {
 	public final String threadName() {
 		return this.threadName;
 	}
-
+	
 	/**
 	 * Throwable.
 	 *
@@ -128,7 +133,7 @@ public class LogEvent {
 	public final Throwable throwable() {
 		return this.throwable;
 	}
-
+	
 	/**
 	 * Timestamp.
 	 *
@@ -137,7 +142,7 @@ public class LogEvent {
 	public final Instant timestamp() {
 		return this.timestamp;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -165,5 +170,5 @@ public class LogEvent {
 		builder.append("]");
 		return builder.toString();
 	}
-
+	
 }

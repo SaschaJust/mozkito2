@@ -10,8 +10,13 @@
 	<name>mozkito skeleton [meta]</name>
 	<packaging>pom</packaging>
 	<modules>
+		<module>commons</module>
 		<module>contracts</module>
+		<module>datastructures</module>
 		<module>datetime</module>
+		<module>diff</module>
+		<module>exec</module>
+		<module>graphs</module>
 		<module>i18n</module>
 		<module>io</module>
 		<module>logging</module>

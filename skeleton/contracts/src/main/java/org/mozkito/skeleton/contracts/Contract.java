@@ -26,21 +26,21 @@ public class Contract {
 	/**
 	 * Asserts.
 	 *
-	 * @param next
+	 * @param value
 	 *            the next
 	 */
-	public static void asserts(final boolean next) {
-		assert next : Messages.get("skeleton.contract.asserts.failed", getCallerString());
+	public static void asserts(final boolean value) {
+		assert value : Messages.get("skeleton.contracts.asserts.failed", getCallerString(), "");
 	}
 	
 	/**
 	 * Ensures.
 	 *
-	 * @param next
+	 * @param value
 	 *            the next
 	 */
-	public static void ensures(final boolean next) {
-		assert next : Messages.get("skeleton.contract.ensures.failed", getCallerString());
+	public static void ensures(final boolean value) {
+		assert value : Messages.get("skeleton.contracts.ensures.failed", getCallerString(), "");
 	}
 	
 	/**
@@ -56,8 +56,9 @@ public class Contract {
 		final Integer lineNumber = throwable.getStackTrace()[2].getLineNumber();
 		final String methodName = throwable.getStackTrace()[2].getMethodName();
 		final String className = throwable.getStackTrace()[2].getClassName();
+		final String fileName = throwable.getStackTrace()[2].getFileName();
 		
-		return "[" + className + "::" + methodName + "#" + lineNumber + "] ";
+		return "[" + className + "." + methodName + "(" + fileName + ":" + lineNumber + ")] ";
 	}
 	
 	/**
@@ -69,43 +70,43 @@ public class Contract {
 	 */
 	public static void requires(final boolean value) {
 		if (!value) {
-			throw new RequirementNotMetExeption(
-			                                    Messages.get("skeleton.contract.requires.failed", getCallerString(), ""));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.failed", getCallerString(),
+			                                                 ""));
 		}
 	}
 	
 	/**
 	 * Requires.
 	 *
-	 * @param b
+	 * @param value
 	 *            the b
 	 * @param message
 	 *            the message
 	 */
-	public static void requires(final boolean b,
+	public static void requires(final boolean value,
 	                            final String message) {
-		if (!b) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.failed", getCallerString(),
-			                                                message));
+		if (!value) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.failed", getCallerString(),
+			                                                 message));
 		}
 	}
 	
 	/**
 	 * Requires.
 	 *
-	 * @param b
+	 * @param value
 	 *            the b
 	 * @param formatString
 	 *            the format string
 	 * @param arguments
 	 *            the arguments
 	 */
-	public static void requires(final boolean b,
+	public static void requires(final boolean value,
 	                            final String formatString,
 	                            final Object... arguments) {
-		if (!b) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.failed", getCallerString(),
-			                                                String.format(formatString, arguments)));
+		if (!value) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.failed", getCallerString(),
+			                                                 String.format(formatString, arguments)));
 		}
 	}
 	

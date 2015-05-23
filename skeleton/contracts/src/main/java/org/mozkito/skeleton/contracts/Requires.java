@@ -16,6 +16,7 @@ package org.mozkito.skeleton.contracts;
 import java.util.Collection;
 import java.util.Map;
 
+import org.mozkito.skeleton.contracts.internal.RequirementNotMetExeption;
 import org.mozkito.skeleton.i18n.Messages;
 
 /**
@@ -38,8 +39,8 @@ public class Requires {
 	public static <X, Y> void containsKey(final Map<X, Y> map,
 	                                      final X key) {
 		if (map != null && !map.containsKey(key)) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.containsKey",
-			                                                Contract.getCallerString(), ""));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.containsKey",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -61,8 +62,8 @@ public class Requires {
 	                                      final X key,
 	                                      final String message) {
 		if (map != null && !map.containsKey(key)) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.containsKey",
-			                                                Contract.getCallerString(), message));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.containsKey",
+			                                                 Contract.getCallerString(), message));
 		}
 	}
 	
@@ -87,9 +88,9 @@ public class Requires {
 	                                      final String formatString,
 	                                      final Object... arguments) {
 		if (map != null && !map.containsKey(key)) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.containsKey",
-			                                                Contract.getCallerString(),
-			                                                String.format(formatString, arguments)));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.containsKey",
+			                                                 Contract.getCallerString(),
+			                                                 String.format(formatString, arguments)));
 		}
 	}
 	
@@ -105,12 +106,12 @@ public class Requires {
 	                           final Object ref) {
 		if (ref != null) {
 			if (!ref.equals(arg)) {
-				throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.equalTo",
-				                                                Contract.getCallerString()));
+				throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.equalTo",
+				                                                 Contract.getCallerString(), ""));
 			}
 		} else if (arg != null) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.equalTo",
-			                                                Contract.getCallerString()));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.equalTo",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -122,8 +123,8 @@ public class Requires {
 	 */
 	public static void isInteger(final Object object) {
 		if (object != null && !(object instanceof Integer)) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.isInteger",
-			                                                Contract.getCallerString()));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.isInteger",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -135,8 +136,8 @@ public class Requires {
 	 */
 	public static void isLong(final Object object) {
 		if (object != null && !(object instanceof Long)) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.isLong",
-			                                                Contract.getCallerString()));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.isLong",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -148,8 +149,27 @@ public class Requires {
 	 */
 	public static void isNull(final Object arg) {
 		if (arg != null) {
-			throw new NullPointerException(
-			                               Messages.get("skeleton.contract.requires.isNull", Contract.getCallerString()));
+			throw new NullPointerException(Messages.get("skeleton.contracts.requires.isNull",
+			                                            Contract.getCallerString(), ""));
+		}
+	}
+	
+	/**
+	 * Less.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
+	 * @param message
+	 *            the message
+	 */
+	public static void less(final int lhs,
+	                        final int rhs,
+	                        final String message) {
+		if (lhs >= rhs) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.less",
+			                                                 Contract.getCallerString(), message));
 		}
 	}
 	
@@ -161,8 +181,21 @@ public class Requires {
 	 */
 	public static void notEmpty(final Collection<?> arg) {
 		if (arg != null && arg.isEmpty()) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.notEmpty",
-			                                                Contract.getCallerString()));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notEmpty",
+			                                                 Contract.getCallerString(), ""));
+		}
+	}
+	
+	/**
+	 * Not empty.
+	 *
+	 * @param arg
+	 *            the arg
+	 */
+	public static void notEmpty(final Map<?, ?> arg) {
+		if (arg != null && arg.isEmpty()) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notEmpty",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -174,8 +207,8 @@ public class Requires {
 	 */
 	public static void notEmpty(final Object[] arg) {
 		if (arg != null && arg.length == 0) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.notEmpty",
-			                                                Contract.getCallerString()));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notEmpty",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -187,8 +220,8 @@ public class Requires {
 	 */
 	public static void notEmpty(final String arg) {
 		if (arg != null && arg.isEmpty()) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.notEmpty",
-			                                                Contract.getCallerString(), ""));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notEmpty",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -203,8 +236,8 @@ public class Requires {
 	public static void notEmpty(final String arg,
 	                            final String message) {
 		if (arg != null && arg.isEmpty()) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.notEmpty",
-			                                                Contract.getCallerString(), message));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notEmpty",
+			                                                 Contract.getCallerString(), message));
 		}
 	}
 	
@@ -219,11 +252,11 @@ public class Requires {
 	public static void notEqualTo(final String lhs,
 	                              final String rhs) {
 		if (lhs != null && !lhs.equals(rhs)) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
-			                                                Contract.getCallerString(), ""));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.validIndex",
+			                                                 Contract.getCallerString(), ""));
 		} else if (rhs != null) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
-			                                                Contract.getCallerString(), ""));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.validIndex",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -241,11 +274,11 @@ public class Requires {
 	                              final String rhs,
 	                              final String message) {
 		if (lhs != null && !lhs.equals(rhs)) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
-			                                                Contract.getCallerString(), message));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.validIndex",
+			                                                 Contract.getCallerString(), message));
 		} else if (rhs != null) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
-			                                                Contract.getCallerString(), message));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.validIndex",
+			                                                 Contract.getCallerString(), message));
 		}
 	}
 	
@@ -266,13 +299,13 @@ public class Requires {
 	                              final String formatString,
 	                              final Object... arguments) {
 		if (lhs != null && !lhs.equals(rhs)) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
-			                                                Contract.getCallerString(),
-			                                                String.format(formatString, arguments)));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.validIndex",
+			                                                 Contract.getCallerString(),
+			                                                 String.format(formatString, arguments)));
 		} else if (rhs != null) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
-			                                                Contract.getCallerString(),
-			                                                String.format(formatString, arguments)));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.validIndex",
+			                                                 Contract.getCallerString(),
+			                                                 String.format(formatString, arguments)));
 		}
 	}
 	
@@ -284,8 +317,8 @@ public class Requires {
 	 */
 	public static void notNegative(final Integer arg) {
 		if (arg != null && arg < 0) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.notNegative",
-			                                                Contract.getCallerString()));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notNegative",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -297,8 +330,8 @@ public class Requires {
 	 */
 	public static void notNull(final Object arg) {
 		if (arg == null) {
-			throw new NullPointerException(Messages.get("skeleton.contract.requires.notNull",
-			                                            Contract.getCallerString()));
+			throw new NullPointerException(Messages.get("skeleton.contracts.requires.notNull",
+			                                            Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -313,8 +346,8 @@ public class Requires {
 	public static void notNull(final Object arg,
 	                           final String message) {
 		if (arg == null) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.notNull",
-			                                                Contract.getCallerString(), message));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notNull",
+			                                                 Contract.getCallerString(), message));
 		}
 	}
 	
@@ -332,9 +365,9 @@ public class Requires {
 	                           final String formatString,
 	                           final Object... arguments) {
 		if (arg == null) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.notNull",
-			                                                Contract.getCallerString(),
-			                                                String.format(formatString, arguments)));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notNull",
+			                                                 Contract.getCallerString(),
+			                                                 String.format(formatString, arguments)));
 		}
 	}
 	
@@ -346,8 +379,8 @@ public class Requires {
 	 */
 	public static void positive(final Integer arg) {
 		if (arg != null && arg <= 0) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.positive",
-			                                                Contract.getCallerString(), ""));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.positive",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -362,8 +395,8 @@ public class Requires {
 	public static void positive(final Integer arg,
 	                            final String message) {
 		if (arg != null && arg <= 0) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.positive",
-			                                                Contract.getCallerString(), message));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.positive",
+			                                                 Contract.getCallerString(), message));
 		}
 	}
 	
@@ -381,9 +414,9 @@ public class Requires {
 	                            final String formatString,
 	                            final Object... arguments) {
 		if (arg != null && arg <= 0) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.positive",
-			                                                Contract.getCallerString(),
-			                                                String.format(formatString, arguments)));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.positive",
+			                                                 Contract.getCallerString(),
+			                                                 String.format(formatString, arguments)));
 		}
 	}
 	
@@ -395,8 +428,8 @@ public class Requires {
 	 */
 	public static void positive(final Long arg) {
 		if (arg != null && arg <= 0) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.positive",
-			                                                Contract.getCallerString()));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.positive",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	
@@ -411,8 +444,8 @@ public class Requires {
 	public static void validIndex(final int index,
 	                              final Object[] array) {
 		if (array != null && (index < 0 || array.length <= index)) {
-			throw new IllegalArgumentException(Messages.get("skeleton.contract.requires.validIndex",
-			                                                Contract.getCallerString()));
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.validIndex",
+			                                                 Contract.getCallerString(), ""));
 		}
 	}
 	

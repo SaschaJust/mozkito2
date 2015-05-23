@@ -1,0 +1,13 @@
+CREATE SEQUENCE seq_changesets_id MINVALUE 1 START WITH 1 INCREMENT BY 1;
+
+CREATE TABLE changesets (
+	id BIGINT PRIMARY KEY,
+	depot_id SMALLINT,
+	commit_hash CHAR(40),
+	tree_hash CHAR(40),
+	patch_hash CHAR(40),
+	authored_time TIMESTAMP,
+	author_id INT,
+	commit_time TIMESTAMP,
+	committer_id int
+);

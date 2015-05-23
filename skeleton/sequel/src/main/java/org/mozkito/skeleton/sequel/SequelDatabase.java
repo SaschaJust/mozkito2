@@ -98,6 +98,17 @@ public class SequelDatabase implements DataSource, Closeable {
 	}
 	
 	/**
+     * 
+     */
+	public void commit() {
+		try {
+			getConnection().commit();
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @see javax.sql.DataSource#getConnection()

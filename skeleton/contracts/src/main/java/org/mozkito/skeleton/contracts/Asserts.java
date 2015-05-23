@@ -13,12 +13,65 @@
 
 package org.mozkito.skeleton.contracts;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import org.mozkito.skeleton.i18n.Messages;
 
 /**
  * The Class Assert.
  */
 public class Asserts {
+	
+	/**
+	 * Contains.
+	 *
+	 * @param <T>
+	 *            the generic type
+	 * @param map
+	 *            the map
+	 * @param key
+	 *            the key
+	 */
+	public static <T> void containsKey(final Map<T, ?> map,
+	                                   final T key) {
+		assert map == null || map.containsKey(key) : Messages.get("skeleton.contracts.asserts.containsKey",
+		                                                          Contract.getCallerString(), "");
+	}
+	
+	/**
+	 * Asserts that given map (if not <code>null</code>) contains the given key.
+	 * 
+	 * The example below will raise an AssertionError, if assertions are enabled (VMARG -ea).
+	 * 
+	 * <pre>
+	 * Map&lt;String, String&gt; friends = new HashMap&lt;&gt;();
+	 * map.put(&quot;Peter&quot;, &quot;Maggie&quot;);
+	 * map.put(&quot;Peter&quot;, &quot;Emma&quot;);
+	 * map.put(&quot;Emma&quot;, &quot;Maggie&quot;);
+	 * 
+	 * Asserts.containsKey(&quot;Maggie&quot;);
+	 * </pre>
+	 *
+	 * @param <T>
+	 *            the generic type of the key.
+	 * @param map
+	 *            the map which needs to contain the key
+	 * @param key
+	 *            the key to check for.
+	 * @param formatString
+	 *            the format string of the error raised, in case the assertion triggers.
+	 * @param arguments
+	 *            the arguments to the format string.
+	 */
+	public static <T> void containsKey(final Map<T, ?> map,
+	                                   final T key,
+	                                   final String formatString,
+	                                   final Object... arguments) {
+		assert map == null || map.containsKey(key) : Messages.get("skeleton.contracts.asserts.containsKey",
+		                                                          Contract.getCallerString(),
+		                                                          String.format(formatString, arguments));
+	}
 	
 	/**
 	 * Equal to.
@@ -30,7 +83,7 @@ public class Asserts {
 	 */
 	public static void equalTo(final int lhs,
 	                           final int rhs) {
-		assert lhs == rhs : Messages.get("skeleton.contract.asserts.equalTo", Contract.getCallerString());
+		assert lhs == rhs : Messages.get("skeleton.contracts.asserts.equalTo", Contract.getCallerString());
 	}
 	
 	/**
@@ -50,13 +103,38 @@ public class Asserts {
 	}
 	
 	/**
+	 * Checks for next.
+	 *
+	 * @param it
+	 *            the it
+	 */
+	public static void hasNext(final Iterator<?> it) {
+		assert it == null || it.hasNext() : Messages.get("skeleton.contracts.asserts.hasNext",
+		                                                 Contract.getCallerString(), "");
+	}
+	
+	/**
+	 * Checks for next.
+	 *
+	 * @param it
+	 *            the it
+	 * @param message
+	 *            the message
+	 */
+	public static void hasNext(final Iterator<?> it,
+	                           final String message) {
+		assert it == null || it.hasNext() : Messages.get("skeleton.contracts.asserts.hasNext",
+		                                                 Contract.getCallerString(), message);
+	}
+	
+	/**
 	 * Checks if is integer.
 	 *
 	 * @param object
 	 *            the object
 	 */
 	public static void isInteger(final Object object) {
-		assert object == null || object instanceof Integer : Messages.get("skeleton.contract.asserts.isInteger",
+		assert object == null || object instanceof Integer : Messages.get("skeleton.contracts.asserts.isInteger",
 		                                                                  Contract.getCallerString());
 	}
 	
@@ -67,7 +145,7 @@ public class Asserts {
 	 *            the arg
 	 */
 	public static void isNull(final Object arg) {
-		assert arg == null : Messages.get("skeleton.contract.asserts.isNull", Contract.getCallerString(), "");
+		assert arg == null : Messages.get("skeleton.contracts.asserts.isNull", Contract.getCallerString(), "");
 	}
 	
 	/**
@@ -80,7 +158,7 @@ public class Asserts {
 	 */
 	public static void isNull(final Object arg,
 	                          final String message) {
-		assert arg == null : Messages.get("skeleton.contract.asserts.isNull", Contract.getCallerString(), message);
+		assert arg == null : Messages.get("skeleton.contracts.asserts.isNull", Contract.getCallerString(), message);
 	}
 	
 	/**
@@ -96,7 +174,7 @@ public class Asserts {
 	public static void isNull(final Object arg,
 	                          final String formatString,
 	                          final Object... arguments) {
-		assert arg == null : Messages.get("skeleton.contract.asserts.isNull", Contract.getCallerString(),
+		assert arg == null : Messages.get("skeleton.contracts.asserts.isNull", Contract.getCallerString(),
 		                                  String.format(formatString, arguments));
 	}
 	
@@ -113,7 +191,7 @@ public class Asserts {
 	public static void less(final Integer lhs,
 	                        final Integer rhs,
 	                        final String message) {
-		assert lhs < rhs : Messages.get("skeleton.contract.asserts.less", Contract.getCallerString());
+		assert lhs < rhs : Messages.get("skeleton.contracts.asserts.less", Contract.getCallerString());
 	}
 	
 	/**
@@ -129,7 +207,7 @@ public class Asserts {
 	public static void notNegative(final Integer arg,
 	                               final String formatString,
 	                               final Object... arguments) {
-		assert arg >= 0 : Messages.get("skeleton.contract.asserts.notNegative", Contract.getCallerString(),
+		assert arg >= 0 : Messages.get("skeleton.contracts.asserts.notNegative", Contract.getCallerString(),
 		                               String.format(formatString, arguments));
 	}
 	
@@ -140,7 +218,7 @@ public class Asserts {
 	 *            the arg
 	 */
 	public static void notNull(final Object arg) {
-		assert arg != null : Messages.get("skeleton.contract.asserts.notNull", Contract.getCallerString(), "");
+		assert arg != null : Messages.get("skeleton.contracts.asserts.notNull", Contract.getCallerString(), "");
 	}
 	
 	/**
@@ -153,7 +231,7 @@ public class Asserts {
 	 */
 	public static void notNull(final Object arg,
 	                           final String message) {
-		assert arg != null : Messages.get("skeleton.contract.asserts.notNull", Contract.getCallerString(), message);
+		assert arg != null : Messages.get("skeleton.contracts.asserts.notNull", Contract.getCallerString(), message);
 	}
 	
 	/**
@@ -169,8 +247,16 @@ public class Asserts {
 	public static void notNull(final Object arg,
 	                           final String formatString,
 	                           final Object... arguments) {
-		assert arg != null : Messages.get("skeleton.contract.asserts.notNull", Contract.getCallerString(),
+		assert arg != null : Messages.get("skeleton.contracts.asserts.notNull", Contract.getCallerString(),
 		                                  String.format(formatString, arguments));
+	}
+	
+	/**
+	 * @param id
+	 */
+	public static void positive(final Integer id) {
+		assert id == null || id > 0 : Messages.get("skeleton.contracts.asserts.positive", Contract.getCallerString(),
+		                                           "");
 	}
 	
 	/**
@@ -183,8 +269,8 @@ public class Asserts {
 	 */
 	public static void validIndex(final int i,
 	                              final Object[] ids) {
-		assert ids == null || i < ids.length : Messages.get("skeleton.contract.asserts.validIndex",
-		                                                    Contract.getCallerString());
+		assert ids == null || i < ids.length : Messages.get("skeleton.contracts.asserts.validIndex",
+		                                                    Contract.getCallerString(), "");
 	}
 	
 	/**

@@ -13,6 +13,8 @@
 
 package org.mozkito.skeleton.logging;
 
+import org.mozkito.skeleton.logging.consumer.LogConsumer;
+import org.mozkito.skeleton.logging.consumer.appender.TerminalAppender;
 import org.mozkito.skeleton.logging.internal.LogStream;
 
 /**
@@ -21,6 +23,10 @@ import org.mozkito.skeleton.logging.internal.LogStream;
  * @author Sascha Just
  */
 public class Logger {
+	
+	static {
+		new LogConsumer(Bus.provider).register(new TerminalAppender(Level.DEBUG));
+	}
 	
 	/** The Constant error. */
 	public static final LogStream error        = new LogStream(Level.ERROR);

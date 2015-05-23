@@ -13,15 +13,97 @@
 
 package org.mozkito.core.libs.versions.model;
 
+import java.net.URI;
+
+import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
- * @author Sascha Just
+ * The Class Depot.
  *
+ * @author Sascha Just
  */
 public class Depot implements ISequelEntity {
 	
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 2547303402415479035L;
+	
+	/** The id. */
+	private int               id;
+	
+	/** The name. */
+	private String            name;
+	
+	/** The origin. */
+	private URI               origin;
+	
+	/**
+	 * @param name
+	 * @param origin
+	 */
+	public Depot(final String name, final URI origin) {
+		super();
+		this.name = name;
+		this.origin = origin;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Depot other = (Depot) obj;
+		if (this.name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!this.name.equals(other.name)) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Gets the name.
+	 *
+	 * @return the name
+	 */
+	public final String getName() {
+		return this.name;
+	}
+	
+	/**
+	 * @return the origin
+	 */
+	public final URI getOrigin() {
+		return this.origin;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (this.name == null
+		                                            ? 0
+		                                            : this.name.hashCode());
+		return result;
+	}
 	
 	/**
 	 * {@inheritDoc}
@@ -29,11 +111,8 @@ public class Depot implements ISequelEntity {
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
 	@Override
-	public Object id() {
-		// TODO Auto-generated method stub
-		// return null;
-		throw new RuntimeException("Method 'id' has not yet been implemented."); //$NON-NLS-1$
-		
+	public Integer id() {
+		return this.id;
 	}
 	
 	/**
@@ -43,10 +122,46 @@ public class Depot implements ISequelEntity {
 	 */
 	@Override
 	public void id(final Object id) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'id' has not yet been implemented."); //$NON-NLS-1$
+		Requires.notNull(id);
+		Requires.isInteger(id);
 		
+		this.id = (int) id;
 	}
 	
+	/**
+	 * Sets the name.
+	 *
+	 * @param name
+	 *            the name to set
+	 */
+	public final void setName(final String name) {
+		this.name = name;
+	}
+	
+	/**
+	 * @param origin
+	 *            the origin to set
+	 */
+	public final void setOrigin(final URI origin) {
+		this.origin = origin;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("Depot [id=");
+		builder.append(this.id);
+		builder.append(", ");
+		if (this.name != null) {
+			builder.append("name=");
+			builder.append(this.name);
+		}
+		builder.append("]");
+		return builder.toString();
+	}
 }

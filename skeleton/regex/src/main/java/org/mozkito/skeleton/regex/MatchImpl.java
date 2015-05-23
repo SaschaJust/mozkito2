@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright 2012 Kim Herzig, Sascha Just
+/***********************************************************************************************************************
+ * Copyright 2015 mozkito.org
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -7,9 +7,9 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR RequiresS OF ANY KIND, either express or implied. See the License for the
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- ******************************************************************************/
+ **********************************************************************************************************************/
 package org.mozkito.skeleton.regex;
 
 import java.util.HashMap;
@@ -85,6 +85,10 @@ class MatchImpl implements Match {
 	 * 
 	 * @see net.ownhero.dev.regex.Match#get(int)
 	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#get(int)
+	 */
 	@Override
 	public Group get(final int id) {
 		Requires.positive(id);
@@ -97,6 +101,10 @@ class MatchImpl implements Match {
 	 * 
 	 * @see net.ownhero.dev.regex.Match#getFullMatch()
 	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#getFullMatch()
+	 */
 	@Override
 	public Group getFullMatch() {
 		return this.fullMatch;
@@ -106,6 +114,10 @@ class MatchImpl implements Match {
 	 * (non-Javadoc)
 	 * 
 	 * @see net.ownhero.dev.regex.IMatch#get(int)
+	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#getGroup(int)
 	 */
 	@Override
 	public Group getGroup(final int id) {
@@ -119,6 +131,10 @@ class MatchImpl implements Match {
 	 * (non-Javadoc)
 	 * 
 	 * @see net.ownhero.dev.regex.IMatch#get(java.lang.String)
+	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#getGroup(java.lang.String)
 	 */
 	@Override
 	public Group getGroup(final String name) {
@@ -139,6 +155,10 @@ class MatchImpl implements Match {
 	 * 
 	 * @see net.ownhero.dev.regex.Match#size()
 	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#getGroupCount()
+	 */
 	@Override
 	public int getGroupCount() {
 		Requires.notNull(this.map, "Field '%s' in '%s'.", "map", getHandle()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -151,6 +171,10 @@ class MatchImpl implements Match {
 	 * 
 	 * @see net.ownhero.dev.regex.IMatch#getGroupNames()
 	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#getGroupNames()
+	 */
 	@Override
 	public Set<String> getGroupNames() {
 		Requires.notNull(this.map, "Field '%s' in '%s'.", "map", getHandle()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -162,6 +186,10 @@ class MatchImpl implements Match {
 	 * (non-Javadoc)
 	 * 
 	 * @see net.ownhero.dev.regex.IMatch#getGroups()
+	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#getGroups()
 	 */
 	@Override
 	public Group[] getGroups() {
@@ -183,6 +211,10 @@ class MatchImpl implements Match {
 	 * (non-Javadoc)
 	 * 
 	 * @see net.ownhero.dev.regex.Match#getNamedGroupCount()
+	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#getNamedGroupCount()
 	 */
 	@Override
 	public int getNamedGroupCount() {
@@ -213,6 +245,10 @@ class MatchImpl implements Match {
 	 * 
 	 * @see net.ownhero.dev.regex.Match#hasGroup(int)
 	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#hasGroup(int)
+	 */
 	@Override
 	public boolean hasGroup(final int id) {
 		Requires.positive(id);
@@ -226,6 +262,10 @@ class MatchImpl implements Match {
 	 * 
 	 * @see net.ownhero.dev.regex.Match#hasGroups()
 	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#hasGroups()
+	 */
 	@Override
 	public boolean hasGroups() {
 		Requires.notNull(this.map, "Field '%s' in '%s'.", "map", getHandle()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -237,6 +277,10 @@ class MatchImpl implements Match {
 	 * (non-Javadoc)
 	 * 
 	 * @see net.ownhero.dev.regex.Match#hasNamedGroup(java.lang.String)
+	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#hasNamedGroup(java.lang.String)
 	 */
 	@Override
 	public boolean hasNamedGroup(final String name) {
@@ -253,6 +297,10 @@ class MatchImpl implements Match {
 	 * 
 	 * @see net.ownhero.dev.regex.Match#hasNamesGroups()
 	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#hasNamedGroups()
+	 */
 	@Override
 	public boolean hasNamedGroups() {
 		Requires.notNull(this.nameMap, "Field '%s' in '%s'.", "nameMap", getHandle()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -265,6 +313,10 @@ class MatchImpl implements Match {
 	 * 
 	 * @see net.ownhero.dev.regex.Match#isEmpty()
 	 */
+	/**
+	 * {@inheritDoc}
+	 * @see org.mozkito.skeleton.regex.Match#isEmpty()
+	 */
 	@Override
 	public boolean isEmpty() {
 		Requires.notNull(this.map, "Field '%s' in '%s'.", "map", getHandle()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -275,6 +327,10 @@ class MatchImpl implements Match {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see java.lang.Iterable#iterator()
+	 */
+	/**
+	 * {@inheritDoc}
 	 * @see java.lang.Iterable#iterator()
 	 */
 	@Override
@@ -307,6 +363,10 @@ class MatchImpl implements Match {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	/**
+	 * {@inheritDoc}
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

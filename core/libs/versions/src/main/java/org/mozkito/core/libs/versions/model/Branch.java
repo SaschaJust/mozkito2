@@ -13,27 +13,48 @@
 
 package org.mozkito.core.libs.versions.model;
 
+import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
- * @author Sascha Just
+ * The Class Branch models a branch in a version archive.
  *
+ * @author Sascha Just
  */
 public class Branch implements ISequelEntity {
 	
-	/**
-	 *
-	 */
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 6406059989807143676L;
-	private int               depotId;
+	
+	/** The depot id. */
+	private final int         depotId;
+	
+	/** The id. */
 	private int               id;
-	private String            name;
-	private long              headChangeSetId;
+	
+	/** The name. */
+	private final String      name;
+	
+	/** The head change set id. */
+	private long              headId;
 	
 	/**
 	 * The base change set id. This is the first commit to this branch, i.e. where it was spawned.
 	 * */
-	private long              baseChangeSetId;
+	private long              rootId;
+	
+	/**
+	 * Instantiates a new branch.
+	 *
+	 * @param depot
+	 *            the depot
+	 * @param name
+	 *            the name
+	 */
+	public Branch(final Depot depot, final String name) {
+		this.depotId = depot.id();
+		this.name = name;
+	}
 	
 	/**
 	 * {@inheritDoc}
@@ -66,13 +87,8 @@ public class Branch implements ISequelEntity {
 	}
 	
 	/**
-	 * @return the baseChangeSetId
-	 */
-	public final long getBaseChangeSetId() {
-		return this.baseChangeSetId;
-	}
-	
-	/**
+	 * Gets the depot id.
+	 *
 	 * @return the depotId
 	 */
 	public final int getDepotId() {
@@ -80,17 +96,30 @@ public class Branch implements ISequelEntity {
 	}
 	
 	/**
-	 * @return the headChangeSetId
+	 * Gets the head id.
+	 *
+	 * @return the headId
 	 */
-	public final long getHeadChangeSetId() {
-		return this.headChangeSetId;
+	public final long getHeadId() {
+		return this.headId;
 	}
 	
 	/**
+	 * Gets the name.
+	 *
 	 * @return the name
 	 */
 	public final String getName() {
 		return this.name;
+	}
+	
+	/**
+	 * Gets the root id.
+	 *
+	 * @return the rootId
+	 */
+	public final long getRootId() {
+		return this.rootId;
 	}
 	
 	/**
@@ -111,60 +140,43 @@ public class Branch implements ISequelEntity {
 	
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
-	@Override
-	public Object id() {
-		// TODO Auto-generated method stub
-		// return null;
-		throw new RuntimeException("Method 'id' has not yet been implemented."); //$NON-NLS-1$
-		
+	public Integer id() {
+		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
 	 */
-	@Override
-	public void id(final Object id) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'id' has not yet been implemented."); //$NON-NLS-1$
+	public void id(@SuppressWarnings ("hiding") final Object id) {
+		Requires.notNull(id);
+		Requires.isInteger(id);
 		
+		this.id = (int) id;
 	}
 	
 	/**
-	 * @param baseChangeSetId
-	 *            the baseChangeSetId to set
+	 * Sets the head id.
+	 *
+	 * @param headId
+	 *            the headId to set
 	 */
-	public final void setBaseChangeSetId(final long baseChangeSetId) {
-		this.baseChangeSetId = baseChangeSetId;
+	public final void setHeadId(final long headId) {
+		this.headId = headId;
 	}
 	
 	/**
-	 * @param depotId
-	 *            the depotId to set
+	 * Sets the root id.
+	 *
+	 * @param rootId
+	 *            the rootId to set
 	 */
-	public final void setDepotId(final int depotId) {
-		this.depotId = depotId;
-	}
-	
-	/**
-	 * @param headChangeSetId
-	 *            the headChangeSetId to set
-	 */
-	public final void setHeadChangeSetId(final long headChangeSetId) {
-		this.headChangeSetId = headChangeSetId;
-	}
-	
-	/**
-	 * @param name
-	 *            the name to set
-	 */
-	public final void setName(final String name) {
-		this.name = name;
+	public final void setRootId(final long rootId) {
+		this.rootId = rootId;
 	}
 	
 	/**
@@ -179,12 +191,16 @@ public class Branch implements ISequelEntity {
 		builder.append(this.id);
 		builder.append(", depotId=");
 		builder.append(this.depotId);
-		builder.append(", name=");
-		builder.append(this.name);
-		builder.append(", headChangeSetId=");
-		builder.append(this.headChangeSetId);
-		builder.append(", baseChangeSetId=");
-		builder.append(this.baseChangeSetId);
+		builder.append(", ");
+		if (this.name != null) {
+			builder.append("name=");
+			builder.append(this.name);
+			builder.append(", ");
+		}
+		builder.append("headId=");
+		builder.append(this.headId);
+		builder.append(", rootId=");
+		builder.append(this.rootId);
 		builder.append("]");
 		return builder.toString();
 	}

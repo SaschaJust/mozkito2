@@ -32,9 +32,6 @@ public class File implements ISequelEntity {
 	/** The path. */
 	private String            path;
 	
-	/** The former file id. */
-	private Long              formerFileId;
-	
 	/** The revision id. */
 	private long              revisionId;
 	
@@ -68,15 +65,6 @@ public class File implements ISequelEntity {
 		}
 		
 		return true;
-	}
-	
-	/**
-	 * Gets the former file id.
-	 *
-	 * @return the formerFile
-	 */
-	public final Long getFormerFileId() {
-		return this.formerFileId;
 	}
 	
 	/**
@@ -137,16 +125,6 @@ public class File implements ISequelEntity {
 	}
 	
 	/**
-	 * Sets the former file id.
-	 *
-	 * @param formerFile
-	 *            the formerFile to set
-	 */
-	public final void setFormerFileId(final Long formerFile) {
-		this.formerFileId = formerFile;
-	}
-	
-	/**
 	 * Sets the path.
 	 *
 	 * @param path
@@ -184,10 +162,7 @@ public class File implements ISequelEntity {
 			builder.append(this.path);
 			builder.append(", ");
 		}
-		if (this.formerFileId != null) {
-			builder.append("formerFileId=");
-			builder.append(this.formerFileId);
-		}
+		
 		builder.append("]");
 		return builder.toString();
 	}

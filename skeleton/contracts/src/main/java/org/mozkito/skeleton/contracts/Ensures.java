@@ -27,7 +27,7 @@ public class Ensures {
 	 *            the arg
 	 */
 	public static void notNull(final Object arg) {
-		assert arg != null : Contract.getCallerString() + "Postcondition violated: Object must not be (null).";
+		assert arg != null : Messages.get("skeleton.contracts.ensures.notNull", Contract.getCallerString(), "");
 	}
 	
 	/**
@@ -40,10 +40,7 @@ public class Ensures {
 	 */
 	public static void notNull(final Object arg,
 	                           final String message) {
-		assert arg != null : Contract.getCallerString() + "Postcondition violated: Object must not be (null)."
-		        + message != null
-		                         ? " " + message
-		                         : "";
+		assert arg != null : Messages.get("skeleton.contracts.ensures.notNull", Contract.getCallerString(), message);
 	}
 	
 	/**
@@ -59,10 +56,12 @@ public class Ensures {
 	public static void notNull(final Object arg,
 	                           final String formatString,
 	                           final Object... arguments) {
-		assert arg != null : Messages.get("org.mozkito.skeleton.contracts.ensures.notNull",
-		                                  String.format(formatString, arguments));
+		assert arg != null : Messages.get("skeleton.contracts.ensures.notNull", String.format(formatString, arguments));
 	}
 	
+	/**
+	 * Instantiates a new ensures.
+	 */
 	private Ensures() {
 		// avoid instantiation.
 	}
