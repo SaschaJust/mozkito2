@@ -6,11 +6,11 @@
 		<artifactId>mozkito</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>core</artifactId>
-	<name>mozkito core [meta]</name>
+	<artifactId>mozkito-core</artifactId>
+	<name>mozkito-core [meta]</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>agents</module>
-		<module>libs</module>
+		<module>apps</module>
+		<module>base</module>
 	</modules>
 </project>

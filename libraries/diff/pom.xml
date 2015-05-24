@@ -3,24 +3,24 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.mozkito</groupId>
-		<artifactId>external</artifactId>
+		<artifactId>mozkito-libraries</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
-	<groupId>org.mozkito.external</groupId>
-	<artifactId>jregex</artifactId>
+	<groupId>org.mozkito.libraries</groupId>
+	<artifactId>mozkito-diff-libs</artifactId>
 	<packaging>jar</packaging>
-	<name>jregex [external]</name>
-	<description>JRegex extension.</description>
+	<name>diff [library]</name>
+	<description>Diff-Utilities.</description>
 	<dependencies>
 		<dependency>
-			<groupId>jregex</groupId>
-			<artifactId>jregex</artifactId>
-			<version>1.2_01</version>
+			<groupId>org.mozkito.libraries</groupId>
+			<artifactId>mozkito-i18n-libs</artifactId>
+			<version>2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.mozkito.libraries</groupId>
-			<artifactId>mozkito-contracts-libs</artifactId>
-			<version>2.0-SNAPSHOT</version>
+			<groupId>com.googlecode.java-diff-utils</groupId>
+			<artifactId>diffutils</artifactId>
+			<version>1.3.0</version>
 		</dependency>
 	</dependencies>
 </project>

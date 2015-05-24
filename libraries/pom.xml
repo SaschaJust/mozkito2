@@ -6,10 +6,22 @@
 		<artifactId>mozkito</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>mozkito-analysis</artifactId>
-	<name>analysis [meta]</name>
+	<artifactId>mozkito-libraries</artifactId>
+	<name>libraries [meta]</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>branches</module>
+		<module>commons</module>
+		<module>contracts</module>
+		<module>datastructures</module>
+		<module>datetime</module>
+		<module>diff</module>
+		<module>exec</module>
+		<module>graphs</module>
+		<module>i18n</module>
+		<module>io</module>
+		<module>logging</module>
+		<module>regex</module>
+		<module>settings</module>
+		<module>sequel</module>
 	</modules>
 </project>

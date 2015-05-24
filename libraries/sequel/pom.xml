@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.mozkito</groupId>
+		<artifactId>mozkito-libraries</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+	<groupId>org.mozkito.libraries</groupId>
+	<artifactId>mozkito-sequel-libs</artifactId>
+	<packaging>jar</packaging>
+	<name>sequel [library]</name>
+	<description>Contracts.</description>
+	<dependencies>
+		<dependency>
+			<groupId>org.mozkito.libraries</groupId>
+			<artifactId>mozkito-i18n-libs</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mozkito.libraries</groupId>
+			<artifactId>mozkito-contracts-libs</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mozkito.libraries</groupId>
+			<artifactId>mozkito-io-libs</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mozkito.libraries</groupId>
+			<artifactId>mozkito-logging-libs</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mozkito.external</groupId>
+			<artifactId>ibatis</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.zaxxer</groupId>
+		    <artifactId>HikariCP</artifactId>
+		    <version>2.3.8</version>
+		    <scope>compile</scope>
+		</dependency>
+	</dependencies>
+</project>

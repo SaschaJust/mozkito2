@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.mozkito.core</groupId>
+		<artifactId>mozkito-core-base</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+	<groupId>org.mozkito.core.base</groupId>
+	<artifactId>mozkito-versions-base</artifactId>
+	<packaging>jar</packaging>
+	<name>versions [base]</name>
+	<description>Helper to browse, navigate and accesss version control systems.</description>
+	<dependencies>
+		<dependency>
+			<groupId>org.mozkito.libraries</groupId>
+			<artifactId>mozkito-sequel-libs</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mozkito.libraries</groupId>
+			<artifactId>mozkito-diff-libs</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mozkito.libraries</groupId>
+			<artifactId>mozkito-graphs-libs</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mozkito.libraries</groupId>
+			<artifactId>mozkito-datastructures-libs</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mozkito.libraries</groupId>
+			<artifactId>mozkito-commons-libs</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mozkito.core.base</groupId>
+			<artifactId>mozkito-users-base</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
+		</dependency>
+	</dependencies>
+</project>

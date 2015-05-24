@@ -3,23 +3,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.mozkito</groupId>
-		<artifactId>external</artifactId>
+		<artifactId>mozkito-libraries</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
-	<groupId>org.mozkito.external</groupId>
-	<artifactId>jregex</artifactId>
+	<groupId>org.mozkito.libraries</groupId>
+	<artifactId>mozkito-settings-libs</artifactId>
 	<packaging>jar</packaging>
-	<name>jregex [external]</name>
-	<description>JRegex extension.</description>
+	<name>settings [library]</name>
+	<description>Settings/Registry/Environment</description>
 	<dependencies>
 		<dependency>
-			<groupId>jregex</groupId>
-			<artifactId>jregex</artifactId>
-			<version>1.2_01</version>
-		</dependency>
-		<dependency>
 			<groupId>org.mozkito.libraries</groupId>
-			<artifactId>mozkito-contracts-libs</artifactId>
+			<artifactId>mozkito-graphs-libs</artifactId>
 			<version>2.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

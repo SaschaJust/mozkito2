@@ -3,13 +3,15 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.mozkito</groupId>
-		<artifactId>mozkito</artifactId>
+		<artifactId>mozkito-core</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>mozkito-analysis</artifactId>
-	<name>analysis [meta]</name>
+	<groupId>org.mozkito.core</groupId>
+	<artifactId>mozkito-core-base</artifactId>
+	<name>base meta]</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>branches</module>
+		<module>users</module>
+		<module>versions</module>
 	</modules>
 </project>
