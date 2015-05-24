@@ -65,9 +65,6 @@ public class ChangeSet implements ISequelEntity {
 	/** The id. */
 	private long               id;
 	
-	/** The patch hash. */
-	private String             patchHash;
-	
 	/** The tree hash. */
 	private String             treeHash;
 	
@@ -89,8 +86,6 @@ public class ChangeSet implements ISequelEntity {
 	 *            the commit hash
 	 * @param treeHash
 	 *            the tree hash
-	 * @param patchHash
-	 *            the patch hash
 	 * @param authoredTime
 	 *            the authored time
 	 * @param authorId
@@ -99,17 +94,17 @@ public class ChangeSet implements ISequelEntity {
 	 *            the commit time
 	 * @param committerId
 	 *            the committer id
-	 * @param branchIds
-	 *            the branch ids
+	 * @param subject
+	 *            the subject
+	 * @param body
+	 *            the body
 	 */
-	public ChangeSet(final int depotId, final String commitHash, final String treeHash, final String patchHash,
-	        final Instant authoredTime, final int authorId, final Instant commitTime, final int committerId,
-	        final String subject, final String body) {
+	public ChangeSet(final int depotId, final String commitHash, final String treeHash, final Instant authoredTime,
+	        final int authorId, final Instant commitTime, final int committerId, final String subject, final String body) {
 		super();
 		Requires.positive(depotId);
 		Requires.notNull(commitHash);
 		Requires.notNull(treeHash);
-		Requires.notNull(patchHash);
 		Requires.notNull(authoredTime);
 		Requires.positive(authorId);
 		Requires.notNull(commitTime);
@@ -120,7 +115,6 @@ public class ChangeSet implements ISequelEntity {
 		this.depotId = depotId;
 		this.commitHash = commitHash;
 		this.treeHash = treeHash;
-		this.patchHash = patchHash;
 		this.authoredTime = authoredTime;
 		this.authorId = authorId;
 		this.commitTime = commitTime;
@@ -239,15 +233,6 @@ public class ChangeSet implements ISequelEntity {
 	}
 	
 	/**
-	 * Gets the patch hash.
-	 *
-	 * @return the patchHash
-	 */
-	public final String getPatchHash() {
-		return this.patchHash;
-	}
-	
-	/**
 	 * @return the subject
 	 */
 	public final String getSubject() {
@@ -285,7 +270,7 @@ public class ChangeSet implements ISequelEntity {
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
 	@Override
-	public Object id() {
+	public Long id() {
 		return this.id;
 	}
 	
@@ -371,16 +356,6 @@ public class ChangeSet implements ISequelEntity {
 	}
 	
 	/**
-	 * Sets the patch hash.
-	 *
-	 * @param patchHash
-	 *            the patchHash to set
-	 */
-	public final void setPatchHash(final String patchHash) {
-		this.patchHash = patchHash;
-	}
-	
-	/**
 	 * @param subject
 	 *            the subject to set
 	 */
@@ -439,11 +414,6 @@ public class ChangeSet implements ISequelEntity {
 		if (this.body != null) {
 			builder.append("body=");
 			builder.append(this.body);
-			builder.append(", ");
-		}
-		if (this.patchHash != null) {
-			builder.append("patchHash=");
-			builder.append(this.patchHash);
 			builder.append(", ");
 		}
 		if (this.treeHash != null) {

@@ -116,6 +116,18 @@ public class Requires {
 	}
 	
 	/**
+	 * @param confidence
+	 * @param i
+	 */
+	public static void greaterOrEqual(final int lhs,
+	                                  final int rhs) {
+		if (lhs < rhs) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.greaterOrEqual",
+			                                                 Contract.getCallerString(), ""));
+		}
+	}
+	
+	/**
 	 * Checks if is integer.
 	 *
 	 * @param object

@@ -123,6 +123,28 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	}
 	
 	/**
+	 * @return the nextIdStatement
+	 */
+	public final PreparedStatement getNextIdStatement() {
+		try {
+			return this.database.getConnection().prepareStatement(this.nextIdStatement);
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * @return the saveStatement
+	 */
+	public final PreparedStatement getSaveStatement() {
+		try {
+			return this.database.getConnection().prepareStatement(this.saveStatement);
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
@@ -177,12 +199,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 				final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
 				
 				for (final ChangeSet changeSet : changeSets) {
-					final ResultSet idResult = idStatement.executeQuery();
-					final boolean result = idResult.next();
-					Contract.asserts(result);
-					final long id = idResult.getLong(1);
-					
-					save(statement, id, changeSet);
+					save(statement, idStatement, changeSet);
 				}
 			}
 		} catch (final SQLException e) {
@@ -193,7 +210,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	/**
 	 * Save.
 	 *
-	 * @param statement
+	 * @param saveStatement
 	 *            the statement
 	 * @param id
 	 *            the id
@@ -202,33 +219,39 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
-	public void save(final PreparedStatement statement,
-	                 final Object id,
-	                 final ChangeSet changeSet) throws SQLException {
-		Requires.notNull(statement);
-		Requires.notNull(id);
-		Requires.isLong(id);
+	public void save(final PreparedStatement saveStatement,
+	                 final PreparedStatement idStatement,
+	                 final ChangeSet changeSet) {
+		Requires.notNull(saveStatement);
+		Requires.notNull(idStatement);
 		Requires.notNull(changeSet);
 		
 		try {
+			final ResultSet idResult = idStatement.executeQuery();
+			final boolean result = idResult.next();
+			Contract.asserts(result);
+			
+			final long id = idResult.getLong(1);
+			
 			int index = 0;
-			statement.setLong(++index, (long) id);
+			saveStatement.setLong(++index, id);
 			
-			statement.setInt(++index, changeSet.getDepotId());
+			saveStatement.setInt(++index, changeSet.getDepotId());
 			
-			statement.setString(++index, changeSet.getCommitHash());
+			saveStatement.setString(++index, changeSet.getCommitHash());
 			
-			statement.setString(++index, changeSet.getTreeHash());
+			saveStatement.setString(++index, changeSet.getTreeHash());
 			
-			statement.setString(++index, changeSet.getPatchHash());
+			saveStatement.setTimestamp(++index, Timestamp.from(changeSet.getAuthoredTime()));
+			saveStatement.setInt(++index, changeSet.getAuthorId());
 			
-			statement.setTimestamp(++index, Timestamp.from(changeSet.getAuthoredTime()));
-			statement.setInt(++index, changeSet.getAuthorId());
+			saveStatement.setTimestamp(++index, Timestamp.from(changeSet.getCommitTime()));
+			saveStatement.setInt(++index, changeSet.getCommitterId());
 			
-			statement.setTimestamp(++index, Timestamp.from(changeSet.getCommitTime()));
-			statement.setInt(++index, changeSet.getCommitterId());
+			saveStatement.setString(++index, changeSet.getSubject());
+			saveStatement.setString(++index, changeSet.getBody());
 			
-			statement.executeUpdate();
+			saveStatement.executeUpdate();
 			
 			changeSet.id(id);
 		} catch (final SQLException e) {

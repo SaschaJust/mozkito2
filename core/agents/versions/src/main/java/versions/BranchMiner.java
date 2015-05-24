@@ -89,7 +89,10 @@ public class BranchMiner implements Runnable {
 			
 			final Tuple<Integer, List<String>> result = CommandExecutor.execute("git", new String[] { "ls-remote",
 			        "--heads" }, this.cloneDir, null, new HashMap<String, String>());
-			for (final String line : result.getSecond()) {
+			RESULTS: for (final String line : result.getSecond()) {
+				if (line.startsWith("From ")) {
+					continue RESULTS;
+				}
 				final String headHash = line.substring(0, 40);
 				String branchName = line.substring(40).trim();
 				Contract.asserts(branchName.startsWith(TAG));

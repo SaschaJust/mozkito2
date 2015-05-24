@@ -45,14 +45,13 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	/** The depot id. */
 	private final int depotId;
 	
-	/** The patch hash. */
-	private String    patchHash;
-	
 	/** The tree hash. */
 	private String    treeHash;
 	
+	/** The subject. */
 	private String    subject;
 	
+	/** The body. */
 	private String    body;
 	
 	/**
@@ -139,20 +138,8 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	 * @see org.mozkito.skeleton.sequel.IBuilder#create()
 	 */
 	public ChangeSet create() {
-		return new ChangeSet(this.depotId, this.commitHash, this.treeHash, this.patchHash, this.authoredTime,
-		                     this.authorId, this.commitTime, this.committerId, this.subject, this.body);
-	}
-	
-	/**
-	 * Patch hash.
-	 *
-	 * @param patchHash
-	 *            the patch hash
-	 * @return the change set builder
-	 */
-	public ChangeSetBuilder patchHash(final String patchHash) {
-		this.patchHash = patchHash;
-		return this;
+		return new ChangeSet(this.depotId, this.commitHash, this.treeHash, this.authoredTime, this.authorId,
+		                     this.commitTime, this.committerId, this.subject, this.body);
 	}
 	
 	/**

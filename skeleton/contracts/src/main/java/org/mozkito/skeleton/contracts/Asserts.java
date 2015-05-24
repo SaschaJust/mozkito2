@@ -81,8 +81,8 @@ public class Asserts {
 	 * @param rhs
 	 *            the rhs
 	 */
-	public static void equalTo(final int lhs,
-	                           final int rhs) {
+	public static void equalTo(final Object lhs,
+	                           final Object rhs) {
 		assert lhs == rhs : Messages.get("skeleton.contracts.asserts.equalTo", Contract.getCallerString());
 	}
 	

@@ -77,7 +77,7 @@
 					<programs>
 						<program>
 							<mainClass>${mainClass}</mainClass>
-							<id>versions</id>
+							<id>mozkito-versions</id>
 						</program>
 					</programs>
 				</configuration>

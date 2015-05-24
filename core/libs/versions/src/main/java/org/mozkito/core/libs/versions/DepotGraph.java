@@ -18,12 +18,15 @@ import graphs.DirectedGraph;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.iterators.UnmodifiableIterator;
 import org.apache.commons.collections4.set.UnmodifiableSet;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -31,6 +34,7 @@ import org.jgrapht.graph.DirectedMaskSubgraph;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.graph.MaskFunctor;
 import org.jgrapht.traverse.DepthFirstIterator;
+import org.jgrapht.traverse.GraphIterator;
 
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
@@ -47,6 +51,44 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
  * @author Sascha Just
  */
 public class DepotGraph extends DirectedGraph {
+	
+	/**
+	 * @author Sascha Just
+	 *
+	 */
+	public class ChangeSetIterator implements Iterator<ChangeSet> {
+		
+		private final GraphIterator<ChangeSet, Edge> iterator;
+		
+		/**
+		 * Instantiates a new change set iterator.
+		 *
+		 * @param graphIterator
+		 *            the graph iterator
+		 */
+		public ChangeSetIterator(final GraphIterator<ChangeSet, Edge> graphIterator) {
+			this.iterator = graphIterator;
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @see java.util.Iterator#hasNext()
+		 */
+		public boolean hasNext() {
+			return this.iterator.hasNext();
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @see java.util.Iterator#next()
+		 */
+		public ChangeSet next() {
+			return this.iterator.next();
+		}
+		
+	}
 	
 	/**
 	 * The Class Edge.
@@ -212,6 +254,34 @@ public class DepotGraph extends DirectedGraph {
 		return this.graph.addVertex(changeSet);
 	}
 	
+	public void computeIntegrationGraph(final Branch branch) {
+		ChangeSet head = getHead(branch);
+		final ChangeSet root = getRootCommit(branch);
+		
+		while (!head.equals(root)) {
+			head = skipForwards(head);
+			final Set<Edge> incomingEdges = this.graph.incomingEdgesOf(head);
+			
+			if (incomingEdges.size() == 1) {
+				head = incomingEdges.iterator().next().parent;
+			} else {
+				ChangeSet branchParent = null;
+				final Stack<ChangeSet> delegates = new Stack<ChangeSet>();
+				for (final Edge incoming : incomingEdges) {
+					if (EdgeType.BRANCH.equals(incoming.type)) {
+						branchParent = incoming.parent;
+					} else {
+						Asserts.equalTo(EdgeType.MERGE, incoming.type);
+						delegates.push(incoming.parent);
+					}
+				}
+				
+				Asserts.notNull(branchParent);
+				
+			}
+		}
+	}
+	
 	/**
 	 * Gets the branches.
 	 *
@@ -219,6 +289,19 @@ public class DepotGraph extends DirectedGraph {
 	 */
 	public Set<Branch> getBranches() {
 		return UnmodifiableSet.unmodifiableSet(this.branchHeads.keySet());
+	}
+	
+	private DirectedMaskSubgraph<ChangeSet, Edge> getBranchGraph(final Branch branch) {
+		return new DirectedMaskSubgraph<ChangeSet, DepotGraph.Edge>(this.graph, new MaskFunctor<ChangeSet, Edge>() {
+			
+			public boolean isEdgeMasked(final Edge arg0) {
+				return arg0.branches.contains(branch);
+			}
+			
+			public boolean isVertexMasked(final ChangeSet arg0) {
+				return arg0.getBranchIds().contains(branch.id());
+			}
+		});
 	}
 	
 	/**
@@ -232,6 +315,21 @@ public class DepotGraph extends DirectedGraph {
 		return this.graph.incomingEdgesOf(changeSet).stream()
 		                 .filter(x -> EdgeType.BRANCH.equals(x.type) || EdgeType.FORWARD.equals(x.type)).findFirst()
 		                 .get().parent;
+	}
+	
+	/**
+	 * @param monitored
+	 * @return
+	 */
+	public Iterator<ChangeSet> getChangeSets(final Branch branch) {
+		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = getBranchGraph(branch);
+		final EdgeReversedGraph<ChangeSet, Edge> reversedGraph = new EdgeReversedGraph<ChangeSet, Edge>(branchGraph);
+		
+		final ChangeSet head = this.branchHeads.get(branch);
+		final DepthFirstIterator<ChangeSet, Edge> iterator = new DepthFirstIterator<ChangeSet, Edge>(reversedGraph,
+		                                                                                             head);
+		return UnmodifiableIterator.unmodifiableIterator(new ChangeSetIterator(iterator));
+		
 	}
 	
 	/**
@@ -371,19 +469,7 @@ public class DepotGraph extends DirectedGraph {
 			throw new IllegalArgumentException(String.format("Branch '%s' not known to graph.", branch));
 		}
 		
-		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = new DirectedMaskSubgraph<ChangeSet, DepotGraph.Edge>(
-		                                                                                                               this.graph,
-		                                                                                                               new MaskFunctor<ChangeSet, Edge>() {
-			                                                                                                               
-			                                                                                                               public boolean isEdgeMasked(final Edge arg0) {
-				                                                                                                               return arg0.branches.contains(branch);
-			                                                                                                               }
-			                                                                                                               
-			                                                                                                               public boolean isVertexMasked(final ChangeSet arg0) {
-				                                                                                                               return arg0.getBranchIds()
-				                                                                                                                          .contains(branch.id());
-			                                                                                                               }
-		                                                                                                               });
+		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = getBranchGraph(branch);
 		
 		final EdgeReversedGraph<ChangeSet, Edge> reversedGraph = new EdgeReversedGraph<ChangeSet, Edge>(branchGraph);
 		
@@ -409,6 +495,16 @@ public class DepotGraph extends DirectedGraph {
 	public List<ChangeSet> getSpinOffs(final ChangeSet changeSet) {
 		return this.graph.outgoingEdgesOf(changeSet).stream().filter(x -> EdgeType.BRANCH.equals(x.type))
 		                 .map(x -> x.parent).collect(Collectors.toList());
+	}
+	
+	private ChangeSet skipForwards(final ChangeSet changeSet) {
+		Set<Edge> incomingEdges = this.graph.incomingEdgesOf(changeSet);
+		
+		while (incomingEdges.size() == 1) {
+			incomingEdges = this.graph.incomingEdgesOf(incomingEdges.iterator().next().parent);
+		}
+		
+		return incomingEdges.iterator().next().child;
 	}
 	
 }

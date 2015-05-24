@@ -13,9 +13,11 @@
 
 package org.mozkito.core.libs.versions.model;
 
+import org.mozkito.core.libs.versions.ChangeType;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class Revision.
  *
@@ -30,16 +32,51 @@ public class Revision implements ISequelEntity {
 	private long              id;
 	
 	/** The change set id. */
-	private long              changeSetId;
-	
-	/** The file id. */
-	private long              fileId;
+	private final long        changeSetId;
 	
 	/** The change type. */
-	private short             changeType;
+	private final short       changeType;
 	
-	/** The patch hash. */
-	private short             patchHash;
+	/** The source id. */
+	private final Long        sourceId;
+	
+	/** The target id. */
+	private final Long        targetId;
+	
+	/** The confidence. */
+	private final short       confidence;
+	
+	/**
+	 * Instantiates a new revision.
+	 *
+	 * @param changeSet
+	 *            the change set
+	 * @param changeType
+	 *            the change type
+	 * @param source
+	 *            the source
+	 * @param target
+	 *            the target
+	 * @param confidence
+	 *            the confidence
+	 */
+	public Revision(final ChangeSet changeSet, final ChangeType changeType, final Handle source, final Handle target,
+	        final short confidence) {
+		Requires.notNull(changeType);
+		Requires.positive(changeSet.id());
+		Requires.notNull(changeType);
+		Requires.notNull(source);
+		Requires.positive(source.id());
+		Requires.notNull(target);
+		Requires.positive(target.id());
+		Requires.greaterOrEqual(confidence, 50);
+		
+		this.changeSetId = changeSet.id();
+		this.changeType = changeType.toMask();
+		this.sourceId = source.id();
+		this.targetId = target.id();
+		this.confidence = confidence;
+	}
 	
 	/**
 	 * {@inheritDoc}
@@ -61,10 +98,56 @@ public class Revision implements ISequelEntity {
 		if (this.changeSetId != other.changeSetId) {
 			return false;
 		}
-		if (this.fileId != other.fileId) {
+		if (this.sourceId == null) {
+			if (other.sourceId != null) {
+				return false;
+			}
+		} else if (!this.sourceId.equals(other.sourceId)) {
+			return false;
+		}
+		if (this.targetId == null) {
+			if (other.targetId != null) {
+				return false;
+			}
+		} else if (!this.targetId.equals(other.targetId)) {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * @return the changeSetId
+	 */
+	public final long getChangeSetId() {
+		return this.changeSetId;
+	}
+	
+	/**
+	 * @return the changeType
+	 */
+	public final short getChangeType() {
+		return this.changeType;
+	}
+	
+	/**
+	 * @return the confidence
+	 */
+	public final short getConfidence() {
+		return this.confidence;
+	}
+	
+	/**
+	 * @return the sourceId
+	 */
+	public final Long getSourceId() {
+		return this.sourceId;
+	}
+	
+	/**
+	 * @return the targetId
+	 */
+	public final Long getTargetId() {
+		return this.targetId;
 	}
 	
 	/**
@@ -77,7 +160,12 @@ public class Revision implements ISequelEntity {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (this.changeSetId ^ this.changeSetId >>> 32);
-		result = prime * result + (int) (this.fileId ^ this.fileId >>> 32);
+		result = prime * result + (this.sourceId == null
+		                                                ? 0
+		                                                : this.sourceId.hashCode());
+		result = prime * result + (this.targetId == null
+		                                                ? 0
+		                                                : this.targetId.hashCode());
 		return result;
 	}
 	
@@ -116,12 +204,21 @@ public class Revision implements ISequelEntity {
 		builder.append(this.id);
 		builder.append(", changeSetId=");
 		builder.append(this.changeSetId);
-		builder.append(", fileId=");
-		builder.append(this.fileId);
 		builder.append(", changeType=");
 		builder.append(this.changeType);
-		builder.append(", patchHash=");
-		builder.append(this.patchHash);
+		builder.append(", ");
+		if (this.sourceId != null) {
+			builder.append("sourceId=");
+			builder.append(this.sourceId);
+			builder.append(", ");
+		}
+		if (this.targetId != null) {
+			builder.append("targetId=");
+			builder.append(this.targetId);
+			builder.append(", ");
+		}
+		builder.append("confidence=");
+		builder.append(this.confidence);
 		builder.append("]");
 		return builder.toString();
 	}

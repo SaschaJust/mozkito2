@@ -15,10 +15,12 @@ package versions;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -41,13 +43,33 @@ import org.mozkito.skeleton.logging.Logger;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
- * @author Sascha Just
+ * The entry point of app: mozkito-versions
  *
+ * @author Sascha Just
  */
 public class Main {
 	
 	/**
-	 * @return
+	 * The Class MozkitoHandler.
+	 */
+	public static class MozkitoHandler implements UncaughtExceptionHandler {
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang.Thread, java.lang.Throwable)
+		 */
+		public void uncaughtException(final Thread t,
+		                              final Throwable e) {
+			Logger.fatal(e, "%s: Unhandled exception. Terminated.", t.getName());
+		}
+		
+	}
+	
+	/**
+	 * Creates the options.
+	 *
+	 * @return the options
 	 */
 	private static Options createOptions() {
 		final Options options = new Options();
@@ -55,19 +77,26 @@ public class Main {
 		Option option = new Option("r", "repository", true, "The URI to the repository");
 		option.setArgName("URI");
 		option.setRequired(true);
-		option.setType(URI.class);
 		options.addOption(option);
 		
 		option = new Option("w", "working-directory", true, "The working directory.");
 		option.setArgName("DIR");
 		option.setRequired(false);
-		option.setType(File.class);
 		options.addOption(option);
 		
-		option = new Option("d", "database-name", true, "The name of the database.");
+		option = new Option("dn", "database-name", true, "The name of the database.");
 		option.setArgName("DB_NAME");
 		option.setRequired(true);
-		option.setType(String.class);
+		options.addOption(option);
+		
+		option = new Option("du", "database-user", true, "The user to be used to connect to the database.");
+		option.setArgName("DB_USER");
+		option.setRequired(false);
+		options.addOption(option);
+		
+		option = new Option("dp", "database-password", true, "The password to be used to connect to the database.");
+		option.setArgName("DB_PASSWORD");
+		option.setRequired(false);
 		options.addOption(option);
 		
 		return options;
@@ -87,12 +116,15 @@ public class Main {
 	 * @throws InterruptedException
 	 *             the interrupted exception
 	 * @throws ParseException
+	 *             the parse exception
 	 */
 	public static void main(final String[] args) throws IOException,
 	                                            SQLException,
 	                                            URISyntaxException,
 	                                            InterruptedException,
 	                                            ParseException {
+		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
+		
 		// create the command line parser
 		final CommandLineParser parser = new DefaultParser();
 		
@@ -106,71 +138,84 @@ public class Main {
 				formatter.printHelp("mozkito-versions", options);
 				System.exit(0);
 			}
+			
+			final File workDir = new File(line.hasOption("working-dir")
+			                                                           ? line.getOptionValue("working-dir")
+			                                                           : "/tmp");
+			
+			final File cloneDir = new File(workDir, "mozkito_test");
+			final URI uri = new URI(line.hasOption("repository")
+			                                                    ? line.getOptionValue("repository")
+			                                                    : "file:///tmp/mozkito_bare.git");
+			
+			final String databaseName = line.hasOption("database-name")
+			                                                           ? line.getOptionValue("database-name")
+			                                                           : "mozkito-versions";
+			
+			Logger.info("Establishing database connection and creating pool.");
+			final SequelDatabase database = new SequelDatabase("jdbc:derby:" + databaseName + ";create=true",
+			                                                   new Properties());
+			
+			Logger.info("Cloning depot.");
+			final Depot depot = new Depot("test", uri);
+			
+			final Tuple<Integer, List<String>> result = CommandExecutor.execute("git",
+			                                                                    new String[] { "clone", "-b", "master",
+			                                                                            "-n", "-q",
+			                                                                            URIUtils.uri2String(uri),
+			                                                                            cloneDir.getAbsolutePath() },
+			                                                                    workDir, null,
+			                                                                    new HashMap<String, String>());
+			if (result.getFirst() != 0) {
+				if (Logger.logError()) {
+					for (final String resLine : result.getSecond()) {
+						Logger.error.println(resLine);
+					}
+				}
+				System.exit(result.getFirst());
+			}
+			
+			Logger.info("Spawning BranchMiner.");
+			
+			final BranchMiner branchMiner = new BranchMiner(cloneDir, database, depot);
+			final Thread bmThread = new Thread(branchMiner);
+			bmThread.start();
+			bmThread.join();
+			
+			final DepotGraph graph = new DepotGraph(depot);
+			
+			Logger.info("Spawning ChangeSetMiner.");
+			final ChangeSetMiner changeSetMiner = new ChangeSetMiner(cloneDir, database, depot, graph,
+			                                                         branchMiner.getBrancHeads());
+			final Thread csmThread = new Thread(changeSetMiner);
+			csmThread.start();
+			csmThread.join();
+			
+			Logger.info("Spawning GraphBuilder.");
+			final GraphMiner graphMiner = new GraphMiner(cloneDir, database, graph, changeSetMiner.getChangeSets());
+			final Thread gmThread = new Thread(graphMiner);
+			gmThread.start();
+			gmThread.join();
+			
+			Logger.info("Analyzing.");
+			final ChangeSet invest = changeSetMiner.getChangeSets().get("d14d00ee51abf5f939651070e8eef4b3d9873aa0");
+			
+			final Branch monitored = graph.getBranches().stream().filter(b -> "master".equals(b.getName())).findFirst()
+			                              .get();
+			final Iterator<ChangeSet> monitoredChangeSets = graph.getChangeSets(monitored);
+			
+			while (monitoredChangeSets.hasNext()) {
+				Logger.info(monitoredChangeSets.next().getCommitHash());
+			}
+			
+			final List<ChangeSet> path = graph.getIntegrationPath(invest, monitored);
+			for (final ChangeSet changeSet : path) {
+				Logger.info(changeSet.toString());
+			}
 		} catch (final ParseException e) {
 			final HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("mozkito-versions", options);
 			System.exit(1);
-		}
-		
-		CommandExecutor.redirectErrorStream = false;
-		final File workDir = new File("/tmp");
-		final File cloneDir = new File("/tmp/mozkito_test");
-		final URI uri = new URI("file:///tmp/mozkito_bare.git");
-		
-		final String databaseName = "test";
-		
-		Logger.info("Establishing database connection and creating pool.");
-		final SequelDatabase database = new SequelDatabase("jdbc:derby:" + databaseName + ";create=true",
-		                                                   new Properties());
-		
-		Logger.info("Cloning depot.");
-		final Depot depot = new Depot("test", uri);
-		
-		final Tuple<Integer, List<String>> result = CommandExecutor.execute("git",
-		                                                                    new String[] { "clone", "-b", "master",
-		                                                                            "-n", "-q",
-		                                                                            URIUtils.uri2String(uri),
-		                                                                            "/tmp/mozkito_test" }, workDir,
-		                                                                    null,
-		                                                                    new HashMap<String, String>());
-		if (result.getFirst() != 0) {
-			if (Logger.logError()) {
-				for (final String resLine : result.getSecond()) {
-					Logger.error.println(resLine);
-				}
-			}
-			System.exit(result.getFirst());
-		}
-		
-		Logger.info("Spawning BranchMiner.");
-		
-		final BranchMiner branchMiner = new BranchMiner(cloneDir, database, depot);
-		final Thread bmThread = new Thread(branchMiner);
-		bmThread.start();
-		bmThread.join();
-		
-		final DepotGraph graph = new DepotGraph(depot);
-		
-		Logger.info("Spawning ChangeSetMiner.");
-		final ChangeSetMiner changeSetMiner = new ChangeSetMiner(cloneDir, database, depot, graph,
-		                                                         branchMiner.getBrancHeads());
-		final Thread csmThread = new Thread(changeSetMiner);
-		csmThread.start();
-		csmThread.join();
-		
-		Logger.info("Spawning GraphBuilder.");
-		final GraphMiner graphMiner = new GraphMiner(cloneDir, database, graph, changeSetMiner.getChangeSets());
-		final Thread gmThread = new Thread(graphMiner);
-		gmThread.start();
-		gmThread.join();
-		
-		Logger.info("Analyzing.");
-		final ChangeSet invest = changeSetMiner.getChangeSets().get("3b3d15c97064284857c7a7b68a4c891b7164159e");
-		final Branch monitored = graph.getBranches().stream().filter(b -> "master".equals(b.getName())).findFirst()
-		                              .get();
-		final List<ChangeSet> path = graph.getIntegrationPath(invest, monitored);
-		for (final ChangeSet changeSet : path) {
-			Logger.info(changeSet.toString());
 		}
 	}
 }

@@ -104,20 +104,18 @@ public class TerminalAppender extends Appender {
 	 */
 	@Override
 	public void log(final LogEvent event) {
-		String line = MessageFormat.format("{0}{1}{2} [{3}] [{4}] {5}{6}",
-		                                   levelToColor(event.level()),
-		                                   event.level().name(),
-		                                   levelToColor(Level.OFF),
-		                                   this.dtFormatter.format(ZonedDateTime.ofInstant(event.timestamp(),
-		                                                                                   ZoneId.systemDefault())),
-		                                   event.threadName(),
-		                                   event.entryPoint() != null
-		                                                             ? event.entryPoint()
-		                                                             : "",
-		                                   event.arguments().length == 0
-		                                                                ? event.message()
-		                                                                : String.format(event.message(),
-		                                                                                event.arguments()));
+		String line = String.format("%s%-5s%s [%s] [%s] %s%s",
+		                            levelToColor(event.level()),
+		                            event.level().name(),
+		                            levelToColor(Level.OFF),
+		                            this.dtFormatter.format(ZonedDateTime.ofInstant(event.timestamp(),
+		                                                                            ZoneId.systemDefault())),
+		                            event.threadName(), event.entryPoint() != null
+		                                                                          ? event.entryPoint()
+		                                                                          : "",
+		                            event.arguments().length == 0
+		                                                         ? event.message()
+		                                                         : String.format(event.message(), event.arguments()));
 		
 		String additionalLines[] = new String[0];
 		if (event.throwable() != null) {

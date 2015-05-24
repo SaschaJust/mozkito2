@@ -5,9 +5,10 @@ CREATE TABLE changesets (
 	depot_id SMALLINT,
 	commit_hash CHAR(40),
 	tree_hash CHAR(40),
-	patch_hash CHAR(40),
 	authored_time TIMESTAMP,
 	author_id INT,
 	commit_time TIMESTAMP,
-	committer_id int
+	committer_id int,
+	subject VARCHAR(),
+	body VARCHAR()
 );
