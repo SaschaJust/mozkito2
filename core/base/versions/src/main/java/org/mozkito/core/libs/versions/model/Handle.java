@@ -33,14 +33,34 @@ public class Handle implements ISequelEntity {
 	/** The path. */
 	private final String      path;
 	
+	/** The depot id. */
+	private final int         depotId;
+	
 	/**
 	 * Instantiates a new handle.
 	 *
+	 * @param depot
+	 *            the depot
 	 * @param path
 	 *            the path
 	 */
-	public Handle(final String path) {
+	public Handle(final Depot depot, final String path) {
+		Requires.notNull(depot);
+		Requires.positive(depot.id());
+		Requires.notNull(path);
+		Requires.notEmpty(path);
+		
 		this.path = path;
+		this.depotId = depot.id();
+	}
+	
+	/**
+	 * Gets the depot id.
+	 *
+	 * @return the depotId
+	 */
+	public final int getDepotId() {
+		return this.depotId;
 	}
 	
 	/**

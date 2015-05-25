@@ -14,9 +14,6 @@
 package versions;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.mozkito.core.libs.versions.DepotGraph;
@@ -24,8 +21,7 @@ import org.mozkito.core.libs.versions.DepotGraph.EdgeType;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.skeleton.contracts.Asserts;
-import org.mozkito.skeleton.datastructures.Tuple;
-import org.mozkito.skeleton.exec.CommandExecutor;
+import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
@@ -64,44 +60,40 @@ public class GraphMiner implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		try {
-			for (final Branch branch : this.graph.getBranches()) {
-				final Tuple<Integer, List<String>> result = CommandExecutor.execute("git", new String[] { "rev-list",
-				                                                                            "--branches=" + branch,
-				                                                                            "--remotes", "--parents" },
-				                                                                    this.cloneDir, null,
-				                                                                    new HashMap<String, String>());
-				for (final String line : result.getSecond()) {
-					final String[] split = line.trim().split("\\s+");
+		for (final Branch branch : this.graph.getBranches()) {
+			
+			final Command command = Command.execute("git", new String[] { "rev-list", "--branches=" + branch,
+			        "--remotes", "--parents" }, this.cloneDir);
+			
+			String line;
+			while ((line = command.nextOutput()) != null) {
+				final String[] split = line.trim().split("\\s+");
+				
+				this.changeSets.get(split[0]).addBranchId(branch.id());
+				
+				if (split.length == 1) {
+					// found root
+				} else {
+					Asserts.greater(split.length, 1, "There has to be a parent at this point.");
 					
-					if (split.length == 1) {
-						// found root
-					} else {
-						Asserts.greater(split.length, 1, "There has to be a parent at this point.");
-						
-						Asserts.containsKey(this.changeSets,
-						                    split[0],
-						                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
-						                    split[0]);
-						Asserts.containsKey(this.changeSets,
-						                    split[1],
-						                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
-						                    split[1]);
-						
-						this.graph.addEdge(this.changeSets.get(split[1]), this.changeSets.get(split[0]),
-						                   split.length == 2
-						                                    ? EdgeType.FORWARD
-						                                    : EdgeType.BRANCH, branch);
-						
-						for (int i = 2; i < split.length; ++i) {
-							this.graph.addEdge(this.changeSets.get(split[i]), this.changeSets.get(split[0]),
-							                   EdgeType.MERGE, branch);
-						}
+					Asserts.containsKey(this.changeSets, split[0],
+					                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
+					                    split[0]);
+					Asserts.containsKey(this.changeSets, split[1],
+					                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
+					                    split[1]);
+					
+					this.graph.addEdge(this.changeSets.get(split[1]), this.changeSets.get(split[0]),
+					                   split.length == 2
+					                                    ? EdgeType.FORWARD
+					                                    : EdgeType.BRANCH, branch);
+					
+					for (int i = 2; i < split.length; ++i) {
+						this.graph.addEdge(this.changeSets.get(split[i]), this.changeSets.get(split[0]),
+						                   EdgeType.MERGE, branch);
 					}
 				}
 			}
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
 		}
 	}
 }

@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
@@ -31,14 +32,15 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.ArrayUtils;
 
 import org.mozkito.core.libs.versions.DepotGraph;
+import org.mozkito.core.libs.versions.adapters.GraphAdapter;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.skeleton.commons.URIUtils;
-import org.mozkito.skeleton.datastructures.Tuple;
-import org.mozkito.skeleton.exec.CommandExecutor;
+import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.logging.Logger;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
@@ -99,6 +101,13 @@ public class Main {
 		option.setRequired(false);
 		options.addOption(option);
 		
+		option = new Option("t", "tasks", true, "The tasks that should be performed.");
+		option.setArgName("branches,changesets,graph,integration,visibility");
+		option.setValueSeparator(',');
+		option.setArgs(5);
+		option.setRequired(true);
+		options.addOption(option);
+		
 		return options;
 	}
 	
@@ -135,6 +144,7 @@ public class Main {
 			final CommandLine line = parser.parse(options, args);
 			if (line.hasOption("help")) {
 				final HelpFormatter formatter = new HelpFormatter();
+				formatter.setWidth(120);
 				formatter.printHelp("mozkito-versions", options);
 				System.exit(0);
 			}
@@ -159,61 +169,82 @@ public class Main {
 			Logger.info("Cloning depot.");
 			final Depot depot = new Depot("test", uri);
 			
-			final Tuple<Integer, List<String>> result = CommandExecutor.execute("git",
-			                                                                    new String[] { "clone", "-b", "master",
-			                                                                            "-n", "-q",
-			                                                                            URIUtils.uri2String(uri),
-			                                                                            cloneDir.getAbsolutePath() },
-			                                                                    workDir, null,
-			                                                                    new HashMap<String, String>());
-			if (result.getFirst() != 0) {
+			final Command command = Command.execute("git",
+			                                        new String[] { "clone", "-b", "master", "-n", "-q",
+			                                                URIUtils.uri2String(uri), cloneDir.getAbsolutePath() },
+			                                        workDir);
+			command.waitFor();
+			
+			if (command.exitValue() != 0) {
+				String resLine;
 				if (Logger.logError()) {
-					for (final String resLine : result.getSecond()) {
+					while ((resLine = command.nextErrput()) != null) {
 						Logger.error.println(resLine);
 					}
 				}
-				System.exit(result.getFirst());
+				System.exit(command.exitValue());
 			}
 			
-			Logger.info("Spawning BranchMiner.");
-			
-			final BranchMiner branchMiner = new BranchMiner(cloneDir, database, depot);
-			final Thread bmThread = new Thread(branchMiner);
-			bmThread.start();
-			bmThread.join();
+			Map<String, Branch> branchHeads;
+			if (ArrayUtils.contains(line.getOptionValues("tasks"), "branches")) {
+				Logger.info("Spawning BranchMiner.");
+				
+				final BranchMiner branchMiner = new BranchMiner(cloneDir, database, depot);
+				final Thread bmThread = new Thread(branchMiner);
+				bmThread.start();
+				bmThread.join();
+				branchHeads = branchMiner.getBranchHeads();
+			} else {
+				// TODO load from DB
+				branchHeads = new HashMap<String, Branch>();
+			}
 			
 			final DepotGraph graph = new DepotGraph(depot);
+			final GraphAdapter graphAdapter = new GraphAdapter(database);
+			graphAdapter.createScheme();
+			Map<String, ChangeSet> changeSets = new HashMap<String, ChangeSet>();
 			
-			Logger.info("Spawning ChangeSetMiner.");
-			final ChangeSetMiner changeSetMiner = new ChangeSetMiner(cloneDir, database, depot, graph,
-			                                                         branchMiner.getBrancHeads());
-			final Thread csmThread = new Thread(changeSetMiner);
-			csmThread.start();
-			csmThread.join();
-			
-			Logger.info("Spawning GraphBuilder.");
-			final GraphMiner graphMiner = new GraphMiner(cloneDir, database, graph, changeSetMiner.getChangeSets());
-			final Thread gmThread = new Thread(graphMiner);
-			gmThread.start();
-			gmThread.join();
-			
-			Logger.info("Analyzing.");
-			final ChangeSet invest = changeSetMiner.getChangeSets().get("d14d00ee51abf5f939651070e8eef4b3d9873aa0");
-			
-			final Branch monitored = graph.getBranches().stream().filter(b -> "master".equals(b.getName())).findFirst()
-			                              .get();
-			final Iterator<ChangeSet> monitoredChangeSets = graph.getChangeSets(monitored);
-			
-			while (monitoredChangeSets.hasNext()) {
-				Logger.info(monitoredChangeSets.next().getCommitHash());
+			if (ArrayUtils.contains(line.getOptionValues("tasks"), "changesets")) {
+				Logger.info("Spawning ChangeSetMiner.");
+				final ChangeSetMiner changeSetMiner = new ChangeSetMiner(cloneDir, database, depot, graph, branchHeads);
+				final Thread csmThread = new Thread(changeSetMiner);
+				csmThread.start();
+				csmThread.join();
+				changeSets = changeSetMiner.getChangeSets();
+			} else {
+				// TODO load changesets and add to graph and the hashmap
 			}
 			
-			final List<ChangeSet> path = graph.getIntegrationPath(invest, monitored);
-			for (final ChangeSet changeSet : path) {
-				Logger.info(changeSet.toString());
+			if (ArrayUtils.contains(line.getOptionValues("tasks"), "graph")) {
+				Logger.info("Spawning GraphBuilder.");
+				final GraphMiner graphMiner = new GraphMiner(cloneDir, database, graph, changeSets);
+				final Thread gmThread = new Thread(graphMiner);
+				gmThread.start();
+				gmThread.join();
+				graphAdapter.save(graph);
+				database.commit();
+			}
+			
+			if (ArrayUtils.contains(line.getOptionValues("tasks"), "integration")) {
+				Logger.info("Spawning IntegrationBuilder.");
+				final ChangeSet invest = changeSets.get("d14d00ee51abf5f939651070e8eef4b3d9873aa0");
+				
+				final Branch monitored = graph.getBranches().stream().filter(b -> "master".equals(b.getName()))
+				                              .findFirst().get();
+				final Iterator<ChangeSet> monitoredChangeSets = graph.getChangeSets(monitored);
+				
+				while (monitoredChangeSets.hasNext()) {
+					Logger.info(monitoredChangeSets.next().getCommitHash());
+				}
+				
+				final List<ChangeSet> path = graph.getIntegrationPath(invest, monitored);
+				for (final ChangeSet changeSet : path) {
+					Logger.info(changeSet.toString());
+				}
 			}
 		} catch (final ParseException e) {
 			final HelpFormatter formatter = new HelpFormatter();
+			formatter.setWidth(120);
 			formatter.printHelp("mozkito-versions", options);
 			System.exit(1);
 		}

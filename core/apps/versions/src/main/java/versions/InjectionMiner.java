@@ -11,43 +11,13 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.versions.model;
+package versions;
 
-import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
  * @author Sascha Just
  *
  */
-public class FileRename implements ISequelEntity {
-	
-	private long id;
-	private long changeSetId;
-	private long oldFileId;
-	private long newFileId;
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
-	 */
-	public Object id() {
-		// TODO Auto-generated method stub
-		// return null;
-		throw new RuntimeException("Method 'id' has not yet been implemented."); //$NON-NLS-1$
-		
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
-	 */
-	public void id(final Object id) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'id' has not yet been implemented."); //$NON-NLS-1$
-		
-	}
+public class InjectionMiner extends Thread {
 	
 }

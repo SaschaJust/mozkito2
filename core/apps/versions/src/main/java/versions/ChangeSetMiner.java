@@ -14,12 +14,9 @@
 package versions;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.commons.collections4.map.UnmodifiableMap;
@@ -31,6 +28,7 @@ import org.mozkito.core.libs.versions.ChangeType;
 import org.mozkito.core.libs.versions.DepotGraph;
 import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
 import org.mozkito.core.libs.versions.adapters.DepotAdapter;
+import org.mozkito.core.libs.versions.adapters.HandleAdapter;
 import org.mozkito.core.libs.versions.adapters.RevisionAdapter;
 import org.mozkito.core.libs.versions.builders.ChangeSetBuilder;
 import org.mozkito.core.libs.versions.model.Branch;
@@ -39,8 +37,7 @@ import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.skeleton.contracts.Asserts;
-import org.mozkito.skeleton.datastructures.Tuple;
-import org.mozkito.skeleton.exec.CommandExecutor;
+import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.logging.Logger;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
@@ -101,7 +98,8 @@ public class ChangeSetMiner implements Runnable {
 	private Revision parseRevision(final ChangeSet changeSet,
 	                               final String line) {
 		final ChangeType changeType = ChangeType.from(line.charAt(0));
-		Asserts.notNull(changeType);
+		Asserts.notNull(changeType, "Character '%s' does not represent a valid change type. Line: %s",
+		                String.valueOf(line.charAt(0)), line);
 		final int split = line.indexOf("\t", 5);
 		String source, target;
 		
@@ -123,18 +121,18 @@ public class ChangeSetMiner implements Runnable {
 		}
 		
 		if (!this.fileCache.containsKey(source)) {
-			final Handle handle = new Handle(source);
+			final Handle handle = new Handle(this.depot, source);
 			this.fileCache.put(source, handle);
 			this.handleAdapter.save(handle);
 		}
 		
 		if (!this.fileCache.containsKey(target)) {
-			final Handle handle = new Handle(target);
+			final Handle handle = new Handle(this.depot, target);
 			this.fileCache.put(target, handle);
 			this.handleAdapter.save(handle);
 		}
 		
-		final Revision revision = new Revision(changeSet, changeType, this.fileCache.get(source),
+		final Revision revision = new Revision(this.depot, changeSet, changeType, this.fileCache.get(source),
 		                                       this.fileCache.get(target), confidence);
 		
 		return revision;
@@ -170,32 +168,20 @@ public class ChangeSetMiner implements Runnable {
 		 * hash tree author name author email author timestamp committer name committer email committer timestamp
 		 * subject body
 		 */
-		Tuple<Integer, List<String>> result;
-		try {
-			result = CommandExecutor.execute("git", new String[] {
-			                                         "log",
-			                                         "--branches",
-			                                         "--remotes",
-			                                         "--topo-order",
-			                                         "--find-copies",
-			                                         "-p",
-			                                         "--name-status",
-			                                         "--format=" + START_TAG
-			                                                 + "%n%H%n%T%n%an%n%ae%n%at%n%cn%n%ce%n%ct%n%s%n%b"
-			                                                 + END_TAG + "%n" },
-			                                 this.cloneDir, null, new HashMap<String, String>());
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
+		
+		Command.execute("git", new String[] { "config", "diff.renameLimit", "999999" }, this.cloneDir).waitFor();
+		
+		final Command command = Command.execute("git", new String[] { "log", "--branches", "--remotes", "--topo-order",
+		        "--find-copies", "-p", "--name-status",
+		        "--format=" + START_TAG + "%n%H%n%T%n%an%n%ae%n%at%n%cn%n%ce%n%ct%n%s%n%b%n" + END_TAG }, this.cloneDir);
 		
 		ChangeSetBuilder changeSetBuilder = null;
 		ChangeSet changeSet = null;
 		final StringBuilder bodyBuilder = new StringBuilder();
-		final StringBuilder patchBuilder = new StringBuilder();
+		
 		Identity identity;
 		String idName, idEmail;
 		
-		final ListIterator<String> it = result.getSecond().listIterator();
 		String line = null;
 		
 		final PreparedStatement nextIdStatement = this.changeSetAdapter.getNextIdStatement();
@@ -203,23 +189,26 @@ public class ChangeSetMiner implements Runnable {
 		
 		int batch = 0;
 		
-		while (it.hasNext()) {
+		while ((line = command.nextOutput()) != null) {
 			++batch;
 			
-			line = it.next();
 			if (START_TAG.equalsIgnoreCase(line)) {
-				line = it.next();
+				line = command.nextOutput();
 			}
+			Asserts.notNull(line, "Awaiting commit hash.");
 			changeSetBuilder = new ChangeSetBuilder(this.depot.id());
 			changeSetBuilder.commitHash(line);
 			
-			Asserts.hasNext(it, "Awaiting tree hash.");
-			changeSetBuilder.treeHash(it.next());
+			line = command.nextOutput();
+			Asserts.notNull(line, "Awaiting tree hash.");
+			changeSetBuilder.treeHash(line);
 			
-			Asserts.hasNext(it, "Awaiting author name.");
-			idName = it.next();
-			Asserts.hasNext(it, "Awaiting author email.");
-			idEmail = it.next();
+			line = command.nextOutput();
+			Asserts.notNull(line, "Awaiting author name.");
+			idName = line;
+			line = command.nextOutput();
+			Asserts.notNull(line, "Awaiting author email.");
+			idEmail = line;
 			identity = identityCache.request(null, idName, idEmail);
 			if (identity.id() <= 0) {
 				this.identityAdapter.save(identity);
@@ -227,13 +216,16 @@ public class ChangeSetMiner implements Runnable {
 			Asserts.positive(identity.id());
 			changeSetBuilder.authorId(identity);
 			
-			Asserts.hasNext(it);
-			changeSetBuilder.authoredOn(Instant.ofEpochSecond(Long.parseLong(it.next())));
+			line = command.nextOutput();
+			Asserts.notNull(line, "Awaiting authored timestamp.");
+			changeSetBuilder.authoredOn(Instant.ofEpochSecond(Long.parseLong(line)));
 			
-			Asserts.hasNext(it, "Awaiting committer name.");
-			idName = it.next();
-			Asserts.hasNext(it, "Awaiting committer email.");
-			idEmail = it.next();
+			line = command.nextOutput();
+			Asserts.notNull(line, "Awaiting committer name.");
+			idName = line;
+			line = command.nextOutput();
+			Asserts.notNull(line, "Awaiting committer email.");
+			idEmail = line;
 			identity = identityCache.request(null, idName, idEmail);
 			if (identity.id() <= 0) {
 				this.identityAdapter.save(identity);
@@ -241,14 +233,16 @@ public class ChangeSetMiner implements Runnable {
 			Asserts.positive(identity.id());
 			changeSetBuilder.committerId(identity);
 			
-			Asserts.hasNext(it);
-			changeSetBuilder.committedOn(Instant.ofEpochSecond(Long.parseLong(it.next())));
+			line = command.nextOutput();
+			Asserts.notNull(line, "Awaiting commit timestamo.");
+			changeSetBuilder.committedOn(Instant.ofEpochSecond(Long.parseLong(line)));
 			
-			Asserts.hasNext(it);
-			changeSetBuilder.subject(it.next());
+			line = command.nextOutput();
+			Asserts.notNull(line, "Awaiting subject.");
+			changeSetBuilder.subject(line.trim());
 			
-			BODY: while (it.hasNext()) {
-				line = it.next();
+			BODY: while ((line = command.nextOutput()) != null) {
+				line = line.trim();
 				if (END_TAG.equals(line)) {
 					break BODY;
 				} else {
@@ -256,14 +250,13 @@ public class ChangeSetMiner implements Runnable {
 				}
 			}
 			
-			changeSetBuilder.body(bodyBuilder.toString());
+			changeSetBuilder.body(bodyBuilder.toString().trim());
 			
 			changeSet = changeSetBuilder.create();
 			Asserts.notNull(changeSet);
 			this.changeSetAdapter.save(saveStatement, nextIdStatement, changeSet);
 			
-			REVISIONS: while (it.hasNext()) {
-				line = it.next();
+			REVISIONS: while ((line = command.nextOutput()) != null) {
 				if (START_TAG.equals(line)) {
 					break REVISIONS;
 				} else {
@@ -274,7 +267,6 @@ public class ChangeSetMiner implements Runnable {
 						Asserts.notNull(revision);
 						this.revisionAdapter.save(revision);
 					}
-					bodyBuilder.append(line).append(System.lineSeparator());
 				}
 			}
 			

@@ -16,6 +16,7 @@ package org.mozkito.core.libs.versions;
 import graphs.DirectedGraph;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,11 +54,13 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
 public class DepotGraph extends DirectedGraph {
 	
 	/**
-	 * @author Sascha Just
+	 * The Class ChangeSetIterator.
 	 *
+	 * @author Sascha Just
 	 */
 	public class ChangeSetIterator implements Iterator<ChangeSet> {
 		
+		/** The iterator. */
 		private final GraphIterator<ChangeSet, Edge> iterator;
 		
 		/**
@@ -93,22 +96,22 @@ public class DepotGraph extends DirectedGraph {
 	/**
 	 * The Class Edge.
 	 */
-	private static class Edge {
+	public class Edge {
 		
 		/** The integration path. */
-		private final Set<Branch> integrationPath = new HashSet<Branch>();
+		final Set<Branch> integrationPath = new HashSet<Branch>();
 		
 		/** The branches. */
-		private final Set<Branch> branches        = new HashSet<Branch>();
+		final Set<Branch> branches        = new HashSet<Branch>();
 		
 		/** The type. */
-		private final EdgeType    type;
+		final EdgeType    type;
 		
 		/** The child. */
-		private final ChangeSet   child;
+		final ChangeSet   child;
 		
 		/** The parent. */
-		private final ChangeSet   parent;
+		final ChangeSet   parent;
 		
 		/**
 		 * Instantiates a new edge.
@@ -140,6 +143,52 @@ public class DepotGraph extends DirectedGraph {
 		public boolean addBranch(final Branch branch) {
 			return this.branches.add(branch);
 		}
+		
+		/**
+		 * Gets the branch ids.
+		 *
+		 * @return the branch ids
+		 */
+		public Collection<Integer> getBranchIds() {
+			return this.branches.stream().map(x -> x.id()).collect(Collectors.toList());
+		}
+		
+		/**
+		 * Gets the integration path ids.
+		 *
+		 * @return the integration path ids
+		 */
+		public Collection<Integer> getIntegrationPathIds() {
+			return this.integrationPath.stream().map(x -> x.id()).collect(Collectors.toList());
+		}
+		
+		/**
+		 * Gets the source id.
+		 *
+		 * @return the source id
+		 */
+		public long getSourceId() {
+			return this.parent.id();
+		}
+		
+		/**
+		 * Gets the target id.
+		 *
+		 * @return the target id
+		 */
+		public long getTargetId() {
+			return this.child.id();
+		}
+		
+		/**
+		 * Gets the type.
+		 *
+		 * @return the type
+		 */
+		public short getType() {
+			return (short) this.type.ordinal();
+		}
+		
 	}
 	
 	/**
@@ -254,6 +303,12 @@ public class DepotGraph extends DirectedGraph {
 		return this.graph.addVertex(changeSet);
 	}
 	
+	/**
+	 * Compute integration graph.
+	 *
+	 * @param branch
+	 *            the branch
+	 */
 	public void computeIntegrationGraph(final Branch branch) {
 		ChangeSet head = getHead(branch);
 		final ChangeSet root = getRootCommit(branch);
@@ -291,8 +346,15 @@ public class DepotGraph extends DirectedGraph {
 		return UnmodifiableSet.unmodifiableSet(this.branchHeads.keySet());
 	}
 	
+	/**
+	 * Gets the branch graph.
+	 *
+	 * @param branch
+	 *            the branch
+	 * @return the branch graph
+	 */
 	private DirectedMaskSubgraph<ChangeSet, Edge> getBranchGraph(final Branch branch) {
-		return new DirectedMaskSubgraph<ChangeSet, DepotGraph.Edge>(this.graph, new MaskFunctor<ChangeSet, Edge>() {
+		return new DirectedMaskSubgraph<ChangeSet, Edge>(this.graph, new MaskFunctor<ChangeSet, Edge>() {
 			
 			public boolean isEdgeMasked(final Edge arg0) {
 				return arg0.branches.contains(branch);
@@ -318,8 +380,11 @@ public class DepotGraph extends DirectedGraph {
 	}
 	
 	/**
-	 * @param monitored
-	 * @return
+	 * Gets the change sets.
+	 *
+	 * @param branch
+	 *            the branch
+	 * @return the change sets
 	 */
 	public Iterator<ChangeSet> getChangeSets(final Branch branch) {
 		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = getBranchGraph(branch);
@@ -330,6 +395,24 @@ public class DepotGraph extends DirectedGraph {
 		                                                                                             head);
 		return UnmodifiableIterator.unmodifiableIterator(new ChangeSetIterator(iterator));
 		
+	}
+	
+	/**
+	 * Gets the depot.
+	 *
+	 * @return the depot
+	 */
+	public final Depot getDepot() {
+		return this.depot;
+	}
+	
+	/**
+	 * Gets the edges.
+	 *
+	 * @return the edges
+	 */
+	public Set<Edge> getEdges() {
+		return UnmodifiableSet.unmodifiableSet(this.graph.edgeSet());
 	}
 	
 	/**
@@ -358,19 +441,19 @@ public class DepotGraph extends DirectedGraph {
 			throw new IllegalArgumentException(String.format("Branch '%s' not known to graph.", branch));
 		}
 		
-		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = new DirectedMaskSubgraph<ChangeSet, DepotGraph.Edge>(
-		                                                                                                               this.graph,
-		                                                                                                               new MaskFunctor<ChangeSet, Edge>() {
-			                                                                                                               
-			                                                                                                               public boolean isEdgeMasked(final Edge arg0) {
-				                                                                                                               return arg0.branches.contains(branch);
-			                                                                                                               }
-			                                                                                                               
-			                                                                                                               public boolean isVertexMasked(final ChangeSet arg0) {
-				                                                                                                               return arg0.getBranchIds()
-				                                                                                                                          .contains(branch.id());
-			                                                                                                               }
-		                                                                                                               });
+		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = new DirectedMaskSubgraph<ChangeSet, Edge>(
+		                                                                                                    this.graph,
+		                                                                                                    new MaskFunctor<ChangeSet, Edge>() {
+			                                                                                                    
+			                                                                                                    public boolean isEdgeMasked(final Edge arg0) {
+				                                                                                                    return arg0.branches.contains(branch);
+			                                                                                                    }
+			                                                                                                    
+			                                                                                                    public boolean isVertexMasked(final ChangeSet arg0) {
+				                                                                                                    return arg0.getBranchIds()
+				                                                                                                               .contains(branch.id());
+			                                                                                                    }
+		                                                                                                    });
 		
 		final ChangeSet head = this.branchHeads.get(branch);
 		
@@ -379,9 +462,11 @@ public class DepotGraph extends DirectedGraph {
 		
 		while (iterator.hasNext()) {
 			commit = iterator.next();
-			if (commit.getOrigin() == branch.id()) {
-				return commit;
-			}
+			assert false;
+			// todo
+			// if (commit.getOrigin() == branch.id()) {
+			// return commit;
+			// }
 		}
 		
 		return null;
@@ -416,19 +501,19 @@ public class DepotGraph extends DirectedGraph {
 	 */
 	public List<ChangeSet> getIntegrationPath(final ChangeSet changeSet,
 	                                          final Branch branch) {
-		final DirectedMaskSubgraph<ChangeSet, Edge> integrationGraph = new DirectedMaskSubgraph<ChangeSet, DepotGraph.Edge>(
-		                                                                                                                    this.graph,
-		                                                                                                                    new MaskFunctor<ChangeSet, Edge>() {
-			                                                                                                                    
-			                                                                                                                    public boolean isEdgeMasked(final Edge arg0) {
-				                                                                                                                    return !arg0.integrationPath.contains(branch);
-			                                                                                                                    }
-			                                                                                                                    
-			                                                                                                                    public boolean isVertexMasked(final ChangeSet arg0) {
-				                                                                                                                    return !arg0.getBranchIds()
-				                                                                                                                                .contains(branch.id());
-			                                                                                                                    }
-		                                                                                                                    });
+		final DirectedMaskSubgraph<ChangeSet, Edge> integrationGraph = new DirectedMaskSubgraph<ChangeSet, Edge>(
+		                                                                                                         this.graph,
+		                                                                                                         new MaskFunctor<ChangeSet, Edge>() {
+			                                                                                                         
+			                                                                                                         public boolean isEdgeMasked(final Edge arg0) {
+				                                                                                                         return !arg0.integrationPath.contains(branch);
+			                                                                                                         }
+			                                                                                                         
+			                                                                                                         public boolean isVertexMasked(final ChangeSet arg0) {
+				                                                                                                         return !arg0.getBranchIds()
+				                                                                                                                     .contains(branch.id());
+			                                                                                                         }
+		                                                                                                         });
 		
 		final List<Edge> path = DijkstraShortestPath.findPathBetween(integrationGraph, changeSet,
 		                                                             this.branchHeads.get(branch));
@@ -497,6 +582,13 @@ public class DepotGraph extends DirectedGraph {
 		                 .map(x -> x.parent).collect(Collectors.toList());
 	}
 	
+	/**
+	 * Skip forwards.
+	 *
+	 * @param changeSet
+	 *            the change set
+	 * @return the change set
+	 */
 	private ChangeSet skipForwards(final ChangeSet changeSet) {
 		Set<Edge> incomingEdges = this.graph.incomingEdgesOf(changeSet);
 		

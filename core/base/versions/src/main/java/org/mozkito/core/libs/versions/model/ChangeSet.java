@@ -16,9 +16,11 @@ package org.mozkito.core.libs.versions.model;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.collections4.collection.UnmodifiableCollection;
+
+import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
@@ -36,13 +38,10 @@ public class ChangeSet implements ISequelEntity {
 	private final Instant      authoredTime;
 	
 	/** The author id. */
-	private int                authorId;
-	
-	/** The branch id. */
-	private final Set<Integer> branchIds        = new HashSet<>();
+	private final int          authorId;
 	
 	/** The commit hash. */
-	private String             commitHash;
+	private final String       commitHash;
 	
 	/**
 	 * The committer id.
@@ -54,28 +53,28 @@ public class ChangeSet implements ISequelEntity {
 	 *
 	 * from: <a href="http://git-scm.com/book/ch2-3.html">FREE online Pro Git book</a>
 	 * */
-	private int                committerId;
+	private final int          committerId;
 	
 	/** The commit time. */
-	private Instant            commitTime;
+	private final Instant      commitTime;
 	
 	/** The depot id. */
-	private int                depotId;
+	private final int          depotId;
+	
+	/** The branch ids. */
+	private final Set<Integer> branchIds        = new HashSet<Integer>();
 	
 	/** The id. */
 	private long               id;
 	
 	/** The tree hash. */
-	private String             treeHash;
-	
-	/** The origin. */
-	private int                origin;
+	private final String       treeHash;
 	
 	/** The subject. */
-	private String             subject;
+	private final String       subject;
 	
 	/** The body. */
-	private String             body;
+	private final String       body;
 	
 	/**
 	 * Instantiates a new change set.
@@ -104,10 +103,14 @@ public class ChangeSet implements ISequelEntity {
 		super();
 		Requires.positive(depotId);
 		Requires.notNull(commitHash);
+		Requires.length(commitHash, 40);
 		Requires.notNull(treeHash);
+		Requires.length(treeHash, 40);
 		Requires.notNull(authoredTime);
+		Requires.greater(authoredTime.getEpochSecond(), 315532800l); // 1980
 		Requires.positive(authorId);
 		Requires.notNull(commitTime);
+		Requires.greater(commitTime.getEpochSecond(), 315532800l); // 1980
 		Requires.positive(committerId);
 		Requires.notNull(subject);
 		Requires.notNull(body);
@@ -121,6 +124,21 @@ public class ChangeSet implements ISequelEntity {
 		this.committerId = committerId;
 		this.subject = subject;
 		this.body = body;
+		
+		Asserts.notNull(this.branchIds);
+	}
+	
+	/**
+	 * Adds the branch id.
+	 *
+	 * @param branchId
+	 *            the branch id
+	 * @return true, if successful
+	 */
+	public boolean addBranchId(final int branchId) {
+		Requires.positive(branchId);
+		
+		return this.branchIds.add(branchId);
 	}
 	
 	/**
@@ -181,10 +199,10 @@ public class ChangeSet implements ISequelEntity {
 	/**
 	 * Gets the branch ids.
 	 *
-	 * @return the branchIds
+	 * @return the branch ids
 	 */
-	public final Set<Integer> getBranchIds() {
-		return this.branchIds;
+	public Collection<Integer> getBranchIds() {
+		return UnmodifiableCollection.unmodifiableCollection(this.branchIds);
 	}
 	
 	/**
@@ -221,15 +239,6 @@ public class ChangeSet implements ISequelEntity {
 	 */
 	public final int getDepotId() {
 		return this.depotId;
-	}
-	
-	/**
-	 * Gets the origin.
-	 *
-	 * @return the origin
-	 */
-	public final int getOrigin() {
-		return this.origin;
 	}
 	
 	/**
@@ -280,97 +289,11 @@ public class ChangeSet implements ISequelEntity {
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
 	 */
 	@Override
-	public void id(@SuppressWarnings ("hiding") final Object id) {
+	public void id(final Object id) {
 		Requires.notNull(id);
 		Requires.isLong(id);
 		
 		this.id = (long) id;
-	}
-	
-	/**
-	 * Sets the author id.
-	 *
-	 * @param authorId
-	 *            the authorId to set
-	 */
-	public final void setAuthorId(final int authorId) {
-		this.authorId = authorId;
-	}
-	
-	/**
-	 * @param body
-	 *            the body to set
-	 */
-	public final void setBody(final String body) {
-		this.body = body;
-	}
-	
-	/**
-	 * Sets the commit hash.
-	 *
-	 * @param commitHash
-	 *            the commitHash to set
-	 */
-	public final void setCommitHash(final String commitHash) {
-		this.commitHash = commitHash;
-	}
-	
-	/**
-	 * Sets the committer id.
-	 *
-	 * @param committerId
-	 *            the committerId to set
-	 */
-	public final void setCommitterId(final int committerId) {
-		this.committerId = committerId;
-	}
-	
-	/**
-	 * Sets the commit time.
-	 *
-	 * @param commitTime
-	 *            the commitTime to set
-	 */
-	public final void setCommitTime(final Instant commitTime) {
-		this.commitTime = commitTime;
-	}
-	
-	/**
-	 * Sets the depot id.
-	 *
-	 * @param depotId
-	 *            the depotId to set
-	 */
-	public final void setDepotId(final int depotId) {
-		this.depotId = depotId;
-	}
-	
-	/**
-	 * Sets the origin.
-	 *
-	 * @param origin
-	 *            the origin to set
-	 */
-	public final void setOrigin(final int origin) {
-		this.origin = origin;
-	}
-	
-	/**
-	 * @param subject
-	 *            the subject to set
-	 */
-	public final void setSubject(final String subject) {
-		this.subject = subject;
-	}
-	
-	/**
-	 * Sets the tree hash.
-	 *
-	 * @param treeHash
-	 *            the treeHash to set
-	 */
-	public final void setTreeHash(final String treeHash) {
-		this.treeHash = treeHash;
 	}
 	
 	/**
@@ -380,80 +303,27 @@ public class ChangeSet implements ISequelEntity {
 	 */
 	@Override
 	public String toString() {
-		final int maxLen = 10;
 		final StringBuilder builder = new StringBuilder();
 		builder.append("ChangeSet [id=");
 		builder.append(this.id);
 		builder.append(", depotId=");
 		builder.append(this.depotId);
-		builder.append(", ");
-		if (this.commitHash != null) {
-			builder.append("commitHash=");
-			builder.append(this.commitHash);
-			builder.append(", ");
-		}
-		builder.append("authorId=");
+		builder.append(", commitHash=");
+		builder.append(this.commitHash);
+		builder.append(", subject=");
+		builder.append(this.subject);
+		builder.append(", authorId=");
 		builder.append(this.authorId);
-		builder.append(", ");
-		if (this.authoredTime != null) {
-			builder.append("authoredTime=");
-			builder.append(this.authoredTime);
-			builder.append(", ");
-		}
-		builder.append("committerId=");
+		builder.append(", authoredTime=");
+		builder.append(this.authoredTime);
+		builder.append(", committerId=");
 		builder.append(this.committerId);
-		builder.append(", ");
-		if (this.commitTime != null) {
-			builder.append("commitTime=");
-			builder.append(this.commitTime);
-			builder.append(", ");
-		}
-		builder.append("origin=");
-		builder.append(this.origin);
-		builder.append(", ");
-		if (this.body != null) {
-			builder.append("body=");
-			builder.append(this.body);
-			builder.append(", ");
-		}
-		if (this.treeHash != null) {
-			builder.append("treeHash=");
-			builder.append(this.treeHash);
-			builder.append(", ");
-		}
-		if (this.subject != null) {
-			builder.append("subject=");
-			builder.append(this.subject);
-			builder.append(", ");
-		}
-		if (this.branchIds != null) {
-			builder.append("branchIds=");
-			builder.append(toString(this.branchIds, maxLen));
-		}
-		builder.append("]");
-		return builder.toString();
-	}
-	
-	/**
-	 * To String.
-	 *
-	 * @param collection
-	 *            the collection
-	 * @param maxLen
-	 *            the max len
-	 * @return the String
-	 */
-	private String toString(final Collection<?> collection,
-	                        final int maxLen) {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("[");
-		int i = 0;
-		for (final Iterator<?> iterator = collection.iterator(); iterator.hasNext() && i < maxLen; i++) {
-			if (i > 0) {
-				builder.append(", ");
-			}
-			builder.append(iterator.next());
-		}
+		builder.append(", commitTime=");
+		builder.append(this.commitTime);
+		builder.append(", treeHash=");
+		builder.append(this.treeHash);
+		builder.append(", body=");
+		builder.append(this.body);
 		builder.append("]");
 		return builder.toString();
 	}

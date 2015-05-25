@@ -38,8 +38,10 @@ import org.mozkito.skeleton.logging.Logger;
 /**
  * Command line process interaction wrapper class.
  * 
+ * @deprecated use {@link Command}
  * @author Sascha Just <sascha.just@st.cs.uni-saarland.de>
  */
+@Deprecated
 public class CommandExecutor extends Thread {
 	
 	/**

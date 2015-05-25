@@ -9,6 +9,6 @@ CREATE TABLE changesets (
 	author_id INT,
 	commit_time TIMESTAMP,
 	committer_id int,
-	subject VARCHAR(),
-	body VARCHAR()
+	subject CLOB,
+	body CLOB
 );

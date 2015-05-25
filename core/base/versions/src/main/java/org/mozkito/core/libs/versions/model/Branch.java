@@ -152,7 +152,7 @@ public class Branch implements ISequelEntity {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
 	 */
-	public void id(@SuppressWarnings ("hiding") final Object id) {
+	public void id(final Object id) {
 		Requires.notNull(id);
 		Requires.isInteger(id);
 		

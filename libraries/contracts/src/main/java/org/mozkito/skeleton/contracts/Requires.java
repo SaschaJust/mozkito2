@@ -19,6 +19,7 @@ import java.util.Map;
 import org.mozkito.skeleton.contracts.internal.RequirementNotMetExeption;
 import org.mozkito.skeleton.i18n.Messages;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class Requires.
  */
@@ -116,8 +117,28 @@ public class Requires {
 	}
 	
 	/**
-	 * @param confidence
-	 * @param i
+	 * Greater.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
+	 */
+	public static void greater(final long lhs,
+	                           final long rhs) {
+		if (lhs <= rhs) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.greater",
+			                                                 Contract.getCallerString(), ""));
+		}
+	}
+	
+	/**
+	 * Greater or equal.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
 	 */
 	public static void greaterOrEqual(final int lhs,
 	                                  final int rhs) {
@@ -163,6 +184,22 @@ public class Requires {
 		if (arg != null) {
 			throw new NullPointerException(Messages.get("skeleton.contracts.requires.isNull",
 			                                            Contract.getCallerString(), ""));
+		}
+	}
+	
+	/**
+	 * Length.
+	 *
+	 * @param string
+	 *            the string
+	 * @param length
+	 *            the length
+	 */
+	public static void length(final String string,
+	                          final int length) {
+		if (string != null && string.length() < length) {
+			throw new IllegalArgumentException(Messages.get("skeleton.contracts.requires.length",
+			                                                Contract.getCallerString(), ""));
 		}
 	}
 	

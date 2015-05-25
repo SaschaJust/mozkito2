@@ -46,9 +46,14 @@ public class Revision implements ISequelEntity {
 	/** The confidence. */
 	private final short       confidence;
 	
+	/** The depot id. */
+	private final int         depotId;
+	
 	/**
 	 * Instantiates a new revision.
 	 *
+	 * @param depot
+	 *            the depot
 	 * @param changeSet
 	 *            the change set
 	 * @param changeType
@@ -60,8 +65,10 @@ public class Revision implements ISequelEntity {
 	 * @param confidence
 	 *            the confidence
 	 */
-	public Revision(final ChangeSet changeSet, final ChangeType changeType, final Handle source, final Handle target,
-	        final short confidence) {
+	public Revision(final Depot depot, final ChangeSet changeSet, final ChangeType changeType, final Handle source,
+	        final Handle target, final short confidence) {
+		Requires.notNull(depot);
+		Requires.positive(depot.id());
 		Requires.notNull(changeType);
 		Requires.positive(changeSet.id());
 		Requires.notNull(changeType);
@@ -71,6 +78,7 @@ public class Revision implements ISequelEntity {
 		Requires.positive(target.id());
 		Requires.greaterOrEqual(confidence, 50);
 		
+		this.depotId = depot.id();
 		this.changeSetId = changeSet.id();
 		this.changeType = changeType.toMask();
 		this.sourceId = source.id();
@@ -116,6 +124,8 @@ public class Revision implements ISequelEntity {
 	}
 	
 	/**
+	 * Gets the change set id.
+	 *
 	 * @return the changeSetId
 	 */
 	public final long getChangeSetId() {
@@ -123,6 +133,8 @@ public class Revision implements ISequelEntity {
 	}
 	
 	/**
+	 * Gets the change type.
+	 *
 	 * @return the changeType
 	 */
 	public final short getChangeType() {
@@ -130,6 +142,8 @@ public class Revision implements ISequelEntity {
 	}
 	
 	/**
+	 * Gets the confidence.
+	 *
 	 * @return the confidence
 	 */
 	public final short getConfidence() {
@@ -137,6 +151,17 @@ public class Revision implements ISequelEntity {
 	}
 	
 	/**
+	 * Gets the depot id.
+	 *
+	 * @return the depotId
+	 */
+	public final int getDepotId() {
+		return this.depotId;
+	}
+	
+	/**
+	 * Gets the source id.
+	 *
 	 * @return the sourceId
 	 */
 	public final Long getSourceId() {
@@ -144,6 +169,8 @@ public class Revision implements ISequelEntity {
 	}
 	
 	/**
+	 * Gets the target id.
+	 *
 	 * @return the targetId
 	 */
 	public final Long getTargetId() {

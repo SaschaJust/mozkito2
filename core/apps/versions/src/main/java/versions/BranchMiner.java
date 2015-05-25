@@ -14,24 +14,23 @@
 package versions;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.map.UnmodifiableMap;
 
 import org.mozkito.core.libs.versions.adapters.BranchAdapter;
 import org.mozkito.core.libs.versions.model.Branch;
+import org.mozkito.core.libs.versions.model.BranchHead;
 import org.mozkito.core.libs.versions.model.Depot;
+import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
-import org.mozkito.skeleton.datastructures.Tuple;
-import org.mozkito.skeleton.exec.CommandExecutor;
+import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class BranchMiner.
+ * The BranchMiner is used to collect all branches known to the underlying depot. The {@link Branch}es are stored in the
+ * provided {@link SequelDatabase}, along with their {@link BranchHead}.
  *
  * @author Sascha Just
  */
@@ -69,11 +68,11 @@ public class BranchMiner implements Runnable {
 	}
 	
 	/**
-	 * Gets the branc heads.
+	 * Gets the branch heads.
 	 *
-	 * @return the branc heads
+	 * @return the branch heads
 	 */
-	public Map<String, Branch> getBrancHeads() {
+	public Map<String, Branch> getBranchHeads() {
 		return UnmodifiableMap.unmodifiableMap(this.branchHeadHashes);
 	}
 	
@@ -83,30 +82,31 @@ public class BranchMiner implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		try {
-			final BranchAdapter branchAdapter = new BranchAdapter(this.database);
-			branchAdapter.createScheme();
-			
-			final Tuple<Integer, List<String>> result = CommandExecutor.execute("git", new String[] { "ls-remote",
-			        "--heads" }, this.cloneDir, null, new HashMap<String, String>());
-			RESULTS: for (final String line : result.getSecond()) {
-				if (line.startsWith("From ")) {
-					continue RESULTS;
-				}
-				final String headHash = line.substring(0, 40);
-				String branchName = line.substring(40).trim();
-				Contract.asserts(branchName.startsWith(TAG));
-				branchName = branchName.substring(TAG.length());
-				
-				final Branch branch = new Branch(this.depot, branchName);
-				branchAdapter.save(branch);
-				this.branchHeadHashes.put(headHash, branch);
+		Asserts.notNull(this.database);
+		final BranchAdapter branchAdapter = new BranchAdapter(this.database);
+		branchAdapter.createScheme();
+		
+		final Command command = Command.execute("git", new String[] { "ls-remote", "--heads" }, this.cloneDir);
+		
+		String line;
+		
+		RESULTS: while ((line = command.nextOutput()) != null) {
+			if (line.startsWith("From ")) {
+				continue RESULTS;
 			}
+			final String headHash = line.substring(0, 40);
+			String branchName = line.substring(40).trim();
+			Contract.asserts(branchName.startsWith(TAG));
+			branchName = branchName.substring(TAG.length());
 			
-			this.database.commit();
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
+			final Branch branch = new Branch(this.depot, branchName);
+			branchAdapter.save(branch);
+			
+			Asserts.notNull(this.branchHeadHashes);
+			this.branchHeadHashes.put(headHash, branch);
 		}
+		
+		this.database.commit();
 	}
 	
 }
