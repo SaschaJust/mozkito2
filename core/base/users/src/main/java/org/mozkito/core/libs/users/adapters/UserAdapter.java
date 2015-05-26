@@ -334,7 +334,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 		try {
 			final Connection connection = this.database.getConnection();
 			final Statement statement = connection.createStatement();
-			final ResultSet results = statement.executeQuery("SELECT user_id, identity_id, username, email, fullname FROM "
+			final ResultSet results = statement.executeQuery("SELECT ut.id user_id, identity_id, username, email, fullname FROM "
 			        + TABLE_NAME + " ut INNER JOIN " + IdentityAdapter.TABLE_NAME + " it ON (ut.identity_id = it.id)");
 			
 			return new UserIterator(results);
