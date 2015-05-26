@@ -99,7 +99,7 @@ public class SequelDatabase implements DataSource, Closeable {
 				throw new RuntimeException("Unsupported database type: " + type);
 		}
 		
-		this.type = Type.DERBY;
+		this.type = type;
 		
 		this.dataSource = new HikariDataSource(config);
 		this.dataSource.getConnection().setAutoCommit(false);

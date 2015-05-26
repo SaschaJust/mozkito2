@@ -8,7 +8,7 @@ CREATE TABLE changesets (
 	authored_time TIMESTAMP,
 	author_id INT,
 	commit_time TIMESTAMP,
-	committer_id int,
+	committer_id INT,
 	subject TEXT,
 	body TEXT
 );
