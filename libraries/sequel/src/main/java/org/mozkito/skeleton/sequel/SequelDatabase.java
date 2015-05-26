@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -29,6 +28,8 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
+import org.mozkito.skeleton.contracts.Requires;
 
 /**
  * The Class SequelDatabase.
@@ -65,31 +66,40 @@ public class SequelDatabase implements DataSource, Closeable {
 	/**
 	 * Instantiates a new sequel database.
 	 *
-	 * @param connectionString
-	 *            the connection string
-	 * @param properties
-	 *            the properties
+	 * @param type
+	 *            the type
+	 * @param name
+	 *            the name
+	 * @param host
+	 *            the host
+	 * @param username
+	 *            the username
+	 * @param password
+	 *            the password
+	 * @param port
+	 *            the port
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
-	public SequelDatabase(final String connectionString, final Properties props) throws SQLException {
-		props.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
-		props.setProperty("dataSource.user", "test");
-		props.setProperty("dataSource.password", "test");
-		props.setProperty("dataSource.databaseName", "mydb");
-		final HikariConfig config = new HikariConfig(props);
-		config.setJdbcUrl(connectionString);
-		config.setUsername(props.getProperty("user"));
-		config.setPassword(props.getProperty("password"));
-		config.addDataSourceProperty("cachePrepStmts", "true");
-		config.addDataSourceProperty("prepStmtCacheSize", "250");
-		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+	public SequelDatabase(final Type type, final String name, final String host, final String username,
+	        final String password, final Integer port) throws SQLException {
+		HikariConfig config;
+		
+		switch (type) {
+			case POSTGRES:
+				config = setupPostgres(name, host, username, password, port);
+				break;
+			case MSSQL:
+				config = setupMSSQL(name, host, username, password, port);
+				break;
+			case DERBY:
+				config = setupDerby(name, host, username, password, port);
+				break;
+			default:
+				throw new RuntimeException("Unsupported database type: " + type);
+		}
 		
 		this.type = Type.DERBY;
-		
-		for (final Entry<Object, Object> entry : props.entrySet()) {
-			config.addDataSourceProperty((String) entry.getKey(), entry.getValue());
-		}
 		
 		this.dataSource = new HikariDataSource(config);
 		this.dataSource.getConnection().setAutoCommit(false);
@@ -245,6 +255,108 @@ public class SequelDatabase implements DataSource, Closeable {
 	@Override
 	public void setLogWriter(final PrintWriter out) throws SQLException {
 		this.dataSource.setLogWriter(out);
+	}
+	
+	/**
+	 * Setup derby.
+	 *
+	 * @param name
+	 *            the name
+	 * @param host
+	 *            the host
+	 * @param username
+	 *            the username
+	 * @param password
+	 *            the password
+	 * @param port
+	 *            the port
+	 * @return the hikari config
+	 */
+	private HikariConfig setupDerby(final String name,
+	                                final String host,
+	                                final String username,
+	                                final String password,
+	                                final Integer port) {
+		final HikariConfig config = new HikariConfig();
+		config.setJdbcUrl("jdbc:derby:" + name);
+		
+		return config;
+	}
+	
+	/**
+	 * Setup mssql.
+	 *
+	 * @param name
+	 *            the name
+	 * @param host
+	 *            the host
+	 * @param username
+	 *            the username
+	 * @param password
+	 *            the password
+	 * @param port
+	 *            the port
+	 * @return the hikari config
+	 */
+	private HikariConfig setupMSSQL(final String name,
+	                                final String host,
+	                                final String username,
+	                                final String password,
+	                                final Integer port) {
+		// TODO Auto-generated method stub
+		//
+		throw new RuntimeException("Method 'setupMSSQL' has not yet been implemented."); //$NON-NLS-1$
+		
+	}
+	
+	/**
+	 * Setup postgres.
+	 *
+	 * @param name
+	 *            the name
+	 * @param host
+	 *            the host
+	 * @param username
+	 *            the username
+	 * @param password
+	 *            the password
+	 * @param port
+	 *            the port
+	 * @return the hikari config
+	 */
+	private HikariConfig setupPostgres(final String name,
+	                                   final String host,
+	                                   final String username,
+	                                   final String password,
+	                                   final Integer port) {
+		Requires.notNull(name);
+		
+		final Properties props = new Properties();
+		props.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
+		props.setProperty("dataSource.databaseName", name);
+		
+		if (username != null) {
+			props.setProperty("dataSource.user", username);
+		}
+		
+		if (password != null) {
+			props.setProperty("dataSource.password", password);
+		}
+		
+		if (port != null) {
+			props.setProperty("dataSource.port", String.valueOf(port));
+		}
+		
+		if (host != null) {
+			props.setProperty("dataSource.host", host);
+		}
+		
+		final HikariConfig config = new HikariConfig(props);
+		
+		config.addDataSourceProperty("cachePrepStmts", "true");
+		config.addDataSourceProperty("prepStmtCacheSize", "250");
+		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+		return config;
 	}
 	
 	/**

@@ -20,7 +20,6 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +49,7 @@ import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.skeleton.logging.Logger;
 import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.SequelDatabase.Type;
 
 import versions.TaskRunner.Task;
 
@@ -165,16 +165,17 @@ public class Main {
 			                                                           : "mozkito-versions";
 			
 			Logger.info("Establishing database connection and creating pool.");
-			final Properties props = new Properties();
-			props.setProperty("user", "just");
-			props.setProperty("password", "mm3m549DvIn28rg");
-			final SequelDatabase database = new SequelDatabase("jdbc:postgresql://localhost" + databaseName, props);
+			
+			final SequelDatabase database = new SequelDatabase(Type.POSTGRES, databaseName, "localhost", "just",
+			                                                   "mm3m549DvIn28rg", 5432);
 			
 			final File baseDir = new File(uri);
 			
 			final Iterator<File> depotDirs;
 			if (baseDir.getName().endsWith(".git")) {
 				depotDirs = new ArrayList<File>() {
+					
+					private static final long serialVersionUID = 1L;
 					
 					{
 						add(baseDir);
@@ -233,7 +234,7 @@ public class Main {
 				System.out.println("All tasks are finished! Timeout: " + !ret);
 				
 			}
-		} catch (final SQLException | URISyntaxException | InterruptedException e) {
+		} catch (final URISyntaxException | SQLException | InterruptedException e) {
 			Logger.error(e);
 		} catch (final ParseException e) {
 			final HelpFormatter formatter = new HelpFormatter();
