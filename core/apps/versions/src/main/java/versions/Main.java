@@ -167,7 +167,7 @@ public class Main {
 			Type databaseType = null;
 			
 			try {
-				databaseType = Type.valueOf(line.getOptionValue("database.type").trim().toUpperCase());
+				databaseType = Type.valueOf(line.getOptionValue("database-type").trim().toUpperCase());
 			} catch (final IllegalArgumentException e) {
 				Logger.error("Database type '%s' is not invalid.", line.getOptionValue("database.type"));
 				printHelp(options);
