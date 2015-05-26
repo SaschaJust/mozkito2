@@ -3,5 +3,5 @@ CREATE SEQUENCE seq_handles_id MINVALUE 1 START WITH 1 INCREMENT BY 1;
 CREATE TABLE handles (
 	id INT PRIMARY KEY,
 	depot_id INT,
-	path CLOB
+	path TEXT
 );
