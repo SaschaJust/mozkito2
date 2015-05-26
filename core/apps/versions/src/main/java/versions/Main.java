@@ -14,9 +14,11 @@
 package versions;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -176,10 +178,10 @@ public class Main {
 				System.exit(EXIT_ERR_DB_TYPE);
 			}
 			
-			final File workDir = new File(line.hasOption("working-dir")
-			                                                           ? line.getOptionValue("working-directory")
-			                                                           : "/tmp");
-			
+			File workDir = new File(line.hasOption("working-dir")
+			                                                     ? line.getOptionValue("working-directory")
+			                                                     : System.getProperty("java.io.tmpdir"));
+			workDir = Files.createTempDirectory(workDir.toPath(), "mozkito2").toFile();
 			final URI uri = new URI(line.hasOption("repository")
 			                                                    ? line.getOptionValue("repository")
 			                                                    : "file:///tmp/mozkito_bare.git");
@@ -248,7 +250,7 @@ public class Main {
 			System.out.println("-----------------------");
 			final boolean ret = es.awaitTermination(30, TimeUnit.DAYS);
 			System.out.println("All tasks are finished! Timeout: " + !ret);
-		} catch (final URISyntaxException | SQLException | InterruptedException e) {
+		} catch (final URISyntaxException | SQLException | InterruptedException | IOException e) {
 			Logger.error(e);
 		} catch (final ParseException e) {
 			printHelp(options);
