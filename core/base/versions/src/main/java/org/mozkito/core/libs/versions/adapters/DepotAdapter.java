@@ -167,25 +167,23 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 		Requires.notNull(depots);
 		
 		try {
-			synchronized (this.database) {
-				final Connection connection = this.database.getConnection();
+			final Connection connection = this.database.getConnection();
+			
+			for (final Depot depot : depots) {
+				final ResultSet idResult = connection.createStatement().executeQuery(this.nextIdStatement);
+				final boolean hasNext = idResult.next();
+				Contract.asserts(hasNext);
 				
-				for (final Depot depot : depots) {
-					final ResultSet idResult = connection.createStatement().executeQuery(this.nextIdStatement);
-					final boolean hasNext = idResult.next();
-					Contract.asserts(hasNext);
-					
-					final int id = idResult.getInt(1);
-					
-					final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
-					statement.setInt(1, id);
-					statement.setString(2, depot.getName());
-					statement.setString(3, depot.getOrigin().toURL().toString());
-					
-					statement.executeUpdate();
-					
-					depot.id(id);
-				}
+				final int id = idResult.getInt(1);
+				
+				final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
+				statement.setInt(1, id);
+				statement.setString(2, depot.getName());
+				statement.setString(3, depot.getOrigin().toURL().toString());
+				
+				statement.executeUpdate();
+				
+				depot.id(id);
 			}
 		} catch (final SQLException | MalformedURLException e) {
 			throw new RuntimeException(e);

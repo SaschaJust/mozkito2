@@ -172,22 +172,18 @@ public class BranchAdapter implements ISequelAdapter<Branch> {
 		Requires.notNull(branches);
 		
 		try {
-			synchronized (this.database) {
-				
-				final Connection connection = this.database.getConnection();
-				final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
-				final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
-				
-				for (final Branch branch : branches) {
-					final ResultSet idResult = idStatement.executeQuery();
-					final boolean result = idResult.next();
-					Contract.asserts(result);
-					final int id = idResult.getInt(1);
-					
-					save(statement, id, branch);
-				}
-			}
+			final Connection connection = this.database.getConnection();
+			final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
+			final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
 			
+			for (final Branch branch : branches) {
+				final ResultSet idResult = idStatement.executeQuery();
+				final boolean result = idResult.next();
+				Contract.asserts(result);
+				final int id = idResult.getInt(1);
+				
+				save(statement, id, branch);
+			}
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

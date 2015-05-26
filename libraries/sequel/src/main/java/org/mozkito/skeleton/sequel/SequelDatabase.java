@@ -19,6 +19,8 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -49,13 +51,16 @@ public class SequelDatabase implements DataSource, Closeable {
 	}
 	
 	/** The data source. */
-	private final HikariDataSource dataSource;
+	private final HikariDataSource                 dataSource;
 	
 	/** The type. */
-	private final Type             type;
+	private final Type                             type;
 	
 	/** The connection. */
-	private final Connection       connection;
+	private final Connection                       connection;
+	
+	/** The adapters. */
+	private final Map<Class<?>, ISequelAdapter<?>> adapters = new HashMap<>();
 	
 	/**
 	 * Instantiates a new sequel database.
@@ -98,14 +103,37 @@ public class SequelDatabase implements DataSource, Closeable {
 	}
 	
 	/**
-     * 
-     */
+	 * Commit.
+	 */
 	public void commit() {
 		try {
 			getConnection().commit();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	/**
+	 * Creates the scheme.
+	 */
+	public void createScheme() {
+		for (final ISequelAdapter<?> adapter : this.adapters.values()) {
+			adapter.createScheme();
+		}
+	}
+	
+	/**
+	 * Gets the adapter.
+	 *
+	 * @param <T>
+	 *            the generic type
+	 * @param managedEntityType
+	 *            the managed entity type
+	 * @return the adapter
+	 */
+	@SuppressWarnings ("unchecked")
+	public <T> ISequelAdapter<T> getAdapter(final Class<T> managedEntityType) {
+		return (ISequelAdapter<T>) this.adapters.get(managedEntityType);
 	}
 	
 	/**
@@ -178,6 +206,21 @@ public class SequelDatabase implements DataSource, Closeable {
 	@Override
 	public boolean isWrapperFor(final Class<?> iface) throws SQLException {
 		return this.dataSource.isWrapperFor(iface);
+	}
+	
+	/**
+	 * Register.
+	 *
+	 * @param <T>
+	 *            the generic type
+	 * @param managedEntityType
+	 *            the managed entity type
+	 * @param adapter
+	 *            the adapter
+	 */
+	public <T> void register(final Class<T> managedEntityType,
+	                         final ISequelAdapter<T> adapter) {
+		this.adapters.put(managedEntityType, adapter);
 	}
 	
 	/**

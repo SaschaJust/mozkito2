@@ -26,6 +26,30 @@ import org.mozkito.skeleton.i18n.Messages;
 public class Requires {
 	
 	/**
+	 * Char at.
+	 *
+	 * @param line
+	 *            the line
+	 * @param index
+	 *            the index
+	 * @param c
+	 *            the c
+	 */
+	public static void charAt(final String line,
+	                          final int index,
+	                          final char c) {
+		if (line != null) {
+			if (line.length() <= index) {
+				throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.charAt",
+				                                                 Contract.getCallerString(), ""));
+			} else if (line.charAt(index) != c) {
+				throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.charAt",
+				                                                 Contract.getCallerString(), ""));
+			}
+		}
+	}
+	
+	/**
 	 * Contains key.
 	 *
 	 * @param <X>
@@ -365,6 +389,19 @@ public class Requires {
 	 *            the arg
 	 */
 	public static void notNegative(final Integer arg) {
+		if (arg != null && arg < 0) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notNegative",
+			                                                 Contract.getCallerString(), ""));
+		}
+	}
+	
+	/**
+	 * Not negative.
+	 *
+	 * @param arg
+	 *            the arg
+	 */
+	public static void notNegative(final Short arg) {
 		if (arg != null && arg < 0) {
 			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notNegative",
 			                                                 Contract.getCallerString(), ""));

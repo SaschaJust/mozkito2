@@ -7,5 +7,9 @@ CREATE TABLE revisions (
 	change_type SMALLINT,
 	source_id BIGINT,
 	target_id BIGINT,
-	confidence SMALLINT
+	confidence SMALLINT,
+	old_mode INT,
+	new_mode INT,
+	old_hash CHAR(40),
+	new_hash CHAR(40)
 );

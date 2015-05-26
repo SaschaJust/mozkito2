@@ -37,6 +37,7 @@ import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.skeleton.contracts.Asserts;
+import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.logging.Logger;
 import org.mozkito.skeleton.sequel.SequelDatabase;
@@ -47,31 +48,50 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
  */
 public class ChangeSetMiner implements Runnable {
 	
-	private static final String          END_TAG     = "<<<#$@#$@<<<";
-	private static final String          START_TAG   = ">>>#$@#$@>>>";
+	private static final String          END_TAG               = "<<<#$@#$@<<<";
+	private static final String          START_TAG             = ">>>#$@#$@>>>";
 	
+	private static int                   RAW_OLD_MODE_OFFSET   = 1;
+	private static int                   RAW_NEW_MODE_OFFSET   = 8;
+	private static int                   RAW_OLD_HASH_OFFSET   = 15;
+	private static int                   RAW_NEW_HASH_OFFSET   = 56;
+	private static int                   RAW_CHANGETYPE_OFFSET = 97;
+	private static final char            BIN_CHANGE_INDICATOR  = '-';
 	private final File                   cloneDir;
 	private final SequelDatabase         database;
+	
 	private final Depot                  depot;
-	private final Map<String, Branch>    branchHeads = new HashMap<String, Branch>();
+	
+	private final Map<String, Branch>    branchHeads           = new HashMap<String, Branch>();
+	
 	private final DepotGraph             graph;
-	private final Map<String, ChangeSet> changeSets  = new HashMap<String, ChangeSet>();
+	
+	private final Map<String, ChangeSet> changeSets            = new HashMap<String, ChangeSet>();
+	
 	private RevisionAdapter              revisionAdapter;
+	
 	private HandleAdapter                handleAdapter;
 	
-	private final Map<String, Handle>    fileCache   = new HashMap<>();
+	private final Map<String, Handle>    fileCache             = new HashMap<>();
 	
 	private DepotAdapter                 depotAdapter;
-	
 	private ChangeSetAdapter             changeSetAdapter;
 	
 	private IdentityAdapter              identityAdapter;
 	
 	/**
+	 * Instantiates a new change set miner.
+	 *
 	 * @param cloneDir
+	 *            the clone dir
 	 * @param database
-	 * @param map
+	 *            the database
+	 * @param depot
+	 *            the depot
 	 * @param graph
+	 *            the graph
+	 * @param branchHeads
+	 *            the branch heads
 	 */
 	public ChangeSetMiner(final File cloneDir, final SequelDatabase database, final Depot depot,
 	        final DepotGraph graph, final Map<String, Branch> branchHeads) {
@@ -92,33 +112,121 @@ public class ChangeSetMiner implements Runnable {
 	}
 	
 	/**
+	 * @param changeSet
 	 * @param line
+	 * @param revisions
+	 */
+	private void parseInOutRevision(final ChangeSet changeSet,
+	                                final String line,
+	                                final Map<Long, Revision> revisions) {
+		Requires.notNull(changeSet);
+		Requires.notNull(line);
+		Requires.notEmpty(line);
+		Requires.notNull(revisions);
+		
+		// format: ([1-9][0-9]*|-)\t([1-9][0-9]*|-)\tPATH_NAME
+		final int linesInOffset = 0;
+		final int linesOutOffset = line.indexOf('\t', linesInOffset) + 1;
+		final int nameOffset = line.indexOf('\t', linesOutOffset) + 1;
+		
+		int lineIn, lineOut;
+		String filename;
+		
+		final String lineInString = line.substring(linesInOffset, linesOutOffset - 1);
+		final String lineOutString = line.substring(linesOutOffset, nameOffset - 1);
+		
+		if (lineInString.charAt(0) == BIN_CHANGE_INDICATOR) {
+			lineIn = -1;
+		} else {
+			lineIn = Integer.parseInt(lineInString);
+		}
+		
+		if (lineOutString.charAt(0) == BIN_CHANGE_INDICATOR) {
+			// binary files should not be shown as line based edited at some point
+			Asserts.equalTo(-1, lineIn);
+			lineOut = -1;
+		} else {
+			lineOut = Integer.parseInt(lineOutString);
+		}
+		
+		final int filenameEnd = line.indexOf(" => ", nameOffset);
+		if (filenameEnd > 0) {
+			final int lbi = line.indexOf('{');
+			final int rbi = line.indexOf('}');
+			
+			if (lbi > 0 && rbi > 0) {
+				// this is to remove this ugly renaming indicator
+				filename = line.substring(nameOffset, lbi) + line.substring(filenameEnd + 4, rbi)
+				        + (rbi + 1 < line.length()
+				                                  ? line.substring(rbi + 1)
+				                                  : "");
+			} else {
+				filename = line.substring(nameOffset, filenameEnd);
+			}
+			filename = filename.replaceAll("//", "/").trim();
+		} else {
+			filename = line.substring(nameOffset).trim();
+		}
+		
+		// we must have seen this file before during parsing
+		Asserts.containsKey(this.fileCache,
+		                    filename,
+		                    "File %s is not known to the file cache, but must have been seen in the raw format parsing step.",
+		                    filename);
+		final Long handleId = this.fileCache.get(filename).id();
+		final Revision revision = revisions.get(handleId);
+		
+		// the revision has to be created in the previous step
+		Asserts.notNull(revision);
+		
+		revision.setLinesIn(lineIn);
+		revision.setLinesOut(lineOut);
+	}
+	
+	/**
+	 * @param changeSet
+	 * @param line
+	 * @param revisions
 	 * @return
 	 */
-	private Revision parseRevision(final ChangeSet changeSet,
-	                               final String line) {
-		final ChangeType changeType = ChangeType.from(line.charAt(0));
+	private Revision parseRawRevision(final ChangeSet changeSet,
+	                                  final String line,
+	                                  final Map<Long, Revision> revisions) {
+		Requires.notNull(changeSet);
+		Requires.notNull(line);
+		Requires.notEmpty(line);
+		Requires.notNull(revisions);
+		Requires.charAt(line, 0, ':');
+		
+		final ChangeType changeType = ChangeType.from(line.charAt(RAW_CHANGETYPE_OFFSET));
 		Asserts.notNull(changeType, "Character '%s' does not represent a valid change type. Line: %s",
 		                String.valueOf(line.charAt(0)), line);
-		final int split = line.indexOf("\t", 5);
 		String source, target;
 		
 		short confidence = 100;
 		
 		if (ChangeType.RENAMED.equals(changeType) || ChangeType.COPIED.equals(changeType)) {
-			confidence = Short.parseShort(line.substring(1, 4));
+			confidence = Short.parseShort(line.substring(RAW_CHANGETYPE_OFFSET + 1, RAW_CHANGETYPE_OFFSET + 4));
+			// determine offset of the old file name
+			// i.e. skip 'R100\t'.length() chars from the RXXX/CXXX change type indicator
+			final int oldNameOffset = RAW_CHANGETYPE_OFFSET + 5;
+			final int split = line.indexOf("\t", oldNameOffset);
 			Asserts.greater(confidence, 49, "Confidence has to be at least 50%.");
-			
-			Asserts.greater(split, 5, "Renames/Copies must provide a target.");
+			Asserts.greater(split, oldNameOffset, "Renames/Copies must provide a target.");
 			Asserts.greater(line.length(), split + 1, "Renames/Copies must provide a target.");
 			
-			source = line.substring(5, split).trim();
+			source = line.substring(oldNameOffset, split).trim();
 			target = line.substring(split + 1).trim();
-			
 		} else {
-			source = line.substring(5).trim();
+			final int nameOffSet = RAW_CHANGETYPE_OFFSET + 2;
+			source = line.substring(nameOffSet).trim();
 			target = source;
 		}
+		
+		final int oldMode = Integer.parseInt(line.substring(RAW_OLD_MODE_OFFSET, RAW_NEW_MODE_OFFSET - 1));
+		final int newMode = Integer.parseInt(line.substring(RAW_NEW_MODE_OFFSET, RAW_OLD_HASH_OFFSET - 1));
+		final String oldHash = line.substring(RAW_OLD_HASH_OFFSET, RAW_NEW_HASH_OFFSET - 1);
+		final String newHash = line.substring(RAW_NEW_HASH_OFFSET, RAW_CHANGETYPE_OFFSET - 1);
 		
 		if (!this.fileCache.containsKey(source)) {
 			final Handle handle = new Handle(this.depot, source);
@@ -133,7 +241,11 @@ public class ChangeSetMiner implements Runnable {
 		}
 		
 		final Revision revision = new Revision(this.depot, changeSet, changeType, this.fileCache.get(source),
-		                                       this.fileCache.get(target), confidence);
+		                                       this.fileCache.get(target), confidence, oldMode, newMode, oldHash,
+		                                       newHash);
+		
+		revisions.put(revision.getSourceId(), revision);
+		revisions.put(revision.getTargetId(), revision);
 		
 		return revision;
 	}
@@ -172,7 +284,7 @@ public class ChangeSetMiner implements Runnable {
 		Command.execute("git", new String[] { "config", "diff.renameLimit", "999999" }, this.cloneDir).waitFor();
 		
 		final Command command = Command.execute("git", new String[] { "log", "--branches", "--remotes", "--topo-order",
-		        "--find-copies", "-p", "--name-status",
+		        "--find-copies", "--raw", "--numstat", "--no-abbrev",
 		        "--format=" + START_TAG + "%n%H%n%T%n%an%n%ae%n%at%n%cn%n%ce%n%ct%n%s%n%b%n" + END_TAG }, this.cloneDir);
 		
 		ChangeSetBuilder changeSetBuilder = null;
@@ -256,18 +368,27 @@ public class ChangeSetMiner implements Runnable {
 			Asserts.notNull(changeSet);
 			this.changeSetAdapter.save(saveStatement, nextIdStatement, changeSet);
 			
+			final Map<Long, Revision> revisions = new HashMap<>();
+			
+			// raw format (which gives us file mode before after and hash before/after) and numstat (which give us lines
+			// in/lines out) are separate blocsk
 			REVISIONS: while ((line = command.nextOutput()) != null) {
 				if (START_TAG.equals(line)) {
 					break REVISIONS;
+				} else if (line.startsWith(":")) {
+					final Revision revision = parseRawRevision(changeSet, line, revisions);
+					Asserts.notNull(revision);
 				} else {
 					if (line.isEmpty()) {
 						continue REVISIONS;
 					} else {
-						final Revision revision = parseRevision(changeSet, line);
-						Asserts.notNull(revision);
-						this.revisionAdapter.save(revision);
+						parseInOutRevision(changeSet, line, revisions);
 					}
 				}
+			}
+			
+			for (final Revision revision : revisions.values()) {
+				this.revisionAdapter.save(revision);
 			}
 			
 			if (batch % 1000 == 0) {
@@ -286,5 +407,6 @@ public class ChangeSetMiner implements Runnable {
 		}
 		
 		this.database.commit();
+		command.waitFor();
 	}
 }

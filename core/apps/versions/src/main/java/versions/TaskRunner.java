@@ -1,0 +1,44 @@
+/***********************************************************************************************************************
+ * Copyright 2015 mozkito.org
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ **********************************************************************************************************************/
+
+package versions;
+
+import java.io.File;
+import java.net.URI;
+
+import org.mozkito.core.libs.versions.DepotGraph;
+import org.mozkito.skeleton.sequel.SequelDatabase;
+
+/**
+ * @author Sascha Just
+ *
+ */
+public class TaskRunner implements Runnable {
+	
+	public TaskRunner(final File workDir, final URI cloneDir, final SequelDatabase database, final DepotGraph graph) {
+		
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() {
+		// TODO Auto-generated method stub
+		//
+		throw new RuntimeException("Method 'run' has not yet been implemented."); //$NON-NLS-1$
+		
+	}
+	
+}

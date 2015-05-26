@@ -195,6 +195,10 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 			saveStatement.setLong(++index, revision.getSourceId());
 			saveStatement.setLong(++index, revision.getTargetId());
 			saveStatement.setShort(++index, revision.getConfidence());
+			saveStatement.setInt(++index, revision.getOldMode());
+			saveStatement.setInt(++index, revision.getNewMode());
+			saveStatement.setString(++index, revision.getOldHash());
+			saveStatement.setString(++index, revision.getNewHash());
 			
 			saveStatement.executeUpdate();
 			
@@ -213,14 +217,12 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 		Requires.notNull(revisions);
 		
 		try {
-			synchronized (this.database) {
-				final Connection connection = this.database.getConnection();
-				final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
-				final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
-				
-				for (final Revision revision : revisions) {
-					save(statement, idStatement, revision);
-				}
+			final Connection connection = this.database.getConnection();
+			final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
+			final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
+			
+			for (final Revision revision : revisions) {
+				save(statement, idStatement, revision);
 			}
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);

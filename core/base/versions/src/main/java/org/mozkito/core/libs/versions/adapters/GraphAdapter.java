@@ -184,19 +184,17 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 		Requires.notNull(depotGraphs);
 		
 		try {
-			synchronized (this.database) {
-				final Connection connection = this.database.getConnection();
-				final PreparedStatement edgeStatement = connection.prepareStatement(this.edgeSaveStatement);
-				final PreparedStatement edgeIdStatement = connection.prepareStatement(this.edgeNextIdStatement);
-				final PreparedStatement branchEdgeStatement = connection.prepareStatement(this.branchEdgeSaveStatement);
-				final PreparedStatement branchEdgeIdStatement = connection.prepareStatement(this.branchEdgeNextIdStatement);
-				final PreparedStatement integrationEdgeStatement = connection.prepareStatement(this.integrationEdgeSaveStatement);
-				final PreparedStatement integrationEdgeIdStatement = connection.prepareStatement(this.integrationEdgeNextIdStatement);
-				
-				for (final DepotGraph depotGraph : depotGraphs) {
-					save(edgeStatement, edgeIdStatement, branchEdgeStatement, branchEdgeIdStatement,
-					     integrationEdgeStatement, integrationEdgeIdStatement, depotGraph);
-				}
+			final Connection connection = this.database.getConnection();
+			final PreparedStatement edgeStatement = connection.prepareStatement(this.edgeSaveStatement);
+			final PreparedStatement edgeIdStatement = connection.prepareStatement(this.edgeNextIdStatement);
+			final PreparedStatement branchEdgeStatement = connection.prepareStatement(this.branchEdgeSaveStatement);
+			final PreparedStatement branchEdgeIdStatement = connection.prepareStatement(this.branchEdgeNextIdStatement);
+			final PreparedStatement integrationEdgeStatement = connection.prepareStatement(this.integrationEdgeSaveStatement);
+			final PreparedStatement integrationEdgeIdStatement = connection.prepareStatement(this.integrationEdgeNextIdStatement);
+			
+			for (final DepotGraph depotGraph : depotGraphs) {
+				save(edgeStatement, edgeIdStatement, branchEdgeStatement, branchEdgeIdStatement,
+				     integrationEdgeStatement, integrationEdgeIdStatement, depotGraph);
 			}
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);

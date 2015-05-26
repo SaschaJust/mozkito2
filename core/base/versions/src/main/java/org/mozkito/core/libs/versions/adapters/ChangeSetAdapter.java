@@ -193,14 +193,12 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 		Requires.notNull(changeSets);
 		
 		try {
-			synchronized (this.database) {
-				final Connection connection = this.database.getConnection();
-				final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
-				final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
-				
-				for (final ChangeSet changeSet : changeSets) {
-					save(statement, idStatement, changeSet);
-				}
+			final Connection connection = this.database.getConnection();
+			final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
+			final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
+			
+			for (final ChangeSet changeSet : changeSets) {
+				save(statement, idStatement, changeSet);
 			}
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);

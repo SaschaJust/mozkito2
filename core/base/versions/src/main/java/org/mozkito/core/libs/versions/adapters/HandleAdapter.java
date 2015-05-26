@@ -178,15 +178,14 @@ public class HandleAdapter implements ISequelAdapter<Handle> {
 		Requires.notNull(handles);
 		
 		try {
-			synchronized (this.database) {
-				final Connection connection = this.database.getConnection();
-				final PreparedStatement saveStatement = connection.prepareStatement(this.saveStatement);
-				final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
-				
-				for (final Handle handle : handles) {
-					save(saveStatement, idStatement, handle);
-				}
+			final Connection connection = this.database.getConnection();
+			final PreparedStatement saveStatement = connection.prepareStatement(this.saveStatement);
+			final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
+			
+			for (final Handle handle : handles) {
+				save(saveStatement, idStatement, handle);
 			}
+			
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

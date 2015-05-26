@@ -49,6 +49,24 @@ public class Revision implements ISequelEntity {
 	/** The depot id. */
 	private final int         depotId;
 	
+	/** The old mode. */
+	private final int         oldMode;
+	
+	/** The new mode. */
+	private final int         newMode;
+	
+	/** The old hash. */
+	private final String      oldHash;
+	
+	/** The new hash. */
+	private final String      newHash;
+	
+	/** The lines in. */
+	private int               linesIn;
+	
+	/** The lines out. */
+	private int               linesOut;
+	
 	/**
 	 * Instantiates a new revision.
 	 *
@@ -64,9 +82,18 @@ public class Revision implements ISequelEntity {
 	 *            the target
 	 * @param confidence
 	 *            the confidence
+	 * @param oldMode
+	 *            the old mode
+	 * @param newMode
+	 *            the new mode
+	 * @param oldHash
+	 *            the old hash
+	 * @param newHash
+	 *            the new hash
 	 */
 	public Revision(final Depot depot, final ChangeSet changeSet, final ChangeType changeType, final Handle source,
-	        final Handle target, final short confidence) {
+	        final Handle target, final short confidence, final int oldMode, final int newMode, final String oldHash,
+	        final String newHash) {
 		Requires.notNull(depot);
 		Requires.positive(depot.id());
 		Requires.notNull(changeType);
@@ -77,6 +104,10 @@ public class Revision implements ISequelEntity {
 		Requires.notNull(target);
 		Requires.positive(target.id());
 		Requires.greaterOrEqual(confidence, 50);
+		Requires.notNegative(oldMode);
+		Requires.notNegative(newMode);
+		Requires.notNull(oldHash);
+		Requires.notNull(newHash);
 		
 		this.depotId = depot.id();
 		this.changeSetId = changeSet.id();
@@ -84,6 +115,10 @@ public class Revision implements ISequelEntity {
 		this.sourceId = source.id();
 		this.targetId = target.id();
 		this.confidence = confidence;
+		this.oldMode = oldMode;
+		this.newMode = newMode;
+		this.oldHash = oldHash;
+		this.newHash = newHash;
 	}
 	
 	/**
@@ -160,6 +195,48 @@ public class Revision implements ISequelEntity {
 	}
 	
 	/**
+	 * @return the linesIn
+	 */
+	public final int getLinesIn() {
+		return this.linesIn;
+	}
+	
+	/**
+	 * @return the linesOut
+	 */
+	public final int getLinesOut() {
+		return this.linesOut;
+	}
+	
+	/**
+	 * @return the newHash
+	 */
+	public final String getNewHash() {
+		return this.newHash;
+	}
+	
+	/**
+	 * @return the newMode
+	 */
+	public final int getNewMode() {
+		return this.newMode;
+	}
+	
+	/**
+	 * @return the oldHash
+	 */
+	public final String getOldHash() {
+		return this.oldHash;
+	}
+	
+	/**
+	 * @return the oldMode
+	 */
+	public final int getOldMode() {
+		return this.oldMode;
+	}
+	
+	/**
 	 * Gets the source id.
 	 *
 	 * @return the sourceId
@@ -217,6 +294,22 @@ public class Revision implements ISequelEntity {
 		Requires.isLong(id);
 		
 		this.id = (long) id;
+	}
+	
+	/**
+	 * @param linesIn
+	 *            the linesIn to set
+	 */
+	public final void setLinesIn(final int linesIn) {
+		this.linesIn = linesIn;
+	}
+	
+	/**
+	 * @param linesOut
+	 *            the linesOut to set
+	 */
+	public final void setLinesOut(final int linesOut) {
+		this.linesOut = linesOut;
 	}
 	
 	/**
