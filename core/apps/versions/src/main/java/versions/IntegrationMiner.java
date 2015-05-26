@@ -15,7 +15,7 @@ package versions;
 
 import org.mozkito.core.libs.versions.DepotGraph;
 import org.mozkito.core.libs.versions.model.Branch;
-import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.skeleton.logging.Logger;
 
 /**
  * @author Sascha Just
@@ -42,10 +42,18 @@ public class IntegrationMiner implements Runnable {
 	 */
 	public void run() {
 		for (final Branch branch : this.graph.getBranches()) {
-			final ChangeSet root = this.graph.getRootCommit(branch);
-			
+			if (Logger.logInfo()) {
+				Logger.info("Processing branch '%s'.", branch.getName());
+			}
+			this.graph.computeIntegrationGraph(branch);
 		}
-		
 	}
+	
+	/**
+	 * Compute integration graph.
+	 *
+	 * @param branch
+	 *            the branch
+	 */
 	
 }

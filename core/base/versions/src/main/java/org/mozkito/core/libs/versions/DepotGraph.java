@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.iterators.UnmodifiableIterator;
@@ -41,10 +40,10 @@ import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.skeleton.contracts.Asserts;
+import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DepotGraph represents a multi-layer view on the Git repository. Once built, it does not require the
  * repository to be present The graph can be persisted to a {@link SequelDatabase}.
@@ -303,36 +302,27 @@ public class DepotGraph extends DirectedGraph {
 		return this.graph.addVertex(changeSet);
 	}
 	
-	/**
-	 * Compute integration graph.
-	 *
-	 * @param branch
-	 *            the branch
-	 */
 	public void computeIntegrationGraph(final Branch branch) {
-		ChangeSet head = getHead(branch);
+		final ChangeSet head = getHead(branch);
 		final ChangeSet root = getRootCommit(branch);
 		
-		while (!head.equals(root)) {
-			head = skipForwards(head);
-			final Set<Edge> incomingEdges = this.graph.incomingEdgesOf(head);
+		final LinkedList<ChangeSet> tempHeads = new LinkedList<ChangeSet>();
+		tempHeads.add(getBranchParent(head));
+		tempHeads.addAll(getMergeParents(head));
+		
+		OUTER: while (!head.equals(root)) {
+			Contract.asserts(!tempHeads.isEmpty());
 			
-			if (incomingEdges.size() == 1) {
-				head = incomingEdges.iterator().next().parent;
-			} else {
-				ChangeSet branchParent = null;
-				final Stack<ChangeSet> delegates = new Stack<ChangeSet>();
-				for (final Edge incoming : incomingEdges) {
-					if (EdgeType.BRANCH.equals(incoming.type)) {
-						branchParent = incoming.parent;
-					} else {
-						Asserts.equalTo(EdgeType.MERGE, incoming.type);
-						delegates.push(incoming.parent);
-					}
+			final ChangeSet current = tempHeads.pollLast();
+			for (final ChangeSet tempHead : tempHeads) {
+				if (DijkstraShortestPath.findPathBetween(this.graph, current, tempHead) != null) {
+					// skip
+					continue OUTER;
+				} else {
+					this.graph.getEdge(current, head).integrationPath.add(branch);
+					tempHeads.addLast(getBranchParent(current));
+					tempHeads.addAll(getMergeParents(current));
 				}
-				
-				Asserts.notNull(branchParent);
-				
 			}
 		}
 	}
@@ -524,7 +514,7 @@ public class DepotGraph extends DirectedGraph {
 			entries.addAll(path.stream().map(x -> x.parent).collect(Collectors.toList()));
 		}
 		
-		return new LinkedList<>();
+		return entries;
 	}
 	
 	/**
@@ -589,7 +579,7 @@ public class DepotGraph extends DirectedGraph {
 	 *            the change set
 	 * @return the change set
 	 */
-	private ChangeSet skipForwards(final ChangeSet changeSet) {
+	public ChangeSet skipForwards(final ChangeSet changeSet) {
 		Set<Edge> incomingEdges = this.graph.incomingEdgesOf(changeSet);
 		
 		while (incomingEdges.size() == 1) {

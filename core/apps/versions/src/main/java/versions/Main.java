@@ -84,6 +84,7 @@ public class Main {
 	private static final int EXIT_ERR_SETTINGS = 1;
 	private static final int EXIT_HELP         = 0;
 	private static final int EXIT_ERR_DB_TYPE  = 2;
+	private static final int EXIT_ERR_TASKS    = 4;
 	
 	/**
 	 * Creates the options.
@@ -140,9 +141,6 @@ public class Main {
 		option = new Option("ti", "mine-integration", false, "Mine integration.");
 		options.addOption(option);
 		
-		option = new Option("tv", "mine-visibility", false, "Mine branches. ");
-		options.addOption(option);
-		
 		return options;
 	}
 	
@@ -176,6 +174,31 @@ public class Main {
 				Logger.error("Database type '%s' is not invalid.", line.getOptionValue("database.type"));
 				printHelp(options);
 				System.exit(EXIT_ERR_DB_TYPE);
+			}
+			
+			final List<Task> tasks = new LinkedList<TaskRunner.Task>();
+			
+			if (line.hasOption("mine-branches")) {
+				tasks.add(Task.BRANCHES);
+			}
+			
+			if (line.hasOption("mine-changesets")) {
+				tasks.add(Task.CHANGESETS);
+			}
+			
+			if (line.hasOption("mine-graph")) {
+				tasks.add(Task.GRAPH);
+			}
+			
+			if (line.hasOption("mine-integration")) {
+				tasks.add(Task.INTEGRATION);
+			}
+			
+			if (tasks.isEmpty()) {
+				if (Logger.logError()) {
+					Logger.error("No tasks selected.");
+				}
+				System.exit(EXIT_ERR_TASKS);
 			}
 			
 			File workDir = new File(line.hasOption("working-directory")
@@ -242,12 +265,11 @@ public class Main {
 			for (final File cloneDir : depotDirs) {
 				final URI depotURI = cloneDir.toURI();
 				
-				es.execute(new TaskRunner(baseDir, workDir, depotURI, database, new Task[] { Task.BRANCHES,
-				        Task.CHANGESETS, Task.GRAPH }));
+				es.execute(new TaskRunner(baseDir, workDir, depotURI, database, tasks.toArray(new Task[0])));
 				
 			}
 			es.shutdown();
-			System.out.println("-----------------------");
+			System.out.println("————————————————————————————————————————");
 			final boolean ret = es.awaitTermination(30, TimeUnit.DAYS);
 			System.out.println("All tasks are finished! Timeout: " + !ret);
 		} catch (final URISyntaxException | SQLException | InterruptedException | IOException e) {

@@ -17,8 +17,6 @@ import java.io.File;
 import java.net.URI;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -196,20 +194,26 @@ public class TaskRunner implements Runnable {
 			
 			if (ArrayUtils.contains(this.tasks, Task.INTEGRATION)) {
 				Logger.info("Spawning IntegrationBuilder.");
-				final ChangeSet invest = changeSets.get("d14d00ee51abf5f939651070e8eef4b3d9873aa0");
 				
-				final Branch monitored = this.graph.getBranches().stream().filter(b -> "master".equals(b.getName()))
-				                                   .findFirst().get();
-				final Iterator<ChangeSet> monitoredChangeSets = this.graph.getChangeSets(monitored);
+				final IntegrationMiner integrationMiner = new IntegrationMiner(this.graph);
+				final Thread imThread = new Thread(integrationMiner);
+				imThread.start();
+				imThread.join();
 				
-				while (monitoredChangeSets.hasNext()) {
-					Logger.info(monitoredChangeSets.next().getCommitHash());
-				}
-				
-				final List<ChangeSet> path = this.graph.getIntegrationPath(invest, monitored);
-				for (final ChangeSet changeSet : path) {
-					Logger.info(changeSet.toString());
-				}
+				// final ChangeSet invest = changeSets.get("d14d00ee51abf5f939651070e8eef4b3d9873aa0");
+				//
+				// final Branch monitored = this.graph.getBranches().stream().filter(b -> "master".equals(b.getName()))
+				// .findFirst().get();
+				// final Iterator<ChangeSet> monitoredChangeSets = this.graph.getChangeSets(monitored);
+				//
+				// while (monitoredChangeSets.hasNext()) {
+				// Logger.info(monitoredChangeSets.next().getCommitHash());
+				// }
+				//
+				// final List<ChangeSet> path = this.graph.getIntegrationPath(invest, monitored);
+				// for (final ChangeSet changeSet : path) {
+				// Logger.info(changeSet.toString());
+				// }
 			}
 		} catch (final InterruptedException e) {
 			throw new RuntimeException(e);
