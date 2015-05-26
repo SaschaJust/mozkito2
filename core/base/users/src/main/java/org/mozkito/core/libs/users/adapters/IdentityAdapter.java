@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.users.adapters;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -137,14 +138,9 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	public void createScheme() {
 		try {
 			synchronized (this.database) {
-				final Connection connection = this.database.getConnection();
-				final Statement statement = connection.createStatement();
-				statement.execute("CREATE TABLE " + TABLE_NAME + " (" + "id smallint PRIMARY KEY,"
-				        + "username varchar(64)," + "email varchar(64)," + "fullname varchar(64))");
-				statement.execute("CREATE SEQUENCE " + IdentityAdapter.ID_SEQUENCE + " START WITH 1 INCREMENT BY 1");
-				connection.commit();
+				SequelManager.executeSQL(this.database, "identity_create_schema");
 			}
-		} catch (final SQLException e) {
+		} catch (final SQLException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}

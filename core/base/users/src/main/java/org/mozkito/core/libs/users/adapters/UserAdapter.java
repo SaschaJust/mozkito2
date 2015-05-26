@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.users.adapters;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -267,15 +268,9 @@ public class UserAdapter implements ISequelAdapter<User> {
 	public void createScheme() {
 		try {
 			synchronized (this.database) {
-				final Connection connection = this.database.getConnection();
-				final Statement statement = connection.createStatement();
-				statement.execute("CREATE TABLE " + TABLE_NAME
-				        + " (user_id smallint, identity_id smallint, PRIMARY KEY (user_id, identity_id))");
-				statement.execute("CREATE SEQUENCE " + ID_SEQUENCE + " MINVALUE 1" + " START WITH 1"
-				        + " INCREMENT BY 1");
-				connection.commit();
+				SequelManager.executeSQL(this.database, "user_create_schema");
 			}
-		} catch (final SQLException e) {
+		} catch (final SQLException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
