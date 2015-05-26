@@ -19,7 +19,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
-import java.util.Properties;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -33,6 +32,7 @@ import org.mozkito.skeleton.logging.consumer.LogConsumer;
 import org.mozkito.skeleton.logging.consumer.appender.TerminalAppender;
 import org.mozkito.skeleton.sequel.ISequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.SequelDatabase.Type;
 
 /**
  * The Class Main.
@@ -53,7 +53,7 @@ public class Main {
 		
 		try {
 			final Identity identity = new Identity("sjust", "sascha.just@mozkito.org", "Sascha Just");
-			final SequelDatabase database = new SequelDatabase("jdbc:derby:simpsons;create=true", new Properties());
+			final SequelDatabase database = new SequelDatabase(Type.DERBY, "simpsons", null, null, null, null);
 			final ISequelAdapter<Identity> adapter = new IdentityAdapter(database);
 			adapter.createScheme();
 			

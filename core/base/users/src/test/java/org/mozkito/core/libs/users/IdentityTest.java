@@ -21,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,6 +34,7 @@ import org.mozkito.core.libs.users.model.User;
 import org.mozkito.skeleton.io.FileUtils;
 import org.mozkito.skeleton.sequel.ISequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.SequelDatabase.Type;
 
 /**
  * The Class IdentityTest.
@@ -62,7 +62,7 @@ public class IdentityTest {
 	public void setUp() throws Exception {
 		this.databaseName = Files.createTempDirectory(IdentityTest.class.getSimpleName() + ".db");
 		FileUtils.deleteDirectory(this.databaseName);
-		this.database = new SequelDatabase("jdbc:derby:" + this.databaseName + ";create=true", new Properties());
+		this.database = new SequelDatabase(Type.DERBY, this.databaseName + ";create=true", null, null, null, null);
 		this.adapter = new IdentityAdapter(this.database);
 		this.adapter.createScheme();
 	}
