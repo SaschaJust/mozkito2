@@ -77,6 +77,10 @@ public class Main {
 		
 	}
 	
+	private static final int EXIT_ERR_SETTINGS = 1;
+	private static final int EXIT_HELP         = 0;
+	private static final int EXIT_ERR_DB_TYPE  = 2;
+	
 	/**
 	 * Creates the options.
 	 *
@@ -98,6 +102,16 @@ public class Main {
 		option = new Option("dn", "database-name", true, "The name of the database.");
 		option.setArgName("DB_NAME");
 		option.setRequired(true);
+		options.addOption(option);
+		
+		option = new Option("dt", "database-type", true, "The name of the database.");
+		option.setArgName("POSTGRES,TSQL,DERBY");
+		option.setRequired(true);
+		options.addOption(option);
+		
+		option = new Option("dh", "database-host", true, "The name of the database.");
+		option.setArgName("localhost");
+		option.setRequired(false);
 		options.addOption(option);
 		
 		option = new Option("du", "database-user", true, "The user to be used to connect to the database.");
@@ -146,10 +160,18 @@ public class Main {
 		try {
 			final CommandLine line = parser.parse(options, args);
 			if (line.hasOption("help")) {
-				final HelpFormatter formatter = new HelpFormatter();
-				formatter.setWidth(120);
-				formatter.printHelp("mozkito-versions", options);
-				System.exit(0);
+				printHelp(options);
+				System.exit(EXIT_HELP);
+			}
+			
+			Type databaseType = null;
+			
+			try {
+				databaseType = Type.valueOf(line.getOptionValue("database.type").trim().toUpperCase());
+			} catch (final IllegalArgumentException e) {
+				Logger.error("Database type '%s' is not invalid.", line.getOptionValue("database.type"));
+				printHelp(options);
+				System.exit(EXIT_ERR_DB_TYPE);
 			}
 			
 			final File workDir = new File(line.hasOption("working-dir")
@@ -166,8 +188,18 @@ public class Main {
 			
 			Logger.info("Establishing database connection and creating pool.");
 			
-			final SequelDatabase database = new SequelDatabase(Type.POSTGRES, databaseName, "localhost", "just",
-			                                                   "mm3m549DvIn28rg", 5432);
+			final SequelDatabase database = new SequelDatabase(
+			                                                   databaseType,
+			                                                   databaseName,
+			                                                   line.hasOption("database-host")
+			                                                                                  ? line.getOptionValue("database-host")
+			                                                                                  : null,
+			                                                   line.hasOption("database-user")
+			                                                                                  ? line.getOptionValue("database-user")
+			                                                                                  : null,
+			                                                   line.hasOption("database-password")
+			                                                                                      ? line.getOptionValue("database-password")
+			                                                                                      : null, null);
 			
 			final File baseDir = new File(uri);
 			
@@ -237,11 +269,18 @@ public class Main {
 		} catch (final URISyntaxException | SQLException | InterruptedException e) {
 			Logger.error(e);
 		} catch (final ParseException e) {
-			final HelpFormatter formatter = new HelpFormatter();
-			formatter.setWidth(120);
-			formatter.printHelp("mozkito-versions", options);
-			System.exit(1);
+			printHelp(options);
+			System.exit(EXIT_ERR_SETTINGS);
 		}
+	}
+	
+	/**
+     * 
+     */
+	private static void printHelp(final Options options) {
+		final HelpFormatter formatter = new HelpFormatter();
+		formatter.setWidth(120);
+		formatter.printHelp("mozkito-versions", options);
 	}
 	
 }
