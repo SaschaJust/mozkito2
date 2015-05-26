@@ -84,7 +84,6 @@ public class BranchMiner implements Runnable {
 	public void run() {
 		Asserts.notNull(this.database);
 		final BranchAdapter branchAdapter = new BranchAdapter(this.database);
-		branchAdapter.createScheme();
 		
 		final Command command = Command.execute("git", new String[] { "ls-remote", "--heads" }, this.cloneDir);
 		

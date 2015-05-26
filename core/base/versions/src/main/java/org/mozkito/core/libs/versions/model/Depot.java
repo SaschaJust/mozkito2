@@ -14,6 +14,7 @@
 package org.mozkito.core.libs.versions.model;
 
 import java.net.URI;
+import java.time.Instant;
 
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
@@ -37,14 +38,23 @@ public class Depot implements ISequelEntity {
 	/** The origin. */
 	private URI               origin;
 	
+	private final Instant     mined;
+	
 	/**
+	 * Instantiates a new depot.
+	 *
 	 * @param name
+	 *            the name
 	 * @param origin
+	 *            the origin
+	 * @param mined
+	 *            the mined
 	 */
-	public Depot(final String name, final URI origin) {
+	public Depot(final String name, final URI origin, final Instant mined) {
 		super();
 		this.name = name;
 		this.origin = origin;
+		this.mined = mined;
 	}
 	
 	/**
@@ -72,6 +82,13 @@ public class Depot implements ISequelEntity {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * @return
+	 */
+	public Instant getMined() {
+		return this.mined;
 	}
 	
 	/**
@@ -160,6 +177,16 @@ public class Depot implements ISequelEntity {
 		if (this.name != null) {
 			builder.append("name=");
 			builder.append(this.name);
+			builder.append(", ");
+		}
+		if (this.origin != null) {
+			builder.append("origin=");
+			builder.append(this.origin);
+			builder.append(", ");
+		}
+		if (this.mined != null) {
+			builder.append("mined=");
+			builder.append(this.mined);
 		}
 		builder.append("]");
 		return builder.toString();

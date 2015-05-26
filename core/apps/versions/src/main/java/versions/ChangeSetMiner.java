@@ -22,14 +22,10 @@ import java.util.Map;
 import org.apache.commons.collections4.map.UnmodifiableMap;
 
 import org.mozkito.core.libs.users.IdentityCache;
-import org.mozkito.core.libs.users.adapters.IdentityAdapter;
 import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.ChangeType;
 import org.mozkito.core.libs.versions.DepotGraph;
 import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
-import org.mozkito.core.libs.versions.adapters.DepotAdapter;
-import org.mozkito.core.libs.versions.adapters.HandleAdapter;
-import org.mozkito.core.libs.versions.adapters.RevisionAdapter;
 import org.mozkito.core.libs.versions.builders.ChangeSetBuilder;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
@@ -40,6 +36,7 @@ import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.logging.Logger;
+import org.mozkito.skeleton.sequel.ISequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
@@ -48,36 +45,35 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
  */
 public class ChangeSetMiner implements Runnable {
 	
-	private static final String          END_TAG               = "<<<#$@#$@<<<";
-	private static final String          START_TAG             = ">>>#$@#$@>>>";
+	private static final String            END_TAG               = "<<<#$@#$@<<<";
+	private static final String            START_TAG             = ">>>#$@#$@>>>";
 	
-	private static int                   RAW_OLD_MODE_OFFSET   = 1;
-	private static int                   RAW_NEW_MODE_OFFSET   = 8;
-	private static int                   RAW_OLD_HASH_OFFSET   = 15;
-	private static int                   RAW_NEW_HASH_OFFSET   = 56;
-	private static int                   RAW_CHANGETYPE_OFFSET = 97;
-	private static final char            BIN_CHANGE_INDICATOR  = '-';
-	private final File                   cloneDir;
-	private final SequelDatabase         database;
+	private static int                     RAW_OLD_MODE_OFFSET   = 1;
+	private static int                     RAW_NEW_MODE_OFFSET   = 8;
+	private static int                     RAW_OLD_HASH_OFFSET   = 15;
+	private static int                     RAW_NEW_HASH_OFFSET   = 56;
+	private static int                     RAW_CHANGETYPE_OFFSET = 97;
+	private static final char              BIN_CHANGE_INDICATOR  = '-';
+	private final File                     cloneDir;
+	private final SequelDatabase           database;
 	
-	private final Depot                  depot;
+	private final Depot                    depot;
 	
-	private final Map<String, Branch>    branchHeads           = new HashMap<String, Branch>();
+	private final Map<String, Branch>      branchHeads           = new HashMap<String, Branch>();
 	
-	private final DepotGraph             graph;
+	private final DepotGraph               graph;
 	
-	private final Map<String, ChangeSet> changeSets            = new HashMap<String, ChangeSet>();
+	private final Map<String, ChangeSet>   changeSets            = new HashMap<String, ChangeSet>();
 	
-	private RevisionAdapter              revisionAdapter;
+	private final Map<String, Handle>      fileCache             = new HashMap<>();
 	
-	private HandleAdapter                handleAdapter;
+	private final ISequelAdapter<Revision> revisionAdapter;
 	
-	private final Map<String, Handle>    fileCache             = new HashMap<>();
+	private final ISequelAdapter<Handle>   handleAdapter;
 	
-	private DepotAdapter                 depotAdapter;
-	private ChangeSetAdapter             changeSetAdapter;
+	private final ChangeSetAdapter         changeSetAdapter;
 	
-	private IdentityAdapter              identityAdapter;
+	private final ISequelAdapter<Identity> identityAdapter;
 	
 	/**
 	 * Instantiates a new change set miner.
@@ -100,6 +96,11 @@ public class ChangeSetMiner implements Runnable {
 		this.depot = depot;
 		this.branchHeads.putAll(branchHeads);
 		this.graph = graph;
+		this.revisionAdapter = database.getAdapter(Revision.class);
+		this.identityAdapter = database.getAdapter(Identity.class);
+		this.changeSetAdapter = new ChangeSetAdapter(database);
+		this.handleAdapter = database.getAdapter(Handle.class);
+		
 	}
 	
 	/**
@@ -256,23 +257,7 @@ public class ChangeSetMiner implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		this.depotAdapter = new DepotAdapter(this.database);
-		this.depotAdapter.createScheme();
-		
-		this.depotAdapter.save(this.depot);
 		Asserts.positive(this.depot.id());
-		
-		this.changeSetAdapter = new ChangeSetAdapter(this.database);
-		this.changeSetAdapter.createScheme();
-		
-		this.identityAdapter = new IdentityAdapter(this.database);
-		this.identityAdapter.createScheme();
-		
-		this.revisionAdapter = new RevisionAdapter(this.database);
-		this.revisionAdapter.createScheme();
-		
-		this.handleAdapter = new HandleAdapter(this.database);
-		this.handleAdapter.createScheme();
 		
 		final IdentityCache identityCache = new IdentityCache();
 		

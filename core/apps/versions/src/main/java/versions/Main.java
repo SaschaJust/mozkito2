@@ -14,18 +14,16 @@
 package versions;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -50,11 +48,10 @@ import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Revision;
-import org.mozkito.skeleton.commons.URIUtils;
-import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.logging.Logger;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
+
+import versions.TaskRunner.Task;
 
 /**
  * The entry point of app: mozkito-versions
@@ -136,22 +133,8 @@ public class Main {
 	 *
 	 * @param args
 	 *            the arguments
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws SQLException
-	 *             the SQL exception
-	 * @throws URISyntaxException
-	 *             the URI syntax exception
-	 * @throws InterruptedException
-	 *             the interrupted exception
-	 * @throws ParseException
-	 *             the parse exception
 	 */
-	public static void main(final String[] args) throws IOException,
-	                                            SQLException,
-	                                            URISyntaxException,
-	                                            InterruptedException,
-	                                            ParseException {
+	public static void main(final String[] args) {
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
 		// create the command line parser
@@ -173,7 +156,6 @@ public class Main {
 			                                                           ? line.getOptionValue("working-dir")
 			                                                           : "/tmp");
 			
-			final File cloneDir = new File(workDir, "mozkito_test");
 			final URI uri = new URI(line.hasOption("repository")
 			                                                    ? line.getOptionValue("repository")
 			                                                    : "file:///tmp/mozkito_bare.git");
@@ -186,124 +168,46 @@ public class Main {
 			final SequelDatabase database = new SequelDatabase("jdbc:derby:" + databaseName + ";create=true",
 			                                                   new Properties());
 			
-			Logger.info("Cloning depot.");
-			final Depot depot = new Depot("test", uri);
+			final File baseDir = new File(uri);
 			
-			final Command command = Command.execute("git",
-			                                        new String[] { "clone", "-b", "master", "-n", "-q",
-			                                                URIUtils.uri2String(uri), cloneDir.getAbsolutePath() },
-			                                        workDir);
-			command.waitFor();
-			
-			if (command.exitValue() != 0) {
-				String resLine;
-				if (Logger.logError()) {
-					while ((resLine = command.nextErrput()) != null) {
-						Logger.error.println(resLine);
+			final Iterator<File> depotDirs;
+			if (baseDir.getName().endsWith(".git")) {
+				depotDirs = new ArrayList<File>() {
+					
+					{
+						add(baseDir);
 					}
-				}
-				System.exit(command.exitValue());
-			}
-			
-			Map<String, Branch> branchHeads;
-			if (line.hasOption("mine-branches")) {
-				Logger.info("Spawning BranchMiner.");
-				
-				final BranchMiner branchMiner = new BranchMiner(cloneDir, database, depot);
-				final Thread bmThread = new Thread(branchMiner);
-				bmThread.start();
-				bmThread.join();
-				branchHeads = branchMiner.getBranchHeads();
+				}.iterator();
 			} else {
-				// TODO load from DB
-				branchHeads = new HashMap<String, Branch>();
+				depotDirs = org.apache.commons.io.FileUtils.iterateFiles(baseDir, new IOFileFilter() {
+					
+					@Override
+					public boolean accept(final File file) {
+						return false;
+					}
+					
+					@Override
+					public boolean accept(final File dir,
+					                      final String name) {
+						return false;
+					}
+				}, new IOFileFilter() {
+					
+					@Override
+					public boolean accept(final File file) {
+						return file.getName().endsWith(".git");
+					}
+					
+					@Override
+					public boolean accept(final File dir,
+					                      final String name) {
+						return false;
+					}
+				});
 			}
 			
-			final DepotGraph graph = new DepotGraph(depot);
-			final GraphAdapter graphAdapter = new GraphAdapter(database);
-			graphAdapter.createScheme();
-			Map<String, ChangeSet> changeSets = new HashMap<String, ChangeSet>();
+			File cloneDir;
 			
-			if (line.hasOption("mine-changesets")) {
-				Logger.info("Spawning ChangeSetMiner.");
-				final ChangeSetMiner changeSetMiner = new ChangeSetMiner(cloneDir, database, depot, graph, branchHeads);
-				final Thread csmThread = new Thread(changeSetMiner);
-				csmThread.start();
-				csmThread.join();
-				changeSets = changeSetMiner.getChangeSets();
-			} else {
-				// TODO load changesets and add to graph and the hashmap
-			}
-			
-			if (line.hasOption("mine-graph")) {
-				Logger.info("Spawning GraphBuilder.");
-				final GraphMiner graphMiner = new GraphMiner(cloneDir, database, graph, changeSets);
-				final Thread gmThread = new Thread(graphMiner);
-				gmThread.start();
-				gmThread.join();
-				graphAdapter.save(graph);
-				database.commit();
-			}
-			
-			if (line.hasOption("mine-integration")) {
-				Logger.info("Spawning IntegrationBuilder.");
-				final ChangeSet invest = changeSets.get("d14d00ee51abf5f939651070e8eef4b3d9873aa0");
-				
-				final Branch monitored = graph.getBranches().stream().filter(b -> "master".equals(b.getName()))
-				                              .findFirst().get();
-				final Iterator<ChangeSet> monitoredChangeSets = graph.getChangeSets(monitored);
-				
-				while (monitoredChangeSets.hasNext()) {
-					Logger.info(monitoredChangeSets.next().getCommitHash());
-				}
-				
-				final List<ChangeSet> path = graph.getIntegrationPath(invest, monitored);
-				for (final ChangeSet changeSet : path) {
-					Logger.info(changeSet.toString());
-				}
-			}
-		} catch (final ParseException e) {
-			final HelpFormatter formatter = new HelpFormatter();
-			formatter.setWidth(120);
-			formatter.printHelp("mozkito-versions", options);
-			System.exit(1);
-		}
-	}
-	
-	public static void main2() {
-		final String databaseName = "mozkito-test";
-		final File workDir = new File("/tmp");
-		final File baseDir = new File("/tmp");
-		
-		final Iterator<File> depotDirs = org.apache.commons.io.FileUtils.iterateFiles(baseDir, new IOFileFilter() {
-			
-			@Override
-			public boolean accept(final File file) {
-				return true;
-			}
-			
-			@Override
-			public boolean accept(final File dir,
-			                      final String name) {
-				return true;
-			}
-		}, new IOFileFilter() {
-			
-			@Override
-			public boolean accept(final File file) {
-				return true;
-			}
-			
-			@Override
-			public boolean accept(final File dir,
-			                      final String name) {
-				return true;
-			}
-		});
-		
-		File cloneDir;
-		try {
-			final SequelDatabase database = new SequelDatabase("", null);
 			database.register(Depot.class, new DepotAdapter(database));
 			database.register(Identity.class, new IdentityAdapter(database));
 			database.register(ChangeSet.class, new ChangeSetAdapter(database));
@@ -313,20 +217,21 @@ public class Main {
 			database.register(Handle.class, new HandleAdapter(database));
 			database.createScheme();
 			
-			final ISequelAdapter<Depot> adapter = database.getAdapter(Depot.class);
-			
 			final ExecutorService es = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors() - 2);
 			
 			while (depotDirs.hasNext()) {
 				cloneDir = depotDirs.next();
+				final URI depotURI = cloneDir.toURI();
 				
-				final URI cloneURI = cloneDir.toURI();
-				final String depotName = cloneDir.getName();
-				final Depot depot = new Depot(depotName, cloneURI);
-				adapter.save(depot);
-				es.execute(new TaskRunner(workDir, cloneURI, database, new DepotGraph(depot)));
+				es.execute(new TaskRunner(baseDir, workDir, depotURI, database, new Task[] { Task.BRANCHES,
+				        Task.CHANGESETS, Task.GRAPH }));
+				es.shutdown();
+				System.out.println("-----------------------");
+				final boolean ret = es.awaitTermination(30, TimeUnit.DAYS);
+				System.out.println("All tasks are finished! Timeout: " + !ret);
+				
 			}
-		} catch (final SQLException e) {
+		} catch (final SQLException | ParseException | URISyntaxException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 	}

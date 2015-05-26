@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
 
@@ -177,10 +178,11 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 				final int id = idResult.getInt(1);
 				
 				final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
-				statement.setInt(1, id);
-				statement.setString(2, depot.getName());
-				statement.setString(3, depot.getOrigin().toURL().toString());
-				
+				int index = 0;
+				statement.setInt(++index, id);
+				statement.setString(++index, depot.getName());
+				statement.setString(++index, depot.getOrigin().toURL().toString());
+				statement.setTimestamp(++index, Timestamp.from(depot.getMined()));
 				statement.executeUpdate();
 				
 				depot.id(id);
