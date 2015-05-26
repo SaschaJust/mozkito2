@@ -172,7 +172,7 @@ public class TaskRunner implements Runnable {
 				Logger.info("Spawning ChangeSetMiner.");
 				final ChangeSetMiner changeSetMiner = new ChangeSetMiner(this.cloneDir, this.database, this.depot,
 				                                                         this.graph, branchHeads);
-				final Thread csmThread = new Thread(changeSetMiner, "ChangeSetMiner" + this.depot.getName());
+				final Thread csmThread = new Thread(changeSetMiner, "ChangeSetMiner:" + this.depot.getName());
 				csmThread.start();
 				csmThread.join();
 				changeSets = changeSetMiner.getChangeSets();
@@ -183,7 +183,7 @@ public class TaskRunner implements Runnable {
 			if (ArrayUtils.contains(this.tasks, Task.GRAPH)) {
 				Logger.info("Spawning GraphBuilder.");
 				final GraphMiner graphMiner = new GraphMiner(this.cloneDir, this.database, this.graph, changeSets);
-				final Thread gmThread = new Thread(graphMiner, "GraphMiner" + this.depot.getName());
+				final Thread gmThread = new Thread(graphMiner, "GraphMiner:" + this.depot.getName());
 				gmThread.start();
 				gmThread.join();
 				graphAdapter.save(this.graph);
@@ -194,7 +194,7 @@ public class TaskRunner implements Runnable {
 				Logger.info("Spawning IntegrationBuilder.");
 				
 				final IntegrationMiner integrationMiner = new IntegrationMiner(this.graph);
-				final Thread imThread = new Thread(integrationMiner, "IntegrationMiner" + this.depot.getName());
+				final Thread imThread = new Thread(integrationMiner, "IntegrationMiner:" + this.depot.getName());
 				imThread.start();
 				imThread.join();
 				

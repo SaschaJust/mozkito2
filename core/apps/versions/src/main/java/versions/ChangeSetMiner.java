@@ -377,7 +377,7 @@ public class ChangeSetMiner implements Runnable {
 			changeSetBuilder.committerId(identity);
 			
 			line = command.nextOutput();
-			Asserts.notNull(line, "Awaiting commit timestamo.");
+			Asserts.notNull(line, "Awaiting commit timestamp.");
 			changeSetBuilder.committedOn(Instant.ofEpochSecond(Long.parseLong(line)));
 			
 			line = command.nextOutput();

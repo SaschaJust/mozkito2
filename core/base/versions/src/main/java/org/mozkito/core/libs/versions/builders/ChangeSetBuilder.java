@@ -138,9 +138,14 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	 * @see org.mozkito.skeleton.sequel.IBuilder#create()
 	 */
 	public ChangeSet create() {
+		if (this.commitTime == null) {
+			this.authoredTime = Instant.EPOCH;
+		}
+		
 		if (this.authoredTime == null) {
 			this.authoredTime = this.commitTime;
 		}
+		
 		return new ChangeSet(this.depotId, this.commitHash, this.treeHash, this.authoredTime, this.authorId,
 		                     this.commitTime, this.committerId, this.subject, this.body);
 	}
