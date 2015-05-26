@@ -18,8 +18,8 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +31,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
 import org.mozkito.core.libs.users.adapters.IdentityAdapter;
@@ -203,45 +205,26 @@ public class Main {
 			
 			final File baseDir = new File(uri);
 			
-			final Iterator<File> depotDirs;
+			final List<File> depotDirs = new LinkedList<File>();
 			if (baseDir.getName().endsWith(".git")) {
-				depotDirs = new ArrayList<File>() {
-					
-					private static final long serialVersionUID = 1L;
-					
-					{
-						add(baseDir);
-					}
-				}.iterator();
+				depotDirs.add(baseDir);
 			} else {
-				depotDirs = org.apache.commons.io.FileUtils.iterateFiles(baseDir, new IOFileFilter() {
+				FileUtils.listFilesAndDirs(baseDir, FalseFileFilter.FALSE, new IOFileFilter() {
 					
-					@Override
 					public boolean accept(final File file) {
-						return false;
+						if (file.isDirectory() && file.getName().endsWith(".git")) {
+							depotDirs.add(file);
+							return false;
+						}
+						return true;
 					}
 					
-					@Override
 					public boolean accept(final File dir,
 					                      final String name) {
-						return false;
-					}
-				}, new IOFileFilter() {
-					
-					@Override
-					public boolean accept(final File file) {
-						return file.getName().endsWith(".git");
-					}
-					
-					@Override
-					public boolean accept(final File dir,
-					                      final String name) {
-						return false;
+						return true;
 					}
 				});
 			}
-			
-			File cloneDir;
 			
 			database.register(Depot.class, new DepotAdapter(database));
 			database.register(Identity.class, new IdentityAdapter(database));
@@ -254,8 +237,7 @@ public class Main {
 			
 			final ExecutorService es = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors() - 2);
 			
-			while (depotDirs.hasNext()) {
-				cloneDir = depotDirs.next();
+			for (final File cloneDir : depotDirs) {
 				final URI depotURI = cloneDir.toURI();
 				
 				es.execute(new TaskRunner(baseDir, workDir, depotURI, database, new Task[] { Task.BRANCHES,
