@@ -39,40 +39,69 @@ import org.mozkito.skeleton.logging.Logger;
 import org.mozkito.skeleton.sequel.ISequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author Sascha Just
+ * The Class ChangeSetMiner.
  *
+ * @author Sascha Just
  */
 public class ChangeSetMiner implements Runnable {
 	
+	/** The Constant END_TAG. */
 	private static final String            END_TAG               = "<<<#$@#$@<<<";
+	
+	/** The Constant START_TAG. */
 	private static final String            START_TAG             = ">>>#$@#$@>>>";
 	
-	private static int                     RAW_OLD_MODE_OFFSET   = 1;
-	private static int                     RAW_NEW_MODE_OFFSET   = 8;
-	private static int                     RAW_OLD_HASH_OFFSET   = 15;
-	private static int                     RAW_NEW_HASH_OFFSET   = 56;
-	private static int                     RAW_CHANGETYPE_OFFSET = 97;
+	/** The Constant BIN_CHANGE_INDICATOR. */
 	private static final char              BIN_CHANGE_INDICATOR  = '-';
+	
+	/** The raw old mode offset. */
+	private static int                     RAW_OLD_MODE_OFFSET   = 1;
+	
+	/** The raw new mode offset. */
+	private static int                     RAW_NEW_MODE_OFFSET   = 8;
+	
+	/** The raw old hash offset. */
+	private static int                     RAW_OLD_HASH_OFFSET   = 15;
+	
+	/** The raw new hash offset. */
+	private static int                     RAW_NEW_HASH_OFFSET   = 56;
+	
+	/** The raw changetype offset. */
+	private static int                     RAW_CHANGETYPE_OFFSET = 97;
+	
+	/** The clone dir. */
 	private final File                     cloneDir;
+	
+	/** The database. */
 	private final SequelDatabase           database;
 	
+	/** The depot. */
 	private final Depot                    depot;
 	
+	/** The branch heads. */
 	private final Map<String, Branch>      branchHeads           = new HashMap<String, Branch>();
 	
+	/** The graph. */
 	private final DepotGraph               graph;
 	
+	/** The change sets. */
 	private final Map<String, ChangeSet>   changeSets            = new HashMap<String, ChangeSet>();
 	
+	/** The file cache. */
 	private final Map<String, Handle>      fileCache             = new HashMap<>();
 	
+	/** The revision adapter. */
 	private final ISequelAdapter<Revision> revisionAdapter;
 	
+	/** The handle adapter. */
 	private final ISequelAdapter<Handle>   handleAdapter;
 	
+	/** The change set adapter. */
 	private final ChangeSetAdapter         changeSetAdapter;
 	
+	/** The identity adapter. */
 	private final ISequelAdapter<Identity> identityAdapter;
 	
 	/**
@@ -113,9 +142,14 @@ public class ChangeSetMiner implements Runnable {
 	}
 	
 	/**
+	 * Parses the in out revision.
+	 *
 	 * @param changeSet
+	 *            the change set
 	 * @param line
+	 *            the line
 	 * @param revisions
+	 *            the revisions
 	 */
 	private void parseInOutRevision(final ChangeSet changeSet,
 	                                final String line,
@@ -185,10 +219,15 @@ public class ChangeSetMiner implements Runnable {
 	}
 	
 	/**
+	 * Parses the raw revision.
+	 *
 	 * @param changeSet
+	 *            the change set
 	 * @param line
+	 *            the line
 	 * @param revisions
-	 * @return
+	 *            the revisions
+	 * @return the revision
 	 */
 	private Revision parseRawRevision(final ChangeSet changeSet,
 	                                  final String line,
