@@ -35,6 +35,7 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
 
 import versions.Main.MozkitoHandler;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class TaskRunner.
  *
@@ -78,6 +79,7 @@ public class TaskRunner implements Runnable {
 	/** The depot. */
 	private final Depot          depot;
 	
+	/** The clone name. */
 	private final String         cloneName;
 	
 	/**
@@ -107,7 +109,7 @@ public class TaskRunner implements Runnable {
 			this.cloneName = sanitize(baseDir.getName());
 		} else {
 			
-			this.cloneName = sanitize(depotURI.relativize(baseURI).getPath());
+			this.cloneName = sanitize(baseURI.relativize(depotURI).getPath());
 		}
 		this.cloneDir = new File(workDir, this.cloneName);
 		this.depot = new Depot(this.cloneName, depotURI, Instant.now());
@@ -202,8 +204,16 @@ public class TaskRunner implements Runnable {
 		}
 	}
 	
+	/**
+	 * Sanitize.
+	 *
+	 * @param fileName
+	 *            the file name
+	 * @return the string
+	 */
 	private String sanitize(final String fileName) {
-		return fileName.replace(File.pathSeparator, "_").replace(".git", "").trim();
+		return fileName.replace(File.separator, "_").replace(".git", "").trim().toLowerCase()
+		               .replaceAll("[^0-9a-z]", "");
 	}
 	
 }
