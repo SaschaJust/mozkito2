@@ -72,18 +72,22 @@ public class SequelDatabase implements DataSource, Closeable {
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
-	public SequelDatabase(final String connectionString, final Properties properties) throws SQLException {
-		final HikariConfig config = new HikariConfig();
+	public SequelDatabase(final String connectionString, final Properties props) throws SQLException {
+		props.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
+		props.setProperty("dataSource.user", "test");
+		props.setProperty("dataSource.password", "test");
+		props.setProperty("dataSource.databaseName", "mydb");
+		final HikariConfig config = new HikariConfig(props);
 		config.setJdbcUrl(connectionString);
-		config.setUsername(properties.getProperty("user"));
-		config.setPassword(properties.getProperty("password"));
+		config.setUsername(props.getProperty("user"));
+		config.setPassword(props.getProperty("password"));
 		config.addDataSourceProperty("cachePrepStmts", "true");
 		config.addDataSourceProperty("prepStmtCacheSize", "250");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 		
 		this.type = Type.DERBY;
 		
-		for (final Entry<Object, Object> entry : properties.entrySet()) {
+		for (final Entry<Object, Object> entry : props.entrySet()) {
 			config.addDataSourceProperty((String) entry.getKey(), entry.getValue());
 		}
 		
