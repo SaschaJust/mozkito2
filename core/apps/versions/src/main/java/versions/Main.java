@@ -178,10 +178,10 @@ public class Main {
 				System.exit(EXIT_ERR_DB_TYPE);
 			}
 			
-			File workDir = new File(line.hasOption("working-dir")
-			                                                     ? line.getOptionValue("working-directory")
-			                                                     : System.getProperty("java.io.tmpdir"));
-			workDir = Files.createTempDirectory(workDir.toPath(), "mozkito2").toFile();
+			File workDir = new File(line.hasOption("working-directory")
+			                                                           ? line.getOptionValue("working-directory")
+			                                                           : System.getProperty("java.io.tmpdir"));
+			workDir = Files.createTempDirectory(workDir.toPath(), "mozkito2-").toFile();
 			final URI uri = new URI(line.hasOption("repository")
 			                                                    ? line.getOptionValue("repository")
 			                                                    : "file:///tmp/mozkito_bare.git");
