@@ -343,10 +343,6 @@ public class SequelDatabase implements DataSource, Closeable {
 			props.setProperty("dataSource.password", password);
 		}
 		
-		if (port != null) {
-			props.setProperty("dataSource.port", String.valueOf(port));
-		}
-		
 		if (host != null) {
 			props.setProperty("dataSource.host", host);
 		}

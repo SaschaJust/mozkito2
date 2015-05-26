@@ -17,13 +17,15 @@ import org.slf4j.helpers.MarkerIgnoringBase;
 
 import org.mozkito.skeleton.logging.Logger;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MozkitoLoggerAdapter.
  *
  * @author Sascha Just
  */
 public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
+	
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = 493348570530630750L;
 	
 	/**
 	 * {@inheritDoc}
