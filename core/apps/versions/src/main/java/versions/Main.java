@@ -242,12 +242,12 @@ public class Main {
 				
 				es.execute(new TaskRunner(baseDir, workDir, depotURI, database, new Task[] { Task.BRANCHES,
 				        Task.CHANGESETS, Task.GRAPH }));
-				es.shutdown();
-				System.out.println("-----------------------");
-				final boolean ret = es.awaitTermination(30, TimeUnit.DAYS);
-				System.out.println("All tasks are finished! Timeout: " + !ret);
 				
 			}
+			es.shutdown();
+			System.out.println("-----------------------");
+			final boolean ret = es.awaitTermination(30, TimeUnit.DAYS);
+			System.out.println("All tasks are finished! Timeout: " + !ret);
 		} catch (final URISyntaxException | SQLException | InterruptedException e) {
 			Logger.error(e);
 		} catch (final ParseException e) {
