@@ -456,14 +456,13 @@ public class UserAdapter implements ISequelAdapter<User> {
 		Requires.notNull(user);
 		
 		try {
-			int index = 0;
-			statement.setInt(++index, id);
 			
 			for (final Identity identity : user.getIdentities()) {
+				int index = 0;
+				statement.setInt(++index, id);
 				statement.setInt(++index, identity.id());
+				statement.executeUpdate();
 			}
-			
-			statement.executeUpdate();
 			
 			user.id(id);
 			Asserts.positive(user.id());
