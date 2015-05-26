@@ -343,11 +343,12 @@ public class SequelDatabase implements DataSource, Closeable {
 			props.setProperty("dataSource.password", password);
 		}
 		
-		if (host != null) {
-			props.setProperty("dataSource.host", host);
-		}
-		
 		final HikariConfig config = new HikariConfig(props);
+		config.setJdbcUrl("jdbc:postgresql://" + (host != null
+		                                                      ? host
+		                                                      : "localhost") + (port != null
+		                                                                                    ? ":" + port
+		                                                                                    : "") + "/" + name);
 		
 		config.addDataSourceProperty("cachePrepStmts", "true");
 		config.addDataSourceProperty("prepStmtCacheSize", "250");
