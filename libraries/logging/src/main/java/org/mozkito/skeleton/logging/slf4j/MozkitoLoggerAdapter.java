@@ -51,10 +51,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void debug(final String arg0,
 	                  final Object... arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'debug' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.debug(arg0, arg1);
 	}
 	
 	/**
@@ -65,10 +62,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	public void debug(final String arg0,
 	                  final Object arg1,
 	                  final Object arg2) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'debug' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.debug(arg0, arg1, arg2);
 	}
 	
 	/**
@@ -78,10 +72,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void debug(final String arg0,
 	                  final Throwable arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'debug' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.debug(arg0, arg1);
 	}
 	
 	/**
@@ -90,10 +81,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 * @see org.slf4j.Logger#error(java.lang.String)
 	 */
 	public void error(final String arg0) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'error' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.error(arg0);
 	}
 	
 	/**
@@ -103,10 +91,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void error(final String arg0,
 	                  final Object arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'error' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.error(arg0, arg1);
 	}
 	
 	/**
@@ -116,10 +101,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void error(final String arg0,
 	                  final Object... arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'error' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.error(arg0, arg1);
 	}
 	
 	/**
@@ -130,10 +112,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	public void error(final String arg0,
 	                  final Object arg1,
 	                  final Object arg2) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'error' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.error(arg0, arg1, arg2);
 	}
 	
 	/**
@@ -143,10 +122,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void error(final String arg0,
 	                  final Throwable arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'error' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.error(arg0, arg1);
 	}
 	
 	/**
@@ -155,10 +131,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 * @see org.slf4j.Logger#info(java.lang.String)
 	 */
 	public void info(final String arg0) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'info' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.info(arg0);
 	}
 	
 	/**
@@ -178,10 +151,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void info(final String arg0,
 	                 final Object... arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'info' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.info(arg0, arg1);
 	}
 	
 	/**
@@ -192,10 +162,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	public void info(final String arg0,
 	                 final Object arg1,
 	                 final Object arg2) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'info' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.info(arg0, arg1, arg2);
 	}
 	
 	/**
@@ -205,10 +172,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void info(final String arg0,
 	                 final Throwable arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'info' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.info(arg0, arg1);
 	}
 	
 	/**
@@ -262,10 +226,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 * @see org.slf4j.Logger#trace(java.lang.String)
 	 */
 	public void trace(final String arg0) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'trace' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.trace(arg0);
 	}
 	
 	/**
@@ -275,10 +236,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void trace(final String arg0,
 	                  final Object arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'trace' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.trace(arg0, arg1);
 	}
 	
 	/**
@@ -288,10 +246,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void trace(final String arg0,
 	                  final Object... arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'trace' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.trace(arg0, arg1);
 	}
 	
 	/**
@@ -302,10 +257,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	public void trace(final String arg0,
 	                  final Object arg1,
 	                  final Object arg2) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'trace' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.trace(arg0, arg1, arg2);
 	}
 	
 	/**
@@ -315,10 +267,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void trace(final String arg0,
 	                  final Throwable arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'trace' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.trace(arg0, arg1);
 	}
 	
 	/**
@@ -327,10 +276,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 * @see org.slf4j.Logger#warn(java.lang.String)
 	 */
 	public void warn(final String arg0) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'warn' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.warn(arg0);
 	}
 	
 	/**
@@ -340,10 +286,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void warn(final String arg0,
 	                 final Object arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'warn' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.warn(arg0, arg1);
 	}
 	
 	/**
@@ -353,10 +296,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void warn(final String arg0,
 	                 final Object... arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'warn' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.warn(arg0, arg1);
 	}
 	
 	/**
@@ -367,10 +307,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	public void warn(final String arg0,
 	                 final Object arg1,
 	                 final Object arg2) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'warn' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.warn(arg0, arg1, arg2);
 	}
 	
 	/**
@@ -380,10 +317,7 @@ public class MozkitoLoggerAdapter extends MarkerIgnoringBase {
 	 */
 	public void warn(final String arg0,
 	                 final Throwable arg1) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'warn' has not yet been implemented."); //$NON-NLS-1$
-		
+		Logger.warn(arg0, arg1);
 	}
 	
 }
