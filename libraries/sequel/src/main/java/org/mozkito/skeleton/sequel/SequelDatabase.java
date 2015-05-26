@@ -279,6 +279,9 @@ public class SequelDatabase implements DataSource, Closeable {
 	                                final Integer port) {
 		final HikariConfig config = new HikariConfig();
 		config.setJdbcUrl("jdbc:derby:" + name);
+		config.addDataSourceProperty("cachePrepStmts", "true");
+		config.addDataSourceProperty("prepStmtCacheSize", "250");
+		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 		
 		return config;
 	}
@@ -350,9 +353,6 @@ public class SequelDatabase implements DataSource, Closeable {
 		                                                                                    ? ":" + port
 		                                                                                    : "") + "/" + name);
 		
-		config.addDataSourceProperty("cachePrepStmts", "true");
-		config.addDataSourceProperty("prepStmtCacheSize", "250");
-		// config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 		return config;
 	}
 	
