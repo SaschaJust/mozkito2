@@ -213,7 +213,7 @@ public class TaskRunner implements Runnable {
 	 */
 	private String sanitize(final String fileName) {
 		return fileName.replace(File.separator, "_").replace('-', '_').replace(".git", "").trim().toLowerCase()
-		               .replaceAll("[^0-9a-z]", "");
+		               .replaceAll("[^0-9a-z_]", "");
 	}
 	
 }
