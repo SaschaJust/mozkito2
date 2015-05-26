@@ -75,8 +75,8 @@ public class SequelDatabase implements DataSource, Closeable {
 	public SequelDatabase(final String connectionString, final Properties properties) throws SQLException {
 		final HikariConfig config = new HikariConfig();
 		config.setJdbcUrl(connectionString);
-		// config.setUsername("bart");
-		// config.setPassword("51mp50n");
+		config.setUsername(properties.getProperty("user"));
+		config.setPassword(properties.getProperty("password"));
 		config.addDataSourceProperty("cachePrepStmts", "true");
 		config.addDataSourceProperty("prepStmtCacheSize", "250");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");

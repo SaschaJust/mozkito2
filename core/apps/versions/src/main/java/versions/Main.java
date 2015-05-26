@@ -165,8 +165,10 @@ public class Main {
 			                                                           : "mozkito-versions";
 			
 			Logger.info("Establishing database connection and creating pool.");
-			final SequelDatabase database = new SequelDatabase("jdbc:derby:" + databaseName + ";create=true",
-			                                                   new Properties());
+			final Properties props = new Properties();
+			props.setProperty("user", "just");
+			props.setProperty("password", "mm3m549DvIn28rg");
+			final SequelDatabase database = new SequelDatabase("jdbc:postgresql://localhost" + databaseName, props);
 			
 			final File baseDir = new File(uri);
 			
@@ -231,8 +233,13 @@ public class Main {
 				System.out.println("All tasks are finished! Timeout: " + !ret);
 				
 			}
-		} catch (final SQLException | ParseException | URISyntaxException | InterruptedException e) {
-			throw new RuntimeException(e);
+		} catch (final SQLException | URISyntaxException | InterruptedException e) {
+			Logger.error(e);
+		} catch (final ParseException e) {
+			final HelpFormatter formatter = new HelpFormatter();
+			formatter.setWidth(120);
+			formatter.printHelp("mozkito-versions", options);
+			System.exit(1);
 		}
 	}
 	
