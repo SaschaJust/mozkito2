@@ -4,39 +4,11 @@ CREATE TABLE changesets (
 	id BIGINT PRIMARY KEY,
 	depot_id SMALLINT,
 	commit_hash CHAR(40),
-	original_id varchar(40) DEFAULT NULL, 
 	tree_hash CHAR(40),
-	patch_hash CHAR(40),
 	authored_time TIMESTAMP,
 	author_id INT,
 	commit_time TIMESTAMP,
-	committer_id int
-);
-
-COMMENT ON TABLE changesets IS 'Holds data containing all the changesets of all branches within all depots';
-
-COMMENT ON COLUMN changesets.id IS 'The sequential, unique id of the changeset (over all depots).
-Generated using sequence seq_changesets_id';
-COMMENT ON COLUMN changesets.depot_id IS 'The id of the source depot the changeset belongs to.';
-COMMENT ON COLUMN changesets.commit_hash IS 'The commit identifier/hash (140bit sha1).
-This is split into 128bit and 32bit parts for performance reasons. You can recover the string representation using rehash(CHAR(40), INT)::varchar).';
-COMMENT ON COLUMN changesets.treehash IS 'The hash of the tree at that point in time, i.e. state/content of the depot within that branch at the particular changeset.
-This is split into 128bit and 32bit parts for performance reasons. You can recover the string representation using rehash(CHAR(40), INT)::varchar).';
-COMMENT ON COLUMN changesets.patch_hash IS 'The sha1 hash of the applied change.
-This is split into 128bit and 32bit parts for performance reasons. You can recover the string representation using rehash(CHAR(40), INT)::varchar).';
-COMMENT ON COLUMN changesets.authored_time IS 'The instant when this patch was created (not applied). Generally, this is the same as the committer instant. 
-However, on cherry-pick, am, apply, rebase, these might differ. The author is generally preserved; the committer however generally is updated to the user who first applied this patch. 
-In case patches are generated with `git diff` rather than `git format-patch`, author information got lost.';
-COMMENT ON COLUMN changesets.author_id IS 'The id of the author of the patch. This FK on users, not on identities.';
-COMMENT ON COLUMN changesets.commit_time IS 'The instant when this patch was created (not applied). See authored_timestamp for details.';
-COMMENT ON COLUMN changesets.committer_id IS 'The id of the user who applied this patch. This FK on users, not on identities.';
-
-CREATE TABLE changeset_merge_parents (
-	changeset_id BIGINT,
-	parent_id BIGINT
-);
-
-CREATE TABLE changeset_branches (
-	changeset_id BIGINT,
-	branch_id INT
+	committer_id int,
+	subject TEXT,
+	body TEXT
 );
