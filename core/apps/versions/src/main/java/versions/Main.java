@@ -198,6 +198,7 @@ public class Main {
 				if (Logger.logError()) {
 					Logger.error("No tasks selected.");
 				}
+				printHelp(options);
 				System.exit(EXIT_ERR_TASKS);
 			}
 			
