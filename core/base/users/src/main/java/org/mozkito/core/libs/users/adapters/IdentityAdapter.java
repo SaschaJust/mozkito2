@@ -31,6 +31,7 @@ import org.mozkito.skeleton.logging.Logger;
 import org.mozkito.skeleton.sequel.ISequelAdapter;
 import org.mozkito.skeleton.sequel.ResultIterator;
 import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.SequelManager;
 
 /**
  * The Class UserSequelAdapter.
@@ -48,6 +49,10 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	/** The database. */
 	private final SequelDatabase database;
 	
+	private final String         saveStatement;
+	
+	private final String         nextIdStatement;
+	
 	/**
 	 * Instantiates a new user sequel adapter.
 	 *
@@ -58,6 +63,8 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 		Requires.notNull(database);
 		
 		this.database = database;
+		this.saveStatement = SequelManager.loadStatement(database, "identity_save");
+		this.nextIdStatement = SequelManager.loadStatement(database, "identity_nextid");
 		
 		Ensures.notNull(database);
 	}
@@ -275,30 +282,53 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 		Requires.notNull(identities);
 		
 		try {
-			synchronized (this.database) {
-				final Connection connection = this.database.getConnection();
-				final Statement idquery = connection.createStatement();
+			final Connection connection = this.database.getConnection();
+			final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
+			final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
+			
+			for (final Identity identity : identities) {
+				final ResultSet idResult = idStatement.executeQuery();
+				final boolean result = idResult.next();
+				Contract.asserts(result);
+				final int id = idResult.getInt(1);
 				
-				final PreparedStatement statement = connection.prepareStatement("INSERT INTO " + TABLE_NAME
-				        + " (id, username, email, fullname) VALUES (?, ?, ?, ?)");
-				
-				for (final Identity identity : identities) {
-					final ResultSet result = idquery.executeQuery(ISequelAdapter.getNextId(this.database.getType(),
-					                                                                       ID_SEQUENCE));
-					
-					Contract.asserts(result.next());
-					
-					final int id = result.getInt(1);
-					statement.setInt(1, id);
-					statement.setString(2, identity.getUserName());
-					statement.setString(3, identity.getEmail());
-					statement.setString(4, identity.getFullName());
-					
-					final int updates = statement.executeUpdate();
-					Asserts.equalTo(1, updates);
-					identity.id(id);
-				}
+				save(statement, id, identity);
 			}
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * Save.
+	 *
+	 * @param statement
+	 *            the statement
+	 * @param id
+	 *            the id
+	 * @param identity
+	 *            the identity
+	 */
+	private void save(final PreparedStatement statement,
+	                  final int id,
+	                  final Identity identity) {
+		Requires.notNull(statement);
+		Requires.notNull(id);
+		Requires.isInteger(id);
+		Requires.notNull(identity);
+		
+		try {
+			int index = 0;
+			statement.setInt(++index, id);
+			
+			statement.setString(++index, identity.getUserName());
+			statement.setString(++index, identity.getEmail());
+			statement.setString(++index, identity.getFullName());
+			
+			statement.executeUpdate();
+			
+			identity.id(id);
+			Asserts.positive(identity.id());
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -314,6 +344,9 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 		Requires.notNull(identities);
 		
 		try {
+			final Connection connection = this.database.getConnection();
+			final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
+			
 			for (final Identity identity : identities) {
 				final Object idO = identity.id();
 				
@@ -322,43 +355,35 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 				
 				int id = (int) idO;
 				
-				synchronized (this.database) {
-					final Connection connection = this.database.getConnection();
+				PreparedStatement statement = null;
+				if (id <= 0) {
+					final ResultSet idResult = idStatement.executeQuery();
+					final boolean result = idResult.next();
+					Contract.asserts(result);
+					id = idResult.getInt(1);
 					
-					PreparedStatement statement = null;
-					if (id <= 0) {
-						statement = connection.prepareStatement(ISequelAdapter.getNextId(this.database.getType(),
-						                                                                 ID_SEQUENCE));
-						statement.setString(1, IdentityAdapter.ID_SEQUENCE);
-						final ResultSet result = statement.executeQuery();
-						
-						Contract.asserts(result.next());
-						
-						id = result.getInt(1);
-						statement = connection.prepareStatement("INSERT INTO " + TABLE_NAME
-						        + " (id, username, email, fullname) VALUES (?, ?, ?, ?)");
-						statement.setInt(1, id);
-						statement.setString(2, identity.getUserName());
-						statement.setString(3, identity.getEmail());
-						statement.setString(4, identity.getFullName());
-						identity.id(id);
-					} else {
-						statement = connection.prepareStatement("UPDATE " + TABLE_NAME
-						        + " SET (username, email, fullname) = (?, ?, ?) WHERE id = ?");
-						statement.setString(1, identity.getUserName());
-						statement.setString(2, identity.getEmail());
-						statement.setString(3, identity.getFullName());
-						statement.setInt(4, id);
-					}
-					
-					final int updates = statement.executeUpdate();
-					
-					Asserts.equalTo(1, updates);
+					statement = connection.prepareStatement("INSERT INTO " + TABLE_NAME
+					        + " (id, username, email, fullname) VALUES (?, ?, ?, ?)");
+					statement.setInt(1, id);
+					statement.setString(2, identity.getUserName());
+					statement.setString(3, identity.getEmail());
+					statement.setString(4, identity.getFullName());
+					identity.id(id);
+				} else {
+					statement = connection.prepareStatement("UPDATE " + TABLE_NAME
+					        + " SET (username, email, fullname) = (?, ?, ?) WHERE id = ?");
+					statement.setString(1, identity.getUserName());
+					statement.setString(2, identity.getEmail());
+					statement.setString(3, identity.getFullName());
+					statement.setInt(4, id);
 				}
+				
+				final int updates = statement.executeUpdate();
+				
+				Asserts.equalTo(1, updates);
 			}
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
 }

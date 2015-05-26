@@ -1,0 +1,2 @@
+INSERT INTO users (id, identity_id)
+VALUES (?, ?)

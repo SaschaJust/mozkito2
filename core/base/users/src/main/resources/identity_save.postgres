@@ -1,0 +1,2 @@
+INSERT INTO identities (id, username, email, fullname)
+VALUES (?, ?, ?, ?)

@@ -27,29 +27,6 @@ import java.util.List;
 public interface ISequelAdapter<T> {
 	
 	/**
-	 * Gets the next id.
-	 *
-	 * @param type
-	 *            the type
-	 * @param sequenceName
-	 *            the sequence name
-	 * @return the next id
-	 */
-	public static String getNextId(final SequelDatabase.Type type,
-	                               final String sequenceName) {
-		switch (type) {
-			case MSSQL:
-				return "SELECT NEXT VALUE FOR " + sequenceName;
-			case DERBY:
-				return "VALUES (NEXT VALUE FOR " + sequenceName + ")";
-			case POSTGRES:
-				return "SELECT nextval'" + sequenceName + "'";
-		}
-		
-		return "SELECT NEXT VALUE FOR " + sequenceName;
-	}
-	
-	/**
 	 * Creates the.
 	 *
 	 * @param result
