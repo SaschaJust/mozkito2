@@ -58,6 +58,18 @@ public class TaskRunner implements Runnable {
 		INTEGRATION;
 	}
 	
+	/**
+	 * Sanitize.
+	 *
+	 * @param fileName
+	 *            the file name
+	 * @return the string
+	 */
+	private static String sanitize(final String fileName) {
+		return fileName.replace(File.separator, "_").replace('-', '_').replace(".git", "").trim().toLowerCase()
+		               .replaceAll("[^0-9a-z_]", "").replaceAll("(^_*|_*$)", "");
+	}
+	
 	/** The work dir. */
 	private final File           workDir;
 	
@@ -202,18 +214,6 @@ public class TaskRunner implements Runnable {
 		} catch (final InterruptedException e) {
 			throw new RuntimeException(e);
 		}
-	}
-	
-	/**
-	 * Sanitize.
-	 *
-	 * @param fileName
-	 *            the file name
-	 * @return the string
-	 */
-	private String sanitize(final String fileName) {
-		return fileName.replace(File.separator, "_").replace('-', '_').replace(".git", "").trim().toLowerCase()
-		               .replaceAll("[^0-9a-z_]", "");
 	}
 	
 }
