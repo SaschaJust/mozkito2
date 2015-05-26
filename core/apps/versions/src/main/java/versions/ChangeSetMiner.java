@@ -306,7 +306,12 @@ public class ChangeSetMiner implements Runnable {
 			line = command.nextOutput();
 			Asserts.notNull(line, "Awaiting author email.");
 			idEmail = line;
-			identity = identityCache.request(null, idName, idEmail);
+			identity = identityCache.request(null, idName.isEmpty()
+			                                                       ? null
+			                                                       : idName, idEmail.isEmpty()
+			                                                                                  ? null
+			                                                                                  : idEmail);
+			
 			if (identity.id() <= 0) {
 				this.identityAdapter.save(identity);
 			}
@@ -315,7 +320,9 @@ public class ChangeSetMiner implements Runnable {
 			
 			line = command.nextOutput();
 			Asserts.notNull(line, "Awaiting authored timestamp.");
-			changeSetBuilder.authoredOn(Instant.ofEpochSecond(Long.parseLong(line)));
+			if (!line.isEmpty()) {
+				changeSetBuilder.authoredOn(Instant.ofEpochSecond(Long.parseLong(line)));
+			}
 			
 			line = command.nextOutput();
 			Asserts.notNull(line, "Awaiting committer name.");

@@ -31,8 +31,6 @@ import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.logging.Logger;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
-import versions.Main.MozkitoHandler;
-
 // TODO: Auto-generated Javadoc
 /**
  * The Class TaskRunner.

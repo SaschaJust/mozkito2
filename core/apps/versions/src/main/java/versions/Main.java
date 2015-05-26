@@ -15,7 +15,6 @@ package versions;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -63,23 +62,6 @@ import versions.TaskRunner.Task;
  * @author Sascha Just
  */
 public class Main {
-	
-	/**
-	 * The Class MozkitoHandler.
-	 */
-	public static class MozkitoHandler implements UncaughtExceptionHandler {
-		
-		/**
-		 * {@inheritDoc}
-		 * 
-		 * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang.Thread, java.lang.Throwable)
-		 */
-		public void uncaughtException(final Thread t,
-		                              final Throwable e) {
-			Logger.fatal(e, "%s: Unhandled exception. Terminated.", t.getName());
-		}
-		
-	}
 	
 	private static final int EXIT_ERR_SETTINGS = 1;
 	private static final int EXIT_HELP         = 0;
