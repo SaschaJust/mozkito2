@@ -177,7 +177,7 @@ public class Main {
 			}
 			
 			final File workDir = new File(line.hasOption("working-dir")
-			                                                           ? line.getOptionValue("working-dir")
+			                                                           ? line.getOptionValue("working-directory")
 			                                                           : "/tmp");
 			
 			final URI uri = new URI(line.hasOption("repository")
