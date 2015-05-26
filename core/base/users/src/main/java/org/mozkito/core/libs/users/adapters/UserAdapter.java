@@ -169,8 +169,8 @@ public class UserAdapter implements ISequelAdapter<User> {
 		Requires.notNull(database);
 		
 		this.database = database;
-		this.saveStatement = SequelManager.loadStatement(database, "users_save");
-		this.nextIdStatement = SequelManager.loadStatement(database, "users_nextid");
+		this.saveStatement = SequelManager.loadStatement(database, "user_save");
+		this.nextIdStatement = SequelManager.loadStatement(database, "user_nextid");
 		
 		Ensures.notNull(database);
 	}
