@@ -11,18 +11,18 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.sequel;
+package org.mozkito.libraries.sequel;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
+import java.util.Random;
 
 import javax.sql.DataSource;
 
@@ -30,6 +30,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.skeleton.logging.Logger;
 
 /**
  * The Class SequelDatabase.
@@ -51,17 +52,23 @@ public class SequelDatabase implements DataSource, Closeable {
 		MSSQL;
 	}
 	
+	/** The connection count. */
+	private int                                    connectionCount = 5;
+	
 	/** The data source. */
 	private final HikariDataSource                 dataSource;
 	
 	/** The type. */
 	private final Type                             type;
 	
-	/** The connection. */
-	private final Connection                       connection;
-	
 	/** The adapters. */
-	private final Map<Class<?>, ISequelAdapter<?>> adapters = new HashMap<>();
+	private final Map<Class<?>, ISequelAdapter<?>> adapters        = new HashMap<>();
+	
+	/** The connections. */
+	private final Connection[]                     connections;
+	
+	/** The random. */
+	private final Random                           random          = new Random(Instant.now().toEpochMilli());
 	
 	/**
 	 * Instantiates a new sequel database.
@@ -78,11 +85,13 @@ public class SequelDatabase implements DataSource, Closeable {
 	 *            the password
 	 * @param port
 	 *            the port
+	 * @param connectionCount
+	 *            the connection count
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
 	public SequelDatabase(final Type type, final String name, final String host, final String username,
-	        final String password, final Integer port) throws SQLException {
+	        final String password, final Integer port, final int connectionCount) throws SQLException {
 		HikariConfig config;
 		
 		switch (type) {
@@ -102,8 +111,14 @@ public class SequelDatabase implements DataSource, Closeable {
 		this.type = type;
 		
 		this.dataSource = new HikariDataSource(config);
-		this.dataSource.getConnection().setAutoCommit(false);
-		this.connection = this.dataSource.getConnection();
+		this.connectionCount = connectionCount;
+		
+		this.connections = new Connection[this.connectionCount];
+		
+		for (int i = 0; i < this.connectionCount; ++i) {
+			this.connections[i] = this.dataSource.getConnection();
+			this.connections[i].setAutoCommit(false);
+		}
 	}
 	
 	/**
@@ -112,8 +127,14 @@ public class SequelDatabase implements DataSource, Closeable {
 	 * @see java.io.Closeable#close()
 	 */
 	@Override
-	public void close() throws IOException {
-		this.dataSource.close();
+	public void close() {
+		for (final Connection connection : this.connections) {
+			try {
+				connection.close();
+			} catch (final SQLException e) {
+				Logger.warn("Could not close SQL connection. " + e.getMessage());
+			}
+		}
 	}
 	
 	/**
@@ -157,7 +178,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	 */
 	@Override
 	public Connection getConnection() throws SQLException {
-		return this.connection;
+		return this.connections[this.random.nextInt(this.connectionCount)];
 	}
 	
 	/**
@@ -199,7 +220,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	 * @see javax.sql.CommonDataSource#getParentLogger()
 	 */
 	@Override
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+	public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		return this.dataSource.getParentLogger();
 	}
 	

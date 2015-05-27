@@ -50,9 +50,9 @@ import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Revision;
+import org.mozkito.libraries.sequel.SequelDatabase;
+import org.mozkito.libraries.sequel.SequelDatabase.Type;
 import org.mozkito.skeleton.logging.Logger;
-import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelDatabase.Type;
 
 import versions.TaskRunner.Task;
 
@@ -209,7 +209,7 @@ public class Main {
 			                                                                                  : null,
 			                                                   line.hasOption("database-password")
 			                                                                                      ? line.getOptionValue("database-password")
-			                                                                                      : null, null);
+			                                                                                      : null, null, 5);
 			
 			final File baseDir = new File(uri);
 			
@@ -252,9 +252,11 @@ public class Main {
 				
 			}
 			es.shutdown();
+			
 			System.out.println("————————————————————————————————————————");
 			final boolean ret = es.awaitTermination(30, TimeUnit.DAYS);
 			System.out.println("All tasks are finished! Timeout: " + !ret);
+			database.close();
 		} catch (final URISyntaxException | SQLException | InterruptedException | IOException e) {
 			Logger.error(e);
 		} catch (final ParseException e) {

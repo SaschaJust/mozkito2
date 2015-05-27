@@ -16,9 +16,9 @@ package org.mozkito.core.libs.users.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mozkito.libraries.sequel.ISequelEntity;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
  * The Class User.
@@ -61,7 +61,7 @@ public class User implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.libraries.sequel.ISequelEntity#id()
 	 */
 	public Integer id() {
 		return this.id;
@@ -70,7 +70,7 @@ public class User implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.ISequelEntity#id(java.lang.Object)
 	 */
 	public void id(final Object id) {
 		Requires.notNull(id);

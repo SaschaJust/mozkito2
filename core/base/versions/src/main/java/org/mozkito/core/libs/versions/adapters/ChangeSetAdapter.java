@@ -23,11 +23,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.libraries.sequel.ISequelAdapter;
+import org.mozkito.libraries.sequel.SequelDatabase;
+import org.mozkito.libraries.sequel.SequelManager;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelManager;
 
 /**
  * The Class ChangeSetAdapter, which is used to load and store {@link ChangeSet} entities from/to a database.
@@ -60,7 +60,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
 	
 	public ChangeSet create(final ResultSet result) {
@@ -70,7 +70,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createConstraints()
 	 */
 	
 	public void createConstraints() {
@@ -83,7 +83,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createIndexes()
 	 */
 	
 	public void createIndexes() {
@@ -96,7 +96,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createScheme()
 	 */
 	
 	public void createScheme() {
@@ -112,7 +112,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
 	
 	public void delete(final ChangeSet object) {
@@ -147,7 +147,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load()
 	 */
 	
 	public Iterator<ChangeSet> load() {
@@ -160,7 +160,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object[])
 	 */
 	
 	public List<ChangeSet> load(final Object... ids) {
@@ -173,7 +173,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object)
 	 */
 	
 	public ChangeSet load(final Object id) {
@@ -186,7 +186,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#save(java.lang.Object[])
 	 */
 	
 	public void save(final ChangeSet... changeSets) {
@@ -260,7 +260,7 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
 	
 	public void update(final ChangeSet... objects) {

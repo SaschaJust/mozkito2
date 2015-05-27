@@ -14,7 +14,7 @@
 package org.mozkito.core.libs.users.model;
 
 import org.mozkito.core.libs.users.IdentityCache;
-import org.mozkito.skeleton.sequel.IBuilder;
+import org.mozkito.libraries.sequel.IBuilder;
 
 /**
  * The Class IdentityBuilder.
@@ -37,7 +37,7 @@ public class IdentityBuilder implements IBuilder<Identity> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IBuilder#create()
+	 * @see org.mozkito.libraries.sequel.IBuilder#create()
 	 */
 	public Identity create() {
 		return new Identity(this.username, this.email, this.fullname);

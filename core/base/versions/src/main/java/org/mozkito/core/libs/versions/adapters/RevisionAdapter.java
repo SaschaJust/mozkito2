@@ -22,11 +22,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mozkito.core.libs.versions.model.Revision;
+import org.mozkito.libraries.sequel.ISequelAdapter;
+import org.mozkito.libraries.sequel.SequelDatabase;
+import org.mozkito.libraries.sequel.SequelManager;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelManager;
 
 /**
  * @author Sascha Just
@@ -50,7 +50,7 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
 	public Revision create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -62,7 +62,7 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createConstraints()
 	 */
 	public void createConstraints() {
 		// TODO Auto-generated method stub
@@ -74,7 +74,7 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createIndexes()
 	 */
 	public void createIndexes() {
 		// TODO Auto-generated method stub
@@ -86,7 +86,7 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createScheme()
 	 */
 	public void createScheme() {
 		try {
@@ -101,7 +101,7 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
 	public void delete(final Revision object) {
 		// TODO Auto-generated method stub
@@ -135,7 +135,7 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load()
 	 */
 	public Iterator<Revision> load() {
 		// TODO Auto-generated method stub
@@ -147,7 +147,7 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object[])
 	 */
 	public List<Revision> load(final Object... ids) {
 		// TODO Auto-generated method stub
@@ -159,7 +159,7 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object)
 	 */
 	public Revision load(final Object id) {
 		// TODO Auto-generated method stub
@@ -211,7 +211,7 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#save(java.lang.Object[])
 	 */
 	public void save(final Revision... revisions) {
 		Requires.notNull(revisions);
@@ -232,7 +232,7 @@ public class RevisionAdapter implements ISequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
 	public void update(final Revision... objects) {
 		// TODO Auto-generated method stub

@@ -31,10 +31,10 @@ import org.mozkito.core.libs.users.adapters.UserAdapter;
 import org.mozkito.core.libs.users.adapters.UserAdapter.UserIterator;
 import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.users.model.User;
+import org.mozkito.libraries.sequel.ISequelAdapter;
+import org.mozkito.libraries.sequel.SequelDatabase;
+import org.mozkito.libraries.sequel.SequelDatabase.Type;
 import org.mozkito.skeleton.io.FileUtils;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelDatabase.Type;
 
 /**
  * The Class IdentityTest.
@@ -62,7 +62,7 @@ public class IdentityTest {
 	public void setUp() throws Exception {
 		this.databaseName = Files.createTempDirectory(IdentityTest.class.getSimpleName() + ".db");
 		FileUtils.deleteDirectory(this.databaseName);
-		this.database = new SequelDatabase(Type.DERBY, this.databaseName + ";create=true", null, null, null, null);
+		this.database = new SequelDatabase(Type.DERBY, this.databaseName + ";create=true", null, null, null, null, 1);
 		this.adapter = new IdentityAdapter(this.database);
 		this.adapter.createScheme();
 	}

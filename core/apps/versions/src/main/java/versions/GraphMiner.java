@@ -20,9 +20,9 @@ import org.mozkito.core.libs.versions.DepotGraph;
 import org.mozkito.core.libs.versions.DepotGraph.EdgeType;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.libraries.sequel.SequelDatabase;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
-import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
  * @author Sascha Just

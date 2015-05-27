@@ -25,14 +25,14 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import org.mozkito.core.libs.users.adapters.IdentityAdapter;
 import org.mozkito.core.libs.users.model.Identity;
+import org.mozkito.libraries.sequel.ISequelAdapter;
+import org.mozkito.libraries.sequel.SequelDatabase;
+import org.mozkito.libraries.sequel.SequelDatabase.Type;
 import org.mozkito.skeleton.logging.Bus;
 import org.mozkito.skeleton.logging.Level;
 import org.mozkito.skeleton.logging.Logger;
 import org.mozkito.skeleton.logging.consumer.LogConsumer;
 import org.mozkito.skeleton.logging.consumer.appender.TerminalAppender;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelDatabase.Type;
 
 /**
  * The Class Main.
@@ -53,7 +53,7 @@ public class Main {
 		
 		try {
 			final Identity identity = new Identity("sjust", "sascha.just@mozkito.org", "Sascha Just");
-			final SequelDatabase database = new SequelDatabase(Type.DERBY, "simpsons", null, null, null, null);
+			final SequelDatabase database = new SequelDatabase(Type.DERBY, "simpsons", null, null, null, null, 1);
 			final ISequelAdapter<Identity> adapter = new IdentityAdapter(database);
 			adapter.createScheme();
 			

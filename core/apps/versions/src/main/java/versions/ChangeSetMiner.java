@@ -32,12 +32,12 @@ import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Revision;
+import org.mozkito.libraries.sequel.ISequelAdapter;
+import org.mozkito.libraries.sequel.SequelDatabase;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.logging.Logger;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -315,6 +315,8 @@ public class ChangeSetMiner implements Runnable {
 		ChangeSet changeSet = null;
 		final StringBuilder bodyBuilder = new StringBuilder();
 		
+		final Map<Long, Revision> revisions = new HashMap<>();
+		
 		Identity identity;
 		String idName, idEmail;
 		
@@ -359,8 +361,13 @@ public class ChangeSetMiner implements Runnable {
 			
 			line = command.nextOutput();
 			Asserts.notNull(line, "Awaiting authored timestamp.");
-			if (!line.isEmpty()) {
+			try {
 				changeSetBuilder.authoredOn(Instant.ofEpochSecond(Long.parseLong(line)));
+			} catch (final NumberFormatException e) {
+				if (Logger.logWarn()) {
+					Logger.warn("While parsing changeset '%s', we could not find a 'authored on' timestamp. Using default value (EPOCH).",
+					            changeSetBuilder.getHash());
+				}
 			}
 			
 			line = command.nextOutput();
@@ -378,7 +385,15 @@ public class ChangeSetMiner implements Runnable {
 			
 			line = command.nextOutput();
 			Asserts.notNull(line, "Awaiting commit timestamp.");
-			changeSetBuilder.committedOn(Instant.ofEpochSecond(Long.parseLong(line)));
+			
+			try {
+				changeSetBuilder.committedOn(Instant.ofEpochSecond(Long.parseLong(line)));
+			} catch (final NumberFormatException e) {
+				if (Logger.logWarn()) {
+					Logger.warn("While parsing changeset '%s', we could not find a 'commited on' timestamp. Using default value (EPOCH).",
+					            changeSetBuilder.getHash());
+				}
+			}
 			
 			line = command.nextOutput();
 			Asserts.notNull(line, "Awaiting subject.");
@@ -399,7 +414,7 @@ public class ChangeSetMiner implements Runnable {
 			Asserts.notNull(changeSet);
 			this.changeSetAdapter.save(saveStatement, nextIdStatement, changeSet);
 			
-			final Map<Long, Revision> revisions = new HashMap<>();
+			revisions.clear();
 			
 			// raw format (which gives us file mode before after and hash before/after) and numstat (which give us lines
 			// in/lines out) are separate blocsk

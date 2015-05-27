@@ -17,7 +17,7 @@ import java.time.Instant;
 
 import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.model.ChangeSet;
-import org.mozkito.skeleton.sequel.IBuilder;
+import org.mozkito.libraries.sequel.IBuilder;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -135,7 +135,7 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IBuilder#create()
+	 * @see org.mozkito.libraries.sequel.IBuilder#create()
 	 */
 	public ChangeSet create() {
 		if (this.commitTime == null) {
@@ -148,6 +148,15 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 		
 		return new ChangeSet(this.depotId, this.commitHash, this.treeHash, this.authoredTime, this.authorId,
 		                     this.commitTime, this.committerId, this.subject, this.body);
+	}
+	
+	/**
+	 * Gets the hash.
+	 *
+	 * @return the hash
+	 */
+	public String getHash() {
+		return this.commitHash;
 	}
 	
 	/**
