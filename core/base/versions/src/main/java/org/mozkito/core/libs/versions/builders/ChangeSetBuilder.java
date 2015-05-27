@@ -17,7 +17,7 @@ import java.time.Instant;
 
 import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.model.ChangeSet;
-import org.mozkito.skeleton.sequel.IBuilder;
+import org.mozkito.libraries.sequel.IBuilder;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -139,7 +139,7 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	 */
 	public ChangeSet create() {
 		if (this.commitTime == null) {
-			this.authoredTime = Instant.EPOCH;
+			this.commitTime = Instant.EPOCH;
 		}
 		
 		if (this.authoredTime == null) {
