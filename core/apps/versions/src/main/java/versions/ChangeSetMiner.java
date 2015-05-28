@@ -302,7 +302,7 @@ public class ChangeSetMiner implements Runnable {
 		ChangeSet changeSet = null;
 		final List<Revision> revisions = new LinkedList<>();
 		
-		final StringBuilder bodyBuilder = new StringBuilder();
+		StringBuilder bodyBuilder = new StringBuilder();
 		
 		Identity identity;
 		String idName, idEmail;
@@ -370,6 +370,8 @@ public class ChangeSetMiner implements Runnable {
 			this.line = command.nextOutput();
 			Asserts.notNull(this.line, "Awaiting subject.");
 			changeSetBuilder.subject(this.line.trim());
+			
+			bodyBuilder = new StringBuilder();
 			
 			BODY: while ((this.line = command.nextOutput()) != null) {
 				this.line = this.line.trim();
