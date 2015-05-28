@@ -13,6 +13,9 @@
 
 package versions;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -24,6 +27,7 @@ import java.lang.management.RuntimeMXBean;
 
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.io.FileUtils;
+import org.mozkito.skeleton.io.FileUtils.FileShutdownAction;
 
 /**
  * The Class MozkitoHandler.
@@ -200,8 +204,20 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 			synchronized (this) {
 				if (!caughtOne) {
 					caughtOne = true;
-					Logger.fatal(e, "%s: Unhandled exception. Terminated.", t.getName());
-					Logger.fatal(getCrashReport(e));
+					File file;
+					try {
+						file = FileUtils.createRandomFile("mozkito-", ".crash", FileShutdownAction.KEEP);
+						try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+							writer.println(t.getName() + ": Unhandled exception. Terminated.");
+							e.printStackTrace(writer);
+							writer.println(getCrashReport(e));
+						}
+					} catch (final IOException e1) {
+						Logger.fatal("Could not write crash file.");
+						Logger.fatal(e, "%s: Unhandled exception. Terminated.", t.getName());
+						Logger.fatal(getCrashReport(e));
+					}
+					
 					System.exit(404);
 				}
 			}
