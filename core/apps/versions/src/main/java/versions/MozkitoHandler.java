@@ -202,6 +202,7 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 					caughtOne = true;
 					Logger.fatal(e, "%s: Unhandled exception. Terminated.", t.getName());
 					Logger.fatal(getCrashReport(e));
+					System.exit(404);
 				}
 			}
 			
