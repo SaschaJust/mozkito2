@@ -19,13 +19,13 @@ import java.util.Map;
 
 import org.apache.commons.collections4.map.UnmodifiableMap;
 
-import org.mozkito.core.libs.versions.adapters.BranchAdapter;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.BranchHead;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.exec.Command;
+import org.mozkito.skeleton.sequel.ISequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
@@ -83,7 +83,7 @@ public class BranchMiner implements Runnable {
 	 */
 	public void run() {
 		Asserts.notNull(this.database);
-		final BranchAdapter branchAdapter = new BranchAdapter(this.database);
+		final ISequelAdapter<Branch> branchAdapter = this.database.getAdapter(Branch.class);
 		
 		final Command command = Command.execute("git", new String[] { "ls-remote", "--heads" }, this.cloneDir);
 		

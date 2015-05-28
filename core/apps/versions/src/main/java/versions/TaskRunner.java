@@ -22,13 +22,13 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 
 import org.mozkito.core.libs.versions.DepotGraph;
-import org.mozkito.core.libs.versions.adapters.GraphAdapter;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.commons.URIUtils;
 import org.mozkito.skeleton.exec.Command;
+import org.mozkito.skeleton.sequel.ISequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
 // TODO: Auto-generated Javadoc
@@ -165,7 +165,7 @@ public class TaskRunner implements Runnable {
 				branchHeads = new HashMap<String, Branch>();
 			}
 			
-			final GraphAdapter graphAdapter = new GraphAdapter(this.database);
+			final ISequelAdapter<DepotGraph> graphAdapter = this.database.getAdapter(DepotGraph.class);
 			Map<String, ChangeSet> changeSets = new HashMap<String, ChangeSet>();
 			
 			if (ArrayUtils.contains(this.tasks, Task.CHANGESETS)) {
