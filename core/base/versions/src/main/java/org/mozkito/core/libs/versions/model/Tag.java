@@ -15,7 +15,6 @@ package org.mozkito.core.libs.versions.model;
 
 import java.time.Instant;
 
-import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
@@ -154,19 +153,17 @@ public class Tag implements ISequelEntity {
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
 	@Override
-	public Object id() {
+	public long id() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
 	 */
 	@Override
-	public void id(final Object id) {
-		Requires.notNull(id);
-		Requires.isInteger(id);
+	public void id(final long id) {
 		this.id = (int) id;
 	}
 	

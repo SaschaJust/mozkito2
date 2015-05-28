@@ -14,9 +14,10 @@
 package versions;
 
 import java.io.File;
-import java.sql.PreparedStatement;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.map.UnmodifiableMap;
@@ -25,21 +26,19 @@ import org.mozkito.core.libs.users.IdentityCache;
 import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.ChangeType;
 import org.mozkito.core.libs.versions.DepotGraph;
-import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
 import org.mozkito.core.libs.versions.builders.ChangeSetBuilder;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Revision;
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.exec.Command;
-import org.mozkito.skeleton.logging.Logger;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
+import org.mozkito.skeleton.sequel.DatabaseDumper;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ChangeSetMiner.
  *
@@ -48,61 +47,66 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
 public class ChangeSetMiner implements Runnable {
 	
 	/** The Constant END_TAG. */
-	private static final String            END_TAG               = "<<<#$@#$@<<<";
+	private static final String             END_TAG               = "<<<#$@#$@<<<";
 	
 	/** The Constant START_TAG. */
-	private static final String            START_TAG             = ">>>#$@#$@>>>";
+	private static final String             START_TAG             = ">>>#$@#$@>>>";
 	
 	/** The Constant BIN_CHANGE_INDICATOR. */
-	private static final char              BIN_CHANGE_INDICATOR  = '-';
+	private static final char               BIN_CHANGE_INDICATOR  = '-';
 	
 	/** The raw old mode offset. */
-	private static int                     RAW_OLD_MODE_OFFSET   = 1;
+	private static int                      RAW_OLD_MODE_OFFSET   = 1;
 	
 	/** The raw new mode offset. */
-	private static int                     RAW_NEW_MODE_OFFSET   = 8;
+	private static int                      RAW_NEW_MODE_OFFSET   = 8;
 	
 	/** The raw old hash offset. */
-	private static int                     RAW_OLD_HASH_OFFSET   = 15;
+	private static int                      RAW_OLD_HASH_OFFSET   = 15;
 	
 	/** The raw new hash offset. */
-	private static int                     RAW_NEW_HASH_OFFSET   = 56;
+	private static int                      RAW_NEW_HASH_OFFSET   = 56;
 	
 	/** The raw changetype offset. */
-	private static int                     RAW_CHANGETYPE_OFFSET = 97;
+	private static int                      RAW_CHANGETYPE_OFFSET = 97;
 	
 	/** The clone dir. */
-	private final File                     cloneDir;
+	private final File                      cloneDir;
 	
 	/** The database. */
-	private final SequelDatabase           database;
+	private final SequelDatabase            database;
 	
 	/** The depot. */
-	private final Depot                    depot;
+	private final Depot                     depot;
 	
 	/** The branch heads. */
-	private final Map<String, Branch>      branchHeads           = new HashMap<String, Branch>();
+	private final Map<String, Branch>       branchHeads           = new HashMap<String, Branch>();
 	
 	/** The graph. */
-	private final DepotGraph               graph;
+	private final DepotGraph                graph;
 	
 	/** The change sets. */
-	private final Map<String, ChangeSet>   changeSets            = new HashMap<String, ChangeSet>();
+	private final Map<String, ChangeSet>    changeSets            = new HashMap<String, ChangeSet>();
 	
 	/** The file cache. */
-	private final Map<String, Handle>      fileCache             = new HashMap<>();
+	private final Map<String, Handle>       fileCache             = new HashMap<>();
 	
-	/** The revision adapter. */
-	private final ISequelAdapter<Revision> revisionAdapter;
+	/** The change set dumper. */
+	private final DatabaseDumper<ChangeSet> changeSetDumper;
 	
-	/** The handle adapter. */
-	private final ISequelAdapter<Handle>   handleAdapter;
+	/** The revision dumper. */
+	private final DatabaseDumper<Revision>  revisionDumper;
 	
-	/** The change set adapter. */
-	private final ChangeSetAdapter         changeSetAdapter;
+	/** The handle dumper. */
+	private final DatabaseDumper<Handle>    handleDumper;
 	
-	/** The identity adapter. */
-	private final ISequelAdapter<Identity> identityAdapter;
+	/** The identity dumper. */
+	private final DatabaseDumper<Identity>  identityDumper;
+	
+	/** The counter. */
+	private long                            counter               = 0;
+	
+	private String                          line;
 	
 	/**
 	 * Instantiates a new change set miner.
@@ -125,11 +129,15 @@ public class ChangeSetMiner implements Runnable {
 		this.depot = depot;
 		this.branchHeads.putAll(branchHeads);
 		this.graph = graph;
-		this.revisionAdapter = database.getAdapter(Revision.class);
-		this.identityAdapter = database.getAdapter(Identity.class);
-		this.changeSetAdapter = new ChangeSetAdapter(database);
-		this.handleAdapter = database.getAdapter(Handle.class);
 		
+		this.identityDumper = new DatabaseDumper<Identity>(database.getAdapter(Identity.class));
+		this.identityDumper.start();
+		this.changeSetDumper = new DatabaseDumper<ChangeSet>(database.getAdapter(ChangeSet.class));
+		this.changeSetDumper.start();
+		this.revisionDumper = new DatabaseDumper<Revision>(database.getAdapter(Revision.class));
+		this.revisionDumper.start();
+		this.handleDumper = new DatabaseDumper<Handle>(database.getAdapter(Handle.class));
+		this.handleDumper.start();
 	}
 	
 	/**
@@ -150,10 +158,13 @@ public class ChangeSetMiner implements Runnable {
 	 *            the line
 	 * @param revisions
 	 *            the revisions
+	 * @param i
+	 *            the i
 	 */
 	private void parseInOutRevision(final ChangeSet changeSet,
 	                                final String line,
-	                                final Map<Long, Revision> revisions) {
+	                                final List<Revision> revisions,
+	                                final int i) {
 		Requires.notNull(changeSet);
 		Requires.notNull(line);
 		Requires.notEmpty(line);
@@ -165,7 +176,7 @@ public class ChangeSetMiner implements Runnable {
 		final int nameOffset = line.indexOf('\t', linesOutOffset) + 1;
 		
 		int lineIn, lineOut;
-		String filename;
+		final String filename;
 		
 		final String lineInString = line.substring(linesInOffset, linesOutOffset - 1);
 		final String lineOutString = line.substring(linesOutOffset, nameOffset - 1);
@@ -184,32 +195,7 @@ public class ChangeSetMiner implements Runnable {
 			lineOut = Integer.parseInt(lineOutString);
 		}
 		
-		final int filenameEnd = line.indexOf(" => ", nameOffset);
-		if (filenameEnd > 0) {
-			final int lbi = line.indexOf('{');
-			final int rbi = line.indexOf('}');
-			
-			if (lbi > 0 && rbi > 0) {
-				// this is to remove this ugly renaming indicator
-				filename = line.substring(nameOffset, lbi) + line.substring(filenameEnd + 4, rbi)
-				        + (rbi + 1 < line.length()
-				                                  ? line.substring(rbi + 1)
-				                                  : "");
-			} else {
-				filename = line.substring(nameOffset, filenameEnd);
-			}
-			filename = filename.replaceAll("//", "/").trim();
-		} else {
-			filename = line.substring(nameOffset).trim();
-		}
-		
-		// we must have seen this file before during parsing
-		Asserts.containsKey(this.fileCache,
-		                    filename,
-		                    "File %s is not known to the file cache, but must have been seen in the raw format parsing step.",
-		                    filename);
-		final Long handleId = this.fileCache.get(filename).id();
-		final Revision revision = revisions.get(handleId);
+		final Revision revision = revisions.get(i);
 		
 		// the revision has to be created in the previous step
 		Asserts.notNull(revision);
@@ -231,7 +217,7 @@ public class ChangeSetMiner implements Runnable {
 	 */
 	private Revision parseRawRevision(final ChangeSet changeSet,
 	                                  final String line,
-	                                  final Map<Long, Revision> revisions) {
+	                                  final List<Revision> revisions) {
 		Requires.notNull(changeSet);
 		Requires.notNull(line);
 		Requires.notEmpty(line);
@@ -270,22 +256,32 @@ public class ChangeSetMiner implements Runnable {
 		
 		if (!this.fileCache.containsKey(source)) {
 			final Handle handle = new Handle(this.depot, source);
+			this.handleDumper.saveLater(handle);
+			Asserts.positive(handle.id());
 			this.fileCache.put(source, handle);
-			this.handleAdapter.save(handle);
 		}
 		
 		if (!this.fileCache.containsKey(target)) {
 			final Handle handle = new Handle(this.depot, target);
+			this.handleDumper.saveLater(handle);
+			Asserts.positive(handle.id());
 			this.fileCache.put(target, handle);
-			this.handleAdapter.save(handle);
 		}
 		
 		final Revision revision = new Revision(this.depot, changeSet, changeType, this.fileCache.get(source),
 		                                       this.fileCache.get(target), confidence, oldMode, newMode, oldHash,
 		                                       newHash);
 		
-		revisions.put(revision.getSourceId(), revision);
-		revisions.put(revision.getTargetId(), revision);
+		Asserts.positive(revision.getSourceId());
+		Asserts.positive(revision.getTargetId());
+		Asserts.equalTo(revision.getSourceId(), this.fileCache.get(source).id(),
+		                "Current value '%s' vs stored in revision '%s'", revision.getSourceId(),
+		                this.fileCache.get(source).id());
+		Asserts.equalTo(revision.getTargetId(), this.fileCache.get(target).id(),
+		                "Current value '%s' vs stored in revision '%s'", revision.getSourceId(),
+		                this.fileCache.get(source).id());
+		
+		revisions.add(revision);
 		
 		return revision;
 	}
@@ -313,38 +309,39 @@ public class ChangeSetMiner implements Runnable {
 		
 		ChangeSetBuilder changeSetBuilder = null;
 		ChangeSet changeSet = null;
+		final List<Revision> revisions = new LinkedList<>();
+		
 		final StringBuilder bodyBuilder = new StringBuilder();
 		
 		Identity identity;
 		String idName, idEmail;
 		
-		String line = null;
-		
-		final PreparedStatement nextIdStatement = this.changeSetAdapter.getNextIdStatement();
-		final PreparedStatement saveStatement = this.changeSetAdapter.getSaveStatement();
+		this.line = null;
 		
 		int batch = 0;
+		int i = 0;
 		
-		while ((line = command.nextOutput()) != null) {
+		while ((this.line = command.nextOutput()) != null) {
 			++batch;
 			
-			if (START_TAG.equalsIgnoreCase(line)) {
-				line = command.nextOutput();
+			if (START_TAG.equalsIgnoreCase(this.line)) {
+				this.line = command.nextOutput();
 			}
-			Asserts.notNull(line, "Awaiting commit hash.");
+			++this.counter;
+			Asserts.notNull(this.line, "Awaiting commit hash.");
 			changeSetBuilder = new ChangeSetBuilder(this.depot.id());
-			changeSetBuilder.commitHash(line);
+			changeSetBuilder.commitHash(this.line);
 			
-			line = command.nextOutput();
-			Asserts.notNull(line, "Awaiting tree hash.");
-			changeSetBuilder.treeHash(line);
+			this.line = command.nextOutput();
+			Asserts.notNull(this.line, "Awaiting tree hash.");
+			changeSetBuilder.treeHash(this.line);
 			
-			line = command.nextOutput();
-			Asserts.notNull(line, "Awaiting author name.");
-			idName = line;
-			line = command.nextOutput();
-			Asserts.notNull(line, "Awaiting author email.");
-			idEmail = line;
+			this.line = command.nextOutput();
+			Asserts.notNull(this.line, "Awaiting author name.");
+			idName = this.line;
+			this.line = command.nextOutput();
+			Asserts.notNull(this.line, "Awaiting author email.");
+			idEmail = this.line;
 			identity = identityCache.request(null, idName.isEmpty()
 			                                                       ? null
 			                                                       : idName, idEmail.isEmpty()
@@ -352,44 +349,44 @@ public class ChangeSetMiner implements Runnable {
 			                                                                                  : idEmail);
 			
 			if (identity.id() <= 0) {
-				this.identityAdapter.save(identity);
+				this.identityDumper.saveLater(identity);
 			}
 			Asserts.positive(identity.id());
 			changeSetBuilder.authorId(identity);
 			
-			line = command.nextOutput();
-			Asserts.notNull(line, "Awaiting authored timestamp.");
-			if (!line.isEmpty()) {
-				changeSetBuilder.authoredOn(Instant.ofEpochSecond(Long.parseLong(line)));
+			this.line = command.nextOutput();
+			Asserts.notNull(this.line, "Awaiting authored timestamp.");
+			if (!this.line.isEmpty()) {
+				changeSetBuilder.authoredOn(Instant.ofEpochSecond(Long.parseLong(this.line)));
 			}
 			
-			line = command.nextOutput();
-			Asserts.notNull(line, "Awaiting committer name.");
-			idName = line;
-			line = command.nextOutput();
-			Asserts.notNull(line, "Awaiting committer email.");
-			idEmail = line;
+			this.line = command.nextOutput();
+			Asserts.notNull(this.line, "Awaiting committer name.");
+			idName = this.line;
+			this.line = command.nextOutput();
+			Asserts.notNull(this.line, "Awaiting committer email.");
+			idEmail = this.line;
 			identity = identityCache.request(null, idName, idEmail);
 			if (identity.id() <= 0) {
-				this.identityAdapter.save(identity);
+				this.identityDumper.saveLater(identity);
 			}
 			Asserts.positive(identity.id());
 			changeSetBuilder.committerId(identity);
 			
-			line = command.nextOutput();
-			Asserts.notNull(line, "Awaiting commit timestamp.");
-			changeSetBuilder.committedOn(Instant.ofEpochSecond(Long.parseLong(line)));
+			this.line = command.nextOutput();
+			Asserts.notNull(this.line, "Awaiting commit timestamp.");
+			changeSetBuilder.committedOn(Instant.ofEpochSecond(Long.parseLong(this.line)));
 			
-			line = command.nextOutput();
-			Asserts.notNull(line, "Awaiting subject.");
-			changeSetBuilder.subject(line.trim());
+			this.line = command.nextOutput();
+			Asserts.notNull(this.line, "Awaiting subject.");
+			changeSetBuilder.subject(this.line.trim());
 			
-			BODY: while ((line = command.nextOutput()) != null) {
-				line = line.trim();
-				if (END_TAG.equals(line)) {
+			BODY: while ((this.line = command.nextOutput()) != null) {
+				this.line = this.line.trim();
+				if (END_TAG.equals(this.line)) {
 					break BODY;
 				} else {
-					bodyBuilder.append(line).append(System.lineSeparator());
+					bodyBuilder.append(this.line).append(System.lineSeparator());
 				}
 			}
 			
@@ -397,38 +394,38 @@ public class ChangeSetMiner implements Runnable {
 			
 			changeSet = changeSetBuilder.create();
 			Asserts.notNull(changeSet);
-			this.changeSetAdapter.save(saveStatement, nextIdStatement, changeSet);
 			
-			final Map<Long, Revision> revisions = new HashMap<>();
+			this.changeSetDumper.saveLater(changeSet);
 			
 			// raw format (which gives us file mode before after and hash before/after) and numstat (which give us lines
 			// in/lines out) are separate blocsk
-			REVISIONS: while ((line = command.nextOutput()) != null) {
-				if (START_TAG.equals(line)) {
+			REVISIONS: while ((this.line = command.nextOutput()) != null) {
+				if (START_TAG.equals(this.line)) {
 					break REVISIONS;
-				} else if (line.startsWith(":")) {
-					final Revision revision = parseRawRevision(changeSet, line, revisions);
+				} else if (this.line.startsWith(":")) {
+					final Revision revision = parseRawRevision(changeSet, this.line, revisions);
 					Asserts.notNull(revision);
 				} else {
-					if (line.isEmpty()) {
+					if (this.line.isEmpty()) {
 						continue REVISIONS;
 					} else {
-						parseInOutRevision(changeSet, line, revisions);
+						parseInOutRevision(changeSet, this.line, revisions, i);
+						++i;
 					}
 				}
 			}
 			
-			for (final Revision revision : revisions.values()) {
-				this.revisionAdapter.save(revision);
+			for (final Revision revision : revisions) {
+				this.revisionDumper.saveLater(revision);
 			}
+			
+			revisions.clear();
+			i = 0;
 			
 			if (batch % 1000 == 0) {
 				this.database.commit();
 			}
 			
-			if (Logger.logDebug()) {
-				Logger.debug(changeSet.getCommitHash());
-			}
 			this.changeSets.put(changeSet.getCommitHash(), changeSet);
 			
 			this.graph.addVertex(changeSet);
@@ -437,7 +434,26 @@ public class ChangeSetMiner implements Runnable {
 			}
 		}
 		
+		try {
+			this.changeSetDumper.interrupt();
+			this.changeSetDumper.join();
+			this.revisionDumper.interrupt();
+			this.revisionDumper.join();
+			this.handleDumper.interrupt();
+			this.handleDumper.join();
+			this.identityDumper.interrupt();
+			this.identityDumper.join();
+		} catch (final InterruptedException e) {
+			if (Logger.logWarn()) {
+				Logger.warn(e);
+			}
+		}
+		
 		this.database.commit();
 		command.waitFor();
+		
+		if (Logger.logInfo()) {
+			Logger.info("Processed '%s' changesets.", this.counter);
+		}
 	}
 }

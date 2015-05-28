@@ -27,7 +27,7 @@ public interface ISequelEntity extends Serializable {
 	 *
 	 * @return the object[]
 	 */
-	Object id();
+	long id();
 	
 	/**
 	 * Id.
@@ -35,5 +35,5 @@ public interface ISequelEntity extends Serializable {
 	 * @param id
 	 *            the id
 	 */
-	void id(Object id);
+	void id(long id);
 }

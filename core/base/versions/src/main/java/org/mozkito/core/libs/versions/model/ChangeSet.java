@@ -32,16 +32,16 @@ import org.mozkito.skeleton.sequel.ISequelEntity;
 public class ChangeSet implements ISequelEntity {
 	
 	/** The Constant serialVersionUID. */
-	private static final long  serialVersionUID = 230724292878651772L;
+	private static final long serialVersionUID = 230724292878651772L;
 	
 	/** The application time. */
-	private final Instant      authoredTime;
+	private final Instant     authoredTime;
 	
 	/** The author id. */
-	private final int          authorId;
+	private final long        authorId;
 	
 	/** The commit hash. */
-	private final String       commitHash;
+	private final String      commitHash;
 	
 	/**
 	 * The committer id.
@@ -53,28 +53,28 @@ public class ChangeSet implements ISequelEntity {
 	 *
 	 * from: <a href="http://git-scm.com/book/ch2-3.html">FREE online Pro Git book</a>
 	 * */
-	private final int          committerId;
+	private final long        committerId;
 	
 	/** The commit time. */
-	private final Instant      commitTime;
+	private final Instant     commitTime;
 	
 	/** The depot id. */
-	private final int          depotId;
+	private final long        depotId;
 	
 	/** The branch ids. */
-	private final Set<Integer> branchIds        = new HashSet<Integer>();
+	private final Set<Long>   branchIds        = new HashSet<>();
 	
 	/** The id. */
-	private long               id;
+	private long              id;
 	
 	/** The tree hash. */
-	private final String       treeHash;
+	private final String      treeHash;
 	
 	/** The subject. */
-	private final String       subject;
+	private final String      subject;
 	
 	/** The body. */
-	private final String       body;
+	private final String      body;
 	
 	/**
 	 * Instantiates a new change set.
@@ -98,8 +98,9 @@ public class ChangeSet implements ISequelEntity {
 	 * @param body
 	 *            the body
 	 */
-	public ChangeSet(final int depotId, final String commitHash, final String treeHash, final Instant authoredTime,
-	        final int authorId, final Instant commitTime, final int committerId, final String subject, final String body) {
+	public ChangeSet(final long depotId, final String commitHash, final String treeHash, final Instant authoredTime,
+	        final long authorId, final Instant commitTime, final long committerId, final String subject,
+	        final String body) {
 		super();
 		Requires.positive(depotId);
 		Requires.notNull(commitHash);
@@ -135,7 +136,7 @@ public class ChangeSet implements ISequelEntity {
 	 *            the branch id
 	 * @return true, if successful
 	 */
-	public boolean addBranchId(final int branchId) {
+	public boolean addBranchId(final long branchId) {
 		Requires.positive(branchId);
 		
 		return this.branchIds.add(branchId);
@@ -185,7 +186,7 @@ public class ChangeSet implements ISequelEntity {
 	 *
 	 * @return the authorId
 	 */
-	public final int getAuthorId() {
+	public final long getAuthorId() {
 		return this.authorId;
 	}
 	
@@ -201,7 +202,7 @@ public class ChangeSet implements ISequelEntity {
 	 *
 	 * @return the branch ids
 	 */
-	public Collection<Integer> getBranchIds() {
+	public Collection<Long> getBranchIds() {
 		return UnmodifiableCollection.unmodifiableCollection(this.branchIds);
 	}
 	
@@ -219,7 +220,7 @@ public class ChangeSet implements ISequelEntity {
 	 *
 	 * @return the committerId
 	 */
-	public final int getCommitterId() {
+	public final long getCommitterId() {
 		return this.committerId;
 	}
 	
@@ -237,7 +238,7 @@ public class ChangeSet implements ISequelEntity {
 	 *
 	 * @return the depotId
 	 */
-	public final int getDepotId() {
+	public final long getDepotId() {
 		return this.depotId;
 	}
 	
@@ -269,7 +270,7 @@ public class ChangeSet implements ISequelEntity {
 		result = prime * result + (this.commitHash == null
 		                                                  ? 0
 		                                                  : this.commitHash.hashCode());
-		result = prime * result + this.depotId;
+		result = prime * result + (int) (this.depotId ^ this.depotId >>> 32);
 		return result;
 	}
 	
@@ -279,21 +280,18 @@ public class ChangeSet implements ISequelEntity {
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
 	@Override
-	public Long id() {
+	public long id() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
 	 */
 	@Override
-	public void id(final Object id) {
-		Requires.notNull(id);
-		Requires.isLong(id);
-		
-		this.id = (long) id;
+	public void id(final long id) {
+		this.id = id;
 	}
 	
 	/**

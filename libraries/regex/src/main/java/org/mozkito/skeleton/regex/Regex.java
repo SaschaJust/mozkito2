@@ -25,10 +25,10 @@ import jregex.PatternSyntaxException;
 import jregex.RETokenizer;
 import jregex.Replacer;
 
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.logging.Logger;
 
 /**
  * This class provides regular expression support and as well interfaces as extends JRegex.

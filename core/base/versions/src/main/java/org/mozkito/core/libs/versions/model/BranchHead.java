@@ -13,24 +13,29 @@
 
 package org.mozkito.core.libs.versions.model;
 
+import org.mozkito.skeleton.sequel.ISequelEntity;
+
 /**
  * BranchHead is used to model the current head of each branch in the database.
  *
  * @author Sascha Just
  */
-public class BranchHead {
+public class BranchHead implements ISequelEntity {
+	
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = -1010755719141984103L;
 	
 	/** The id. */
-	private int        id;
+	private long              id;
 	
 	/** The depot id. */
-	private final int  depotId;
+	private final long        depotId;
 	
 	/** The change set id. */
-	private final long changeSetId;
+	private final long        changeSetId;
 	
 	/** The branch id. */
-	private final int  branchId;
+	private final long        branchId;
 	
 	/**
 	 * Instantiates a new branch head.
@@ -69,9 +74,6 @@ public class BranchHead {
 		if (this.branchId != other.branchId) {
 			return false;
 		}
-		if (this.changeSetId != other.changeSetId) {
-			return false;
-		}
 		if (this.depotId != other.depotId) {
 			return false;
 		}
@@ -83,7 +85,7 @@ public class BranchHead {
 	 *
 	 * @return the branchId
 	 */
-	public final int getBranchId() {
+	public final long getBranchId() {
 		return this.branchId;
 	}
 	
@@ -101,7 +103,7 @@ public class BranchHead {
 	 *
 	 * @return the depotId
 	 */
-	public final int getDepotId() {
+	public final long getDepotId() {
 		return this.depotId;
 	}
 	
@@ -114,10 +116,27 @@ public class BranchHead {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + this.branchId;
-		result = prime * result + (int) (this.changeSetId ^ this.changeSetId >>> 32);
-		result = prime * result + this.depotId;
+		result = prime * result + (int) (this.branchId ^ this.branchId >>> 32);
+		result = prime * result + (int) (this.depotId ^ this.depotId >>> 32);
 		return result;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 */
+	public long id() {
+		return this.id;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 */
+	public void id(final long id) {
+		this.id = id;
 	}
 	
 	/**

@@ -10,12 +10,12 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
-import org.mozkito.skeleton.logging.Bus;
-import org.mozkito.skeleton.logging.Level;
-import org.mozkito.skeleton.logging.Line;
-import org.mozkito.skeleton.logging.Logger;
-import org.mozkito.skeleton.logging.consumer.LogConsumer;
-import org.mozkito.skeleton.logging.consumer.appender.TerminalAppender;
+import org.mozkito.libraries.logging.Bus;
+import org.mozkito.libraries.logging.Level;
+import org.mozkito.libraries.logging.Line;
+import org.mozkito.libraries.logging.Logger;
+import org.mozkito.libraries.logging.consumer.LogConsumer;
+import org.mozkito.libraries.logging.consumer.appender.TerminalAppender;
 
 /**
  * The Class Main.

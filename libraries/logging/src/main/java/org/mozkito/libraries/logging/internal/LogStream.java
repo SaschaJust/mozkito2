@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.logging.internal;
+package org.mozkito.libraries.logging.internal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,9 +21,9 @@ import java.io.PrintStream;
 import java.util.Formatter;
 import java.util.Locale;
 
-import org.mozkito.skeleton.logging.Bus;
-import org.mozkito.skeleton.logging.Level;
-import org.mozkito.skeleton.logging.Line;
+import org.mozkito.libraries.logging.Bus;
+import org.mozkito.libraries.logging.Level;
+import org.mozkito.libraries.logging.Line;
 
 /**
  * The Class LogStream.

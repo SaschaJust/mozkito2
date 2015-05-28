@@ -1,5 +1,5 @@
 CREATE TABLE depots (
-	id INT PRIMARY KEY,
+	id BIGINT PRIMARY KEY,
 	name VARCHAR(80),
 	origin VARCHAR(2083),
 	mined TIMESTAMP

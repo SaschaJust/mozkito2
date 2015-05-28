@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.logging.terminal;
+package org.mozkito.libraries.logging.terminal;
 
 import java.util.regex.Pattern;
 

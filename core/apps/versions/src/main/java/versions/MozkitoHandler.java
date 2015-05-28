@@ -22,13 +22,15 @@ import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.io.FileUtils;
-import org.mozkito.skeleton.logging.Logger;
 
 /**
  * The Class MozkitoHandler.
  */
 public class MozkitoHandler implements UncaughtExceptionHandler {
+	
+	private static boolean caughtOne = false;
 	
 	private String getClassLoadingInformation() {
 		final ClassLoadingMXBean bean = ManagementFactory.getClassLoadingMXBean();
@@ -194,8 +196,10 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 	 */
 	public void uncaughtException(final Thread t,
 	                              final Throwable e) {
-		Logger.fatal(e, "%s: Unhandled exception. Terminated.", t.getName());
-		Logger.fatal(getCrashReport(e));
+		if (!caughtOne) {
+			Logger.fatal(e, "%s: Unhandled exception. Terminated.", t.getName());
+			Logger.fatal(getCrashReport(e));
+		}
 	}
 	
 	private String visit(final ThreadGroup group,

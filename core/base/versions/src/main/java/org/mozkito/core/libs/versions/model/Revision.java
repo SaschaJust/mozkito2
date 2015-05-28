@@ -17,7 +17,6 @@ import org.mozkito.core.libs.versions.ChangeType;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Revision.
  *
@@ -38,16 +37,16 @@ public class Revision implements ISequelEntity {
 	private final short       changeType;
 	
 	/** The source id. */
-	private final Long        sourceId;
+	private final long        sourceId;
 	
 	/** The target id. */
-	private final Long        targetId;
+	private final long        targetId;
 	
 	/** The confidence. */
 	private final short       confidence;
 	
 	/** The depot id. */
-	private final int         depotId;
+	private final long        depotId;
 	
 	/** The old mode. */
 	private final int         oldMode;
@@ -141,18 +140,10 @@ public class Revision implements ISequelEntity {
 		if (this.changeSetId != other.changeSetId) {
 			return false;
 		}
-		if (this.sourceId == null) {
-			if (other.sourceId != null) {
-				return false;
-			}
-		} else if (!this.sourceId.equals(other.sourceId)) {
+		if (this.sourceId != other.sourceId) {
 			return false;
 		}
-		if (this.targetId == null) {
-			if (other.targetId != null) {
-				return false;
-			}
-		} else if (!this.targetId.equals(other.targetId)) {
+		if (this.targetId != other.targetId) {
 			return false;
 		}
 		return true;
@@ -190,7 +181,7 @@ public class Revision implements ISequelEntity {
 	 *
 	 * @return the depotId
 	 */
-	public final int getDepotId() {
+	public final long getDepotId() {
 		return this.depotId;
 	}
 	
@@ -241,7 +232,7 @@ public class Revision implements ISequelEntity {
 	 *
 	 * @return the sourceId
 	 */
-	public final Long getSourceId() {
+	public final long getSourceId() {
 		return this.sourceId;
 	}
 	
@@ -250,7 +241,7 @@ public class Revision implements ISequelEntity {
 	 *
 	 * @return the targetId
 	 */
-	public final Long getTargetId() {
+	public final long getTargetId() {
 		return this.targetId;
 	}
 	
@@ -264,12 +255,8 @@ public class Revision implements ISequelEntity {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (this.changeSetId ^ this.changeSetId >>> 32);
-		result = prime * result + (this.sourceId == null
-		                                                ? 0
-		                                                : this.sourceId.hashCode());
-		result = prime * result + (this.targetId == null
-		                                                ? 0
-		                                                : this.targetId.hashCode());
+		result = prime * result + (int) (this.sourceId ^ this.sourceId >>> 32);
+		result = prime * result + (int) (this.targetId ^ this.targetId >>> 32);
 		return result;
 	}
 	
@@ -279,21 +266,18 @@ public class Revision implements ISequelEntity {
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
 	@Override
-	public Object id() {
+	public long id() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
 	 */
 	@Override
-	public void id(final Object id) {
-		Requires.notNull(id);
-		Requires.isLong(id);
-		
-		this.id = (long) id;
+	public void id(final long id) {
+		this.id = id;
 	}
 	
 	/**
@@ -322,23 +306,30 @@ public class Revision implements ISequelEntity {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("Revision [id=");
 		builder.append(this.id);
+		builder.append(", depotId=");
+		builder.append(this.depotId);
 		builder.append(", changeSetId=");
 		builder.append(this.changeSetId);
 		builder.append(", changeType=");
 		builder.append(this.changeType);
-		builder.append(", ");
-		if (this.sourceId != null) {
-			builder.append("sourceId=");
-			builder.append(this.sourceId);
-			builder.append(", ");
-		}
-		if (this.targetId != null) {
-			builder.append("targetId=");
-			builder.append(this.targetId);
-			builder.append(", ");
-		}
-		builder.append("confidence=");
+		builder.append(", sourceId=");
+		builder.append(this.sourceId);
+		builder.append(", targetId=");
+		builder.append(this.targetId);
+		builder.append(", confidence=");
 		builder.append(this.confidence);
+		builder.append(", oldMode=");
+		builder.append(this.oldMode);
+		builder.append(", newMode=");
+		builder.append(this.newMode);
+		builder.append(", oldHash=");
+		builder.append(this.oldHash);
+		builder.append(", newHash=");
+		builder.append(this.newHash);
+		builder.append(", linesIn=");
+		builder.append(this.linesIn);
+		builder.append(", linesOut=");
+		builder.append(this.linesOut);
 		builder.append("]");
 		return builder.toString();
 	}

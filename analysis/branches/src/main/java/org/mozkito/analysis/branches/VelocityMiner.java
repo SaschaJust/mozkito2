@@ -41,7 +41,7 @@ public class VelocityMiner {
 		final Iterator<ChangeSet> iterator = changeSetAdapter.load();
 		final ChangeSet changeSet = null;
 		final Branch branch = null;
-		final Branch monitoredBranch = branchAdapter.loadByName(monitoredBranchString);
+		// final Branch monitoredBranch = branchAdapter.loadByName(monitoredBranchString);
 		
 		// while (iterator.hasNext()) {
 		// changeSet = iterator.next();

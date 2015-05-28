@@ -13,6 +13,7 @@
 
 package org.mozkito.skeleton.sequel;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.List;
@@ -72,7 +73,7 @@ public interface ISequelAdapter<T> {
 	 *            the ids
 	 * @return the t
 	 */
-	List<T> load(Object... ids);
+	List<T> load(long... ids);
 	
 	/**
 	 * Load.
@@ -81,7 +82,58 @@ public interface ISequelAdapter<T> {
 	 *            the id
 	 * @return the t
 	 */
-	T load(Object id);
+	T load(long id);
+	
+	/**
+	 * Next id.
+	 *
+	 * @param nextIdStatement
+	 *            the next id statement
+	 * @return the object
+	 */
+	long nextId(PreparedStatement nextIdStatement);
+	
+	/**
+	 * Prepare next id statement.
+	 *
+	 * @return the prepared statement
+	 */
+	PreparedStatement prepareNextIdStatement();
+	
+	/**
+	 * Prepare save statement.
+	 *
+	 * @return the prepared statement
+	 */
+	PreparedStatement prepareSaveStatement();
+	
+	/**
+	 * Save.
+	 *
+	 * @param saveStatement
+	 *            the save statement
+	 * @param id
+	 *            the id
+	 * @param entity
+	 *            the entity
+	 */
+	void save(PreparedStatement saveStatement,
+	          long id,
+	          T entity);
+	
+	/**
+	 * Save.
+	 *
+	 * @param saveStatement
+	 *            the save statement
+	 * @param idStatement
+	 *            the id statement
+	 * @param entity
+	 *            the entity
+	 */
+	void save(PreparedStatement saveStatement,
+	          PreparedStatement idStatement,
+	          T entity);
 	
 	/**
 	 * Save.

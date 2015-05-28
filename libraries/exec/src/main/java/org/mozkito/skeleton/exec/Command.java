@@ -31,11 +31,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.collections4.collection.UnmodifiableCollection;
 
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.datastructures.CircularByteBuffer;
-import org.mozkito.skeleton.logging.Logger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -353,8 +353,8 @@ public class Command {
      * 
      */
 	public void logStdErr() {
-		this.logger = new Thread(Thread.currentThread().getName() + "$[Command:" + this.lineElements.iterator().next()
-		        + "]$Logger") {
+		this.logger = new Thread(Thread.currentThread().getName() + "[Command:" + this.lineElements.iterator().next()
+		        + "][Logger]") {
 			
 			/**
 			 * {@inheritDoc}
@@ -365,7 +365,7 @@ public class Command {
 			public void run() {
 				String line;
 				while ((line = nextErrput()) != null) {
-					Logger.error.println(line);
+					Logger.warn.println(line);
 				}
 			}
 		};

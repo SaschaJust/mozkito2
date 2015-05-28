@@ -14,7 +14,6 @@
 package org.mozkito.core.libs.versions.adapters;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,9 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mozkito.core.libs.versions.model.Handle;
-import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
+import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 import org.mozkito.skeleton.sequel.SequelManager;
 
@@ -32,20 +30,13 @@ import org.mozkito.skeleton.sequel.SequelManager;
  * @author Sascha Just
  *
  */
-public class HandleAdapter implements ISequelAdapter<Handle> {
-	
-	private final SequelDatabase database;
-	private final String         nextIdStatement;
-	private final String         saveStatement;
+public class HandleAdapter extends AbstractSequelAdapter<Handle> {
 	
 	/**
 	 * @param database
 	 */
 	public HandleAdapter(final SequelDatabase database) {
-		this.database = database;
-		this.saveStatement = SequelManager.loadStatement(database, "handle_save");
-		this.nextIdStatement = SequelManager.loadStatement(database, "handle_nextid");
-		
+		super(database, "handle");
 	}
 	
 	/**
@@ -65,6 +56,7 @@ public class HandleAdapter implements ISequelAdapter<Handle> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
 	 */
+	@Override
 	public void createConstraints() {
 		// TODO Auto-generated method stub
 		//
@@ -77,6 +69,7 @@ public class HandleAdapter implements ISequelAdapter<Handle> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
 	 */
+	@Override
 	public void createIndexes() {
 		// TODO Auto-generated method stub
 		//
@@ -89,6 +82,7 @@ public class HandleAdapter implements ISequelAdapter<Handle> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
 	 */
+	@Override
 	public void createScheme() {
 		try {
 			synchronized (this.database) {
@@ -112,28 +106,6 @@ public class HandleAdapter implements ISequelAdapter<Handle> {
 	}
 	
 	/**
-	 * @return the nextIdStatement
-	 */
-	public final PreparedStatement getNextIdStatement() {
-		try {
-			return this.database.getConnection().prepareStatement(this.nextIdStatement);
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * @return the saveStatement
-	 */
-	public final PreparedStatement getSaveStatement() {
-		try {
-			return this.database.getConnection().prepareStatement(this.saveStatement);
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
@@ -148,9 +120,9 @@ public class HandleAdapter implements ISequelAdapter<Handle> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
 	 */
-	public List<Handle> load(final Object... ids) {
+	public List<Handle> load(final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -160,9 +132,9 @@ public class HandleAdapter implements ISequelAdapter<Handle> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
 	 */
-	public Handle load(final Object id) {
+	public Handle load(final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -172,47 +144,18 @@ public class HandleAdapter implements ISequelAdapter<Handle> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
-	public void save(final Handle... handles) {
-		Requires.notNull(handles);
-		
-		try {
-			final Connection connection = this.database.getConnection();
-			final PreparedStatement saveStatement = connection.prepareStatement(this.saveStatement);
-			final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
-			
-			for (final Handle handle : handles) {
-				save(saveStatement, idStatement, handle);
-			}
-			
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * @param saveStatement2
-	 * @param idStatement
-	 * @param handle
-	 */
-	private void save(final PreparedStatement saveStatement,
-	                  final PreparedStatement idStatement,
-	                  final Handle handle) {
+	public void save(final PreparedStatement saveStatement,
+	                 final long id,
+	                 final Handle handle) {
 		Requires.notNull(saveStatement);
-		Requires.notNull(idStatement);
 		Requires.notNull(handle);
 		
 		try {
-			final ResultSet idResult = idStatement.executeQuery();
-			final boolean result = idResult.next();
-			Contract.asserts(result);
-			
-			final long id = idResult.getLong(1);
-			
 			int index = 0;
 			saveStatement.setLong(++index, id);
-			saveStatement.setInt(++index, handle.getDepotId());
+			saveStatement.setLong(++index, handle.getDepotId());
 			saveStatement.setString(++index, handle.getPath());
 			saveStatement.executeUpdate();
 			

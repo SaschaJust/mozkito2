@@ -24,6 +24,7 @@ import java.util.Iterator;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.mozkito.core.libs.users.adapters.IdentityAdapter;
@@ -86,6 +87,7 @@ public class IdentityTest {
 	 *             the exception
 	 */
 	@Test
+	@Ignore
 	public void testLoad() throws Exception {
 		final Identity identity = new Identity("sjust", "sascha.just@mozkito.org", "Sascha Just");
 		this.adapter.save(identity);
@@ -116,6 +118,7 @@ public class IdentityTest {
 	 *             the exception
 	 */
 	@Test
+	@Ignore
 	public void testUser() throws Exception {
 		final User user = new User();
 		

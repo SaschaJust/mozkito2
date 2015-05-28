@@ -42,6 +42,7 @@ import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.skeleton.sequel.ISequelEntity;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
@@ -50,7 +51,7 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
  *
  * @author Sascha Just
  */
-public class DepotGraph extends DirectedGraph {
+public class DepotGraph extends DirectedGraph implements ISequelEntity {
 	
 	/**
 	 * The Class ChangeSetIterator.
@@ -148,7 +149,7 @@ public class DepotGraph extends DirectedGraph {
 		 *
 		 * @return the branch ids
 		 */
-		public Collection<Integer> getBranchIds() {
+		public Collection<Long> getBranchIds() {
 			return this.branches.stream().map(x -> x.id()).collect(Collectors.toList());
 		}
 		
@@ -157,7 +158,7 @@ public class DepotGraph extends DirectedGraph {
 		 *
 		 * @return the integration path ids
 		 */
-		public Collection<Integer> getIntegrationPathIds() {
+		public Collection<Long> getIntegrationPathIds() {
 			return this.integrationPath.stream().map(x -> x.id()).collect(Collectors.toList());
 		}
 		
@@ -225,6 +226,8 @@ public class DepotGraph extends DirectedGraph {
 	
 	/** The depot. */
 	private final Depot                                      depot;
+	
+	private long                                             id;
 	
 	/**
 	 * Instantiates a new depot graph.
@@ -570,6 +573,24 @@ public class DepotGraph extends DirectedGraph {
 	public List<ChangeSet> getSpinOffs(final ChangeSet changeSet) {
 		return this.graph.outgoingEdgesOf(changeSet).stream().filter(x -> EdgeType.BRANCH.equals(x.type))
 		                 .map(x -> x.parent).collect(Collectors.toList());
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 */
+	public long id() {
+		return this.id;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 */
+	public void id(final long id) {
+		this.id = id;
 	}
 	
 	/**

@@ -16,7 +16,6 @@ package org.mozkito.core.libs.versions.model;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class File.
  *
@@ -34,7 +33,7 @@ public class Handle implements ISequelEntity {
 	private final String      path;
 	
 	/** The depot id. */
-	private final int         depotId;
+	private final long        depotId;
 	
 	/**
 	 * Instantiates a new handle.
@@ -59,7 +58,7 @@ public class Handle implements ISequelEntity {
 	 *
 	 * @return the depotId
 	 */
-	public final int getDepotId() {
+	public final long getDepotId() {
 		return this.depotId;
 	}
 	
@@ -77,19 +76,17 @@ public class Handle implements ISequelEntity {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
-	public Long id() {
+	public long id() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
 	 */
-	public void id(final Object id) {
-		Requires.notNull(id);
-		Requires.isLong(id);
-		this.id = (Long) id;
+	public void id(final long id) {
+		this.id = id;
 	}
 	
 }

@@ -11,11 +11,14 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.logging;
+package org.mozkito.libraries.logging;
 
-import org.mozkito.skeleton.logging.consumer.LogConsumer;
-import org.mozkito.skeleton.logging.consumer.appender.TerminalAppender;
-import org.mozkito.skeleton.logging.internal.LogStream;
+import java.io.IOException;
+
+import org.mozkito.libraries.logging.consumer.LogConsumer;
+import org.mozkito.libraries.logging.consumer.appender.FileAppender;
+import org.mozkito.libraries.logging.consumer.appender.TerminalAppender;
+import org.mozkito.libraries.logging.internal.LogStream;
 
 /**
  * The Class Logger.
@@ -24,33 +27,74 @@ import org.mozkito.skeleton.logging.internal.LogStream;
  */
 public class Logger {
 	
+	/** The file consumer. */
+	private static LogConsumer      fileConsumer;
+	
+	/** The log consumer. */
+	private static LogConsumer      logConsumer;
+	
+	/** The terminal appender. */
+	private static TerminalAppender terminalAppender;
+	
+	/** The file appender. */
+	private static FileAppender     fileAppender;
+	
 	static {
-		new LogConsumer(Bus.provider).register(new TerminalAppender(Level.DEBUG));
+		logConsumer = new LogConsumer(Bus.provider);
+		
+		terminalAppender = new TerminalAppender(Level.DEBUG);
+		logConsumer.register(terminalAppender);
+		
+		try {
+			fileAppender = new FileAppender(Level.DEBUG);
+			logConsumer.register(fileAppender);
+		} catch (final IOException e) {
+			if (Logger.logError()) {
+				Logger.error("Could not register log file appender.");
+			}
+		}
 	}
 	
 	/** The Constant error. */
-	public static final LogStream error        = new LogStream(Level.ERROR);
+	public static final LogStream   error        = new LogStream(Level.ERROR);
 	
 	/** The Constant fatal. */
-	public static final LogStream fatal        = new LogStream(Level.FATAL);
+	public static final LogStream   fatal        = new LogStream(Level.FATAL);
 	
 	/** The Constant warn. */
-	public static final LogStream warn         = new LogStream(Level.WARN);
+	public static final LogStream   warn         = new LogStream(Level.WARN);
 	
 	/** The Constant info. */
-	public static final LogStream info         = new LogStream(Level.INFO);
+	public static final LogStream   info         = new LogStream(Level.INFO);
 	
 	/** The Constant debug. */
-	public static final LogStream debug        = new LogStream(Level.DEBUG);
+	public static final LogStream   debug        = new LogStream(Level.DEBUG);
 	
 	/** The Constant trace. */
-	public static final LogStream trace        = new LogStream(Level.TRACE);
+	public static final LogStream   trace        = new LogStream(Level.TRACE);
 	
 	/** The Constant notification. */
-	public static final LogStream notification = new LogStream(Level.INFO, Line.NOTIFICATIONS);
+	public static final LogStream   notification = new LogStream(Level.INFO, Line.NOTIFICATIONS);
 	
 	/** The Constant level. */
-	private static final Level    level        = Level.INFO;
+	private static Level            level        = Level.OFF;
+	
+	/**
+	 * Console level.
+	 *
+	 * @param consoleLevel
+	 *            the file level
+	 */
+	public static void consoleLevel(final Level consoleLevel) {
+		if (!terminalAppender.getLevel().equals(consoleLevel)) {
+			if (consoleLevel.compareTo(level) > 0) {
+				level = consoleLevel;
+			}
+			logConsumer.unregister(terminalAppender);
+			terminalAppender.setLevel(consoleLevel);
+			logConsumer.register(terminalAppender);
+		}
+	}
 	
 	/**
 	 * Error.
@@ -236,6 +280,32 @@ public class Logger {
 	                         final String formatString,
 	                         final Object... arguments) {
 		Bus.notify(Level.FATAL, Line.LOGS, throwable, formatString, arguments);
+	}
+	
+	/**
+	 * File level.
+	 *
+	 * @param fileLevel
+	 *            the file level
+	 */
+	public static void fileLevel(final Level fileLevel) {
+		if (!fileAppender.getLevel().equals(fileLevel)) {
+			if (fileLevel.compareTo(level) > 0) {
+				level = fileLevel;
+			}
+			logConsumer.unregister(fileAppender);
+			fileAppender.setLevel(fileLevel);
+			logConsumer.register(fileAppender);
+		}
+	}
+	
+	/**
+	 * Gets the level.
+	 *
+	 * @return the level
+	 */
+	public static Level getLevel() {
+		return level;
 	}
 	
 	/**

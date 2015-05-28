@@ -11,24 +11,24 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.logging.consumer.appender;
+package org.mozkito.libraries.logging.consumer.appender;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.mozkito.libraries.logging.Level;
+import org.mozkito.libraries.logging.LogEvent;
+import org.mozkito.libraries.logging.matchers.IMatcher;
+import org.mozkito.libraries.logging.terminal.ConsoleHighlighter;
+import org.mozkito.libraries.logging.terminal.TerminalColor;
 import org.mozkito.skeleton.contracts.Asserts;
-import org.mozkito.skeleton.logging.Level;
-import org.mozkito.skeleton.logging.LogEvent;
-import org.mozkito.skeleton.logging.terminal.Highlighter;
-import org.mozkito.skeleton.logging.terminal.TerminalColor;
 
 /**
  * The Class TerminalAppender.
@@ -37,8 +37,12 @@ import org.mozkito.skeleton.logging.terminal.TerminalColor;
  */
 public class TerminalAppender extends Appender {
 	
-	/** The highlighters. */
-	private final Map<Level, Set<Highlighter>> highlighters = new HashMap<Level, Set<Highlighter>>();
+	private static final TerminalColor[]            highlighterColors = new TerminalColor[] { TerminalColor.CYAN,
+	        TerminalColor.MAGENTA, TerminalColor.BLUE, TerminalColor.GREEN, TerminalColor.YELLOW, TerminalColor.RED };
+	
+	private final Map<IMatcher, ConsoleHighlighter> highlighters      = new HashMap<>();
+	
+	private final PrintStream                       stream;
 	
 	/**
 	 * Instantiates a new terminal appender.
@@ -47,23 +51,44 @@ public class TerminalAppender extends Appender {
 	 *            the level
 	 */
 	public TerminalAppender(final Level level) {
-		super(level, System.out, DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+		super(level, DateTimeFormatter.ofPattern("dd/MM HH:mm"));
+		this.stream = System.out;
 	}
 	
 	/**
 	 * Adds the highlighter.
 	 *
-	 * @param highlighter
+	 * @param matcher
 	 *            the highlighter
 	 */
-	public void addHighlighter(final Highlighter highlighter) {
-		final Level[] values = Level.values();
-		
-		for (int i = highlighter.getMin().ordinal(); i <= highlighter.getMax().ordinal(); ++i) {
-			if (!this.highlighters.containsKey(values[i])) {
-				this.highlighters.put(values[i], new HashSet<Highlighter>());
-			}
-			this.highlighters.get(values[i]).add(highlighter);
+	public void addMatcher(final IMatcher matcher) {
+		if (!this.highlighters.containsKey(matcher)) {
+			this.highlighters.put(matcher, new ConsoleHighlighter() {
+				
+				/**
+				 * {@inheritDoc}
+				 * 
+				 * @see org.mozkito.libraries.logging.terminal.ConsoleHighlighter#colors()
+				 */
+				@Override
+				public TerminalColor[] colors() {
+					final List<TerminalColor> myColoes = new LinkedList<TerminalColor>();
+					myColoes.add(highlighterColors[TerminalAppender.this.highlighters.size() % highlighterColors.length]);
+					if (TerminalAppender.this.highlighters.size() / highlighterColors.length % 2 == 1) {
+						myColoes.add(TerminalColor.BOLD);
+					}
+					if (2 * TerminalAppender.this.highlighters.size() / highlighterColors.length % 2 == 1) {
+						myColoes.add(TerminalColor.UNDERLINE);
+					}
+					if (4 * TerminalAppender.this.highlighters.size() / highlighterColors.length % 2 == 1) {
+						myColoes.add(TerminalColor.INVERT);
+					}
+					if (8 * TerminalAppender.this.highlighters.size() / highlighterColors.length % 2 == 1) {
+						myColoes.add(TerminalColor.BLINK);
+					}
+					return (TerminalColor[]) myColoes.toArray();
+				}
+			});
 		}
 	}
 	
@@ -100,7 +125,7 @@ public class TerminalAppender extends Appender {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.logging.consumer.appender.Appender#log(org.mozkito.skeleton.logging.LogEvent)
+	 * @see org.mozkito.libraries.logging.consumer.appender.Appender#log(org.mozkito.libraries.logging.LogEvent)
 	 */
 	@Override
 	public void log(final LogEvent event) {
@@ -127,30 +152,33 @@ public class TerminalAppender extends Appender {
 		synchronized (this.stream) {
 			Asserts.notNull(event);
 			Asserts.notNull(event.level());
-			Asserts.notNull(this.highlighters);
 			
-			if (this.highlighters.containsKey(event.level())) {
-				for (final Highlighter highlighter : this.highlighters.get(event.level())) {
-					line = highlighter.highlight(line);
+			if (event.matcher() != null) {
+				if (!this.highlighters.containsKey(event.matcher())) {
+					addMatcher(event.matcher());
 				}
+				
+				line = this.highlighters.get(event.matcher()).highlight(line);
 			}
+			
 			this.stream.println(line);
 			
 			for (String additionalLine : additionalLines) {
-				if (this.highlighters.containsKey(event.level())) {
-					for (final Highlighter highlighter : this.highlighters.get(event.level())) {
-						additionalLine = highlighter.highlight(additionalLine);
-					}
+				if (event.matcher() != null) {
+					line = this.highlighters.get(event.matcher()).highlight(line);
 				}
-				additionalLine = MessageFormat.format("[{0}] [{1}] {2}{3}{4} {5}{6}",
-				                                      this.dtFormatter.format(ZonedDateTime.ofInstant(event.timestamp(),
-				                                                                                      ZoneId.systemDefault())),
-				                                      event.threadName(), levelToColor(event.level()), event.level()
-				                                                                                            .name(),
-				                                      levelToColor(Level.OFF),
-				                                      event.entryPoint() != null
-				                                                                ? event.entryPoint()
-				                                                                : "", additionalLine);
+				
+				additionalLine = String.format("%s%-5s%s [%s] [%s] %s%s",
+				                               levelToColor(event.level()),
+				                               event.level().name(),
+				                               levelToColor(Level.OFF),
+				                               this.dtFormatter.format(ZonedDateTime.ofInstant(event.timestamp(),
+				                                                                               ZoneId.systemDefault())),
+				                               event.threadName(), event.entryPoint() != null
+				                                                                             ? event.entryPoint()
+				                                                                             : "",
+				                               event.arguments().length == 0, additionalLine);
+				
 				this.stream.println(additionalLine);
 			}
 		}

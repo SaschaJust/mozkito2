@@ -13,8 +13,6 @@
 
 package org.mozkito.core.libs.versions.adapters;
 
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,27 +21,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mozkito.core.libs.versions.model.ChangeSet;
-import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
+import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelManager;
 
 /**
  * The Class ChangeSetAdapter, which is used to load and store {@link ChangeSet} entities from/to a database.
  *
  * @author Sascha Just
  */
-public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
-	
-	/** The save statement. */
-	private final String         saveStatement;
-	
-	/** The database. */
-	private final SequelDatabase database;
-	
-	/** The next id statement. */
-	private final String         nextIdStatement;
+public class ChangeSetAdapter extends AbstractSequelAdapter<ChangeSet> {
 	
 	/**
 	 * Instantiates a new change set adapter.
@@ -52,69 +39,26 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	 *            the database
 	 */
 	public ChangeSetAdapter(final SequelDatabase database) {
-		this.database = database;
-		this.saveStatement = SequelManager.loadStatement(database, "changeset_save");
-		this.nextIdStatement = SequelManager.loadStatement(database, "changeset_nextid");
+		super(database, "changeset");
 	}
 	
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
-	
 	public ChangeSet create(final ResultSet result) {
-		return null;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
-	 */
-	
-	public void createConstraints() {
 		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'createConstraints' has not yet been implemented."); //$NON-NLS-1$
+		// return null;
+		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
 		
 	}
 	
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
-	 */
-	
-	public void createIndexes() {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'createIndexes' has not yet been implemented."); //$NON-NLS-1$
-		
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
-	 */
-	
-	public void createScheme() {
-		try {
-			synchronized (this.database) {
-				SequelManager.executeSQL(this.database, "changeset_create_schema");
-			}
-		} catch (final SQLException | IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
-	
 	public void delete(final ChangeSet object) {
 		// TODO Auto-generated method stub
 		//
@@ -123,33 +67,10 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	}
 	
 	/**
-	 * @return the nextIdStatement
-	 */
-	public final PreparedStatement getNextIdStatement() {
-		try {
-			return this.database.getConnection().prepareStatement(this.nextIdStatement);
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * @return the saveStatement
-	 */
-	public final PreparedStatement getSaveStatement() {
-		try {
-			return this.database.getConnection().prepareStatement(this.saveStatement);
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
-	
 	public Iterator<ChangeSet> load() {
 		// TODO Auto-generated method stub
 		// return null;
@@ -159,11 +80,10 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
 	 */
-	
-	public List<ChangeSet> load(final Object... ids) {
+	public List<ChangeSet> load(final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -172,11 +92,10 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
 	 */
-	
-	public ChangeSet load(final Object id) {
+	public ChangeSet load(final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -185,66 +104,31 @@ public class ChangeSetAdapter implements ISequelAdapter<ChangeSet> {
 	
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
-	 */
-	
-	public void save(final ChangeSet... changeSets) {
-		Requires.notNull(changeSets);
-		
-		try {
-			final Connection connection = this.database.getConnection();
-			final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
-			final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
-			
-			for (final ChangeSet changeSet : changeSets) {
-				save(statement, idStatement, changeSet);
-			}
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * Save.
-	 *
-	 * @param saveStatement
-	 *            the statement
-	 * @param id
-	 *            the id
-	 * @param changeSet
-	 *            the change set
-	 * @throws SQLException
-	 *             the SQL exception
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
-	                 final PreparedStatement idStatement,
+	                 final long id,
 	                 final ChangeSet changeSet) {
 		Requires.notNull(saveStatement);
-		Requires.notNull(idStatement);
 		Requires.notNull(changeSet);
 		
 		try {
-			final ResultSet idResult = idStatement.executeQuery();
-			final boolean result = idResult.next();
-			Contract.asserts(result);
-			
-			final long id = idResult.getLong(1);
 			
 			int index = 0;
 			saveStatement.setLong(++index, id);
 			
-			saveStatement.setInt(++index, changeSet.getDepotId());
+			saveStatement.setLong(++index, changeSet.getDepotId());
 			
 			saveStatement.setString(++index, changeSet.getCommitHash());
 			
 			saveStatement.setString(++index, changeSet.getTreeHash());
 			
 			saveStatement.setTimestamp(++index, Timestamp.from(changeSet.getAuthoredTime()));
-			saveStatement.setInt(++index, changeSet.getAuthorId());
+			saveStatement.setLong(++index, changeSet.getAuthorId());
 			
 			saveStatement.setTimestamp(++index, Timestamp.from(changeSet.getCommitTime()));
-			saveStatement.setInt(++index, changeSet.getCommitterId());
+			saveStatement.setLong(++index, changeSet.getCommitterId());
 			
 			saveStatement.setString(++index, changeSet.getSubject());
 			saveStatement.setString(++index, changeSet.getBody());

@@ -13,7 +13,6 @@
 
 package org.mozkito.core.libs.users.model;
 
-import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
@@ -36,7 +35,7 @@ public class Identity implements ISequelEntity {
 	private String            email;
 	
 	/** The id. */
-	private Integer           id               = -1;
+	private long              id               = -1;
 	
 	/**
 	 * Instantiates a new user.
@@ -149,21 +148,18 @@ public class Identity implements ISequelEntity {
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
 	@Override
-	public Integer id() {
+	public long id() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
 	 */
 	@Override
-	public void id(final Object id) {
-		Requires.notNull(id);
-		Requires.isInteger(id);
-		
-		this.id = (Integer) id;
+	public void id(final long id) {
+		this.id = id;
 	}
 	
 	/**
