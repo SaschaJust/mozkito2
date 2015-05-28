@@ -176,8 +176,7 @@ public class TerminalAppender extends Appender {
 				                                                                               ZoneId.systemDefault())),
 				                               event.threadName(), event.entryPoint() != null
 				                                                                             ? event.entryPoint()
-				                                                                             : "",
-				                               event.arguments().length == 0, additionalLine);
+				                                                                             : "", additionalLine);
 				
 				this.stream.println(additionalLine);
 			}
