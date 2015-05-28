@@ -50,7 +50,7 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 	private final String           createConstraintsResource;
 	
 	/** The current id. */
-	private Long                   currentId = 0l;
+	private long                   currentId = 0l;
 	
 	/**
 	 * Instantiates a new abstract sequel adapter.
@@ -119,21 +119,19 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#nextId(java.sql.PreparedStatement)
 	 */
-	public long nextId(final PreparedStatement nextIdStatement) {
+	public synchronized long nextId(final PreparedStatement nextIdStatement) {
 		try {
-			synchronized (this.currentId) {
-				switch (this.database.getIdMode()) {
-					case SEQUENCE:
-						Asserts.notNull(nextIdStatement);
-						final ResultSet idResult = nextIdStatement.executeQuery();
-						final boolean result = idResult.next();
-						Contract.asserts(result);
-						return idResult.getLong(1);
-					case LOCAL:
-						return ++this.currentId;
-					default:
-						throw new RuntimeException("Unsupported ID mode: " + this.database.getIdMode().name());
-				}
+			switch (this.database.getIdMode()) {
+				case SEQUENCE:
+					Asserts.notNull(nextIdStatement);
+					final ResultSet idResult = nextIdStatement.executeQuery();
+					final boolean result = idResult.next();
+					Contract.asserts(result);
+					return idResult.getLong(1);
+				case LOCAL:
+					return ++this.currentId;
+				default:
+					throw new RuntimeException("Unsupported ID mode: " + this.database.getIdMode().name());
 			}
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
