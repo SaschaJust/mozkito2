@@ -84,7 +84,7 @@ public class DatabaseDumper<T extends ISequelEntity> extends Thread {
 					++counter;
 					try {
 						this.adapter.save(this.save, entity.id(), entity);
-					} catch (final RuntimeException e) {
+					} catch (final Throwable e) {
 						if (Logger.logError()) {
 							Logger.error("Could not save '%s'.", entity);
 						}
