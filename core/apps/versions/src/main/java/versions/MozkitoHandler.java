@@ -24,10 +24,10 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
+import java.nio.file.Paths;
 
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.io.FileUtils;
-import org.mozkito.skeleton.io.FileUtils.FileShutdownAction;
 
 /**
  * The Class MozkitoHandler.
@@ -205,16 +205,18 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 				if (!caughtOne) {
 					caughtOne = true;
 					File file;
+					Logger.fatal(e, "%s: Unhandled exception. Terminated.", t.getName());
 					try {
-						file = FileUtils.createRandomFile("mozkito-", ".crash", FileShutdownAction.KEEP);
+						file = File.createTempFile("mozkito-", ".crash", Paths.get("").toFile());
+						Logger.fatal("Writing crash report to " + file.getAbsolutePath());
 						try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
 							writer.println(t.getName() + ": Unhandled exception. Terminated.");
 							e.printStackTrace(writer);
 							writer.println(getCrashReport(e));
+							writer.flush();
 						}
 					} catch (final IOException e1) {
 						Logger.fatal("Could not write crash file.");
-						Logger.fatal(e, "%s: Unhandled exception. Terminated.", t.getName());
 						Logger.fatal(getCrashReport(e));
 					}
 					
