@@ -13,11 +13,10 @@
 
 package versions;
 
-
 /**
  * @author Sascha Just
  *
  */
 public class InjectionMiner extends Thread {
-	
+	// stub
 }

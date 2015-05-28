@@ -382,6 +382,7 @@ public class ChangeSetMiner implements Runnable {
 				}
 			}
 			
+			assert changeSetBuilder != null; // stupid eclipse warning workaround
 			changeSetBuilder.body(bodyBuilder.toString().trim());
 			
 			changeSet = changeSetBuilder.create();
@@ -418,6 +419,7 @@ public class ChangeSetMiner implements Runnable {
 				this.database.commit();
 			}
 			
+			assert changeSet != null; // stupid eclipse warning workaround
 			this.changeSets.put(changeSet.getCommitHash(), changeSet);
 			
 			this.graph.addVertex(changeSet);

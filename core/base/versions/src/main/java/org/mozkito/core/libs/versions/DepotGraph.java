@@ -470,33 +470,34 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 			throw new IllegalArgumentException(String.format("Branch '%s' not known to graph.", branch));
 		}
 		
-		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = new DirectedMaskSubgraph<ChangeSet, Edge>(
-		                                                                                                    this.graph,
-		                                                                                                    new MaskFunctor<ChangeSet, Edge>() {
-			                                                                                                    
-			                                                                                                    public boolean isEdgeMasked(final Edge arg0) {
-				                                                                                                    return arg0.branches.contains(branch);
-			                                                                                                    }
-			                                                                                                    
-			                                                                                                    public boolean isVertexMasked(final ChangeSet arg0) {
-				                                                                                                    return arg0.getBranchIds()
-				                                                                                                               .contains(branch.id());
-			                                                                                                    }
-		                                                                                                    });
-		
-		final ChangeSet head = getHead(branch);
-		
-		final DepthFirstIterator<ChangeSet, Edge> iterator = new DepthFirstIterator<ChangeSet, Edge>(branchGraph, head);
-		ChangeSet commit = null;
-		
-		while (iterator.hasNext()) {
-			commit = iterator.next();
-			assert false;
-			// todo
-			// if (commit.getOrigin() == branch.id()) {
-			// return commit;
-			// }
-		}
+		// final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = new DirectedMaskSubgraph<ChangeSet, Edge>(
+		// this.graph,
+		// new MaskFunctor<ChangeSet, Edge>() {
+		//
+		// public boolean isEdgeMasked(final Edge arg0) {
+		// return arg0.branches.contains(branch);
+		// }
+		//
+		// public boolean isVertexMasked(final ChangeSet arg0) {
+		// return arg0.getBranchIds()
+		// .contains(branch.id());
+		// }
+		// });
+		//
+		// final ChangeSet head = getHead(branch);
+		// TODO
+		// final DepthFirstIterator<ChangeSet, Edge> iterator = new DepthFirstIterator<ChangeSet, Edge>(branchGraph,
+		// head);
+		// ChangeSet commit = null;
+		//
+		// while (iterator.hasNext()) {
+		// commit = iterator.next();
+		// assert false;
+		// // todo
+		// // if (commit.getOrigin() == branch.id()) {
+		// // return commit;
+		// // }
+		// }
 		
 		return null;
 	}

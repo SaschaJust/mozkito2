@@ -20,8 +20,8 @@ import java.util.Map;
 import org.apache.commons.collections4.map.UnmodifiableMap;
 
 import org.mozkito.core.libs.versions.model.Branch;
-import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.core.libs.versions.model.Depot;
+import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.exec.Command;

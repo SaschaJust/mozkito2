@@ -22,17 +22,21 @@ import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
-import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
- * @author Sascha Just
+ * The Class GraphMiner.
  *
+ * @author Sascha Just
  */
 public class GraphMiner implements Runnable {
 	
+	/** The clone dir. */
 	private final File                   cloneDir;
-	private final SequelDatabase         database;
+	
+	/** The graph. */
 	private final DepotGraph             graph;
+	
+	/** The change sets. */
 	private final Map<String, ChangeSet> changeSets;
 	
 	/**
@@ -40,16 +44,13 @@ public class GraphMiner implements Runnable {
 	 *
 	 * @param cloneDir
 	 *            the clone dir
-	 * @param database
-	 *            the database
 	 * @param graph
 	 *            the graph
 	 * @param changeSets
+	 *            the change sets
 	 */
-	public GraphMiner(final File cloneDir, final SequelDatabase database, final DepotGraph graph,
-	        final Map<String, ChangeSet> changeSets) {
+	public GraphMiner(final File cloneDir, final DepotGraph graph, final Map<String, ChangeSet> changeSets) {
 		this.cloneDir = cloneDir;
-		this.database = database;
 		this.graph = graph;
 		this.changeSets = changeSets;
 	}

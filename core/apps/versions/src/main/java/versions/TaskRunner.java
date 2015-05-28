@@ -193,7 +193,7 @@ public class TaskRunner implements Runnable {
 			
 			if (ArrayUtils.contains(this.tasks, Task.GRAPH)) {
 				Logger.info("Spawning GraphBuilder.");
-				final GraphMiner graphMiner = new GraphMiner(this.cloneDir, this.database, this.graph, changeSets);
+				final GraphMiner graphMiner = new GraphMiner(this.cloneDir, this.graph, changeSets);
 				final Thread gmThread = new Thread(graphMiner, "GraphMiner:" + this.depot.getName());
 				gmThread.start();
 				gmThread.join();
