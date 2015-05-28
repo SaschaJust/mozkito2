@@ -22,6 +22,7 @@ import java.util.List;
 import org.mozkito.core.libs.versions.DepotGraph;
 import org.mozkito.core.libs.versions.DepotGraph.Edge;
 import org.mozkito.core.libs.versions.model.BranchEdge;
+import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
@@ -43,6 +44,8 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 	/** The integration adapter. */
 	private final GraphBranchAdapter integrationAdapter;
 	
+	private final EndPointAdapter    endPointAdapter;
+	
 	/**
 	 * Instantiates a new graph adapter.
 	 *
@@ -55,6 +58,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 		this.edgeAdapter = new GraphEdgeAdapter(database);
 		this.branchAdapter = new GraphBranchAdapter(database, "graph_branch_edge");
 		this.integrationAdapter = new GraphBranchAdapter(database, "graph_integration_edge");
+		this.endPointAdapter = new EndPointAdapter(database);
 	}
 	
 	/**
@@ -81,6 +85,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 		this.edgeAdapter.createConstraints();
 		this.branchAdapter.createConstraints();
 		this.integrationAdapter.createConstraints();
+		this.endPointAdapter.createConstraints();
 	}
 	
 	/**
@@ -95,6 +100,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 		this.edgeAdapter.createIndexes();
 		this.branchAdapter.createIndexes();
 		this.integrationAdapter.createIndexes();
+		this.endPointAdapter.createIndexes();
 	}
 	
 	/**
@@ -109,6 +115,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 		this.edgeAdapter.createScheme();
 		this.branchAdapter.createScheme();
 		this.integrationAdapter.createScheme();
+		this.endPointAdapter.createScheme();
 	}
 	
 	/**
@@ -180,6 +187,8 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 			final PreparedStatement branchNextIdStmt = this.branchAdapter.prepareNextIdStatement();
 			final PreparedStatement integrationStmt = this.integrationAdapter.prepareSaveStatement();
 			final PreparedStatement integrationNextIdStmt = this.integrationAdapter.prepareNextIdStatement();
+			final PreparedStatement endPointStmt = this.endPointAdapter.prepareSaveStatement();
+			final PreparedStatement endPointNextIdStmt = this.endPointAdapter.prepareNextIdStatement();
 			
 			saveStatement.setLong(++index, id);
 			saveStatement.setLong(++index, entity.getDepot().id());
@@ -204,7 +213,10 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 					iEdge = new BranchEdge(entity.getDepot().id(), gEdge.id(), branchId);
 					this.integrationAdapter.save(integrationStmt, integrationNextIdStmt, iEdge);
 				}
-				
+			}
+			
+			for (final Endpoint endPoint : entity.getEndPoints()) {
+				this.endPointAdapter.save(endPointStmt, endPointNextIdStmt, endPoint);
 			}
 			
 		} catch (final SQLException e) {

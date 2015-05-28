@@ -19,26 +19,26 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.Branch;
+import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
- * The Class BranchAdapter.
+ * The Class EndPointAdapter.
  *
  * @author Sascha Just
  */
-public class BranchAdapter extends AbstractSequelAdapter<Branch> {
+public class EndPointAdapter extends AbstractSequelAdapter<Endpoint> {
 	
 	/**
-	 * Instantiates a new branch adapter.
+	 * Instantiates a new end point adapter.
 	 *
 	 * @param database
 	 *            the database
 	 */
-	public BranchAdapter(final SequelDatabase database) {
-		super(database, "branch");
+	public EndPointAdapter(final SequelDatabase database) {
+		super(database, "endpoint");
 	}
 	
 	/**
@@ -46,7 +46,7 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
-	public Branch create(final ResultSet result) {
+	public Endpoint create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -58,7 +58,7 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
-	public void delete(final Branch object) {
+	public void delete(final Endpoint object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -70,7 +70,7 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
-	public Iterator<Branch> load() {
+	public Iterator<Endpoint> load() {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -82,7 +82,7 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
 	 */
-	public List<Branch> load(final long... ids) {
+	public List<Endpoint> load(final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -94,7 +94,7 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
 	 */
-	public Branch load(final long id) {
+	public Endpoint load(final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -108,20 +108,20 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	 */
 	public void save(final PreparedStatement statement,
 	                 final long id,
-	                 final Branch branch) {
+	                 final Endpoint entity) {
 		Requires.notNull(statement);
-		Requires.notNull(branch);
+		Requires.notNull(entity);
 		
 		try {
 			int index = 0;
 			statement.setInt(++index, (int) id);
-			
-			statement.setLong(++index, branch.getDepotId());
-			statement.setString(++index, branch.getName());
-			
+			statement.setLong(++index, entity.getDepotId());
+			statement.setLong(++index, entity.getBranchId());
+			statement.setLong(++index, entity.getHeadId());
+			statement.setLong(++index, entity.getRootId());
 			statement.executeUpdate();
 			
-			branch.id(id);
+			entity.id(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -132,7 +132,7 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
-	public void update(final Branch... objects) {
+	public void update(final Endpoint... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

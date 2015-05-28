@@ -27,7 +27,6 @@ import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.ChangeType;
 import org.mozkito.core.libs.versions.DepotGraph;
 import org.mozkito.core.libs.versions.builders.ChangeSetBuilder;
-import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
@@ -78,10 +77,6 @@ public class ChangeSetMiner implements Runnable {
 	
 	/** The depot. */
 	private final Depot                     depot;
-	
-	/** The branch heads. */
-	private final Map<String, Branch>       branchHeads           = new HashMap<String, Branch>();
-	
 	/** The graph. */
 	private final DepotGraph                graph;
 	
@@ -119,15 +114,11 @@ public class ChangeSetMiner implements Runnable {
 	 *            the depot
 	 * @param graph
 	 *            the graph
-	 * @param branchHeads
-	 *            the branch heads
 	 */
-	public ChangeSetMiner(final File cloneDir, final SequelDatabase database, final Depot depot,
-	        final DepotGraph graph, final Map<String, Branch> branchHeads) {
+	public ChangeSetMiner(final File cloneDir, final SequelDatabase database, final Depot depot, final DepotGraph graph) {
 		this.cloneDir = cloneDir;
 		this.database = database;
 		this.depot = depot;
-		this.branchHeads.putAll(branchHeads);
 		this.graph = graph;
 		
 		this.identityDumper = new DatabaseDumper<Identity>(database.getAdapter(Identity.class));
@@ -430,9 +421,6 @@ public class ChangeSetMiner implements Runnable {
 			this.changeSets.put(changeSet.getCommitHash(), changeSet);
 			
 			this.graph.addVertex(changeSet);
-			if (this.branchHeads.containsKey(changeSet.getCommitHash())) {
-				this.graph.addBranchHead(this.branchHeads.get(changeSet.getCommitHash()), changeSet);
-			}
 		}
 		
 		try {

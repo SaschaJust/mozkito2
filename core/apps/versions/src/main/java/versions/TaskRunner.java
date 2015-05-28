@@ -51,7 +51,9 @@ public class TaskRunner implements Runnable {
 		/** The graph. */
 		GRAPH,
 		/** The integration. */
-		INTEGRATION;
+		INTEGRATION,
+		/** The endpoints. */
+		ENDPOINTS;
 	}
 	
 	/**
@@ -171,13 +173,22 @@ public class TaskRunner implements Runnable {
 			if (ArrayUtils.contains(this.tasks, Task.CHANGESETS)) {
 				Logger.info("Spawning ChangeSetMiner.");
 				final ChangeSetMiner changeSetMiner = new ChangeSetMiner(this.cloneDir, this.database, this.depot,
-				                                                         this.graph, branchHeads);
+				                                                         this.graph);
 				final Thread csmThread = new Thread(changeSetMiner, "ChangeSetMiner:" + this.depot.getName());
 				csmThread.start();
 				csmThread.join();
 				changeSets = changeSetMiner.getChangeSets();
 			} else {
 				// TODO load changesets and add to graph and the hashmap
+			}
+			
+			if (ArrayUtils.contains(this.tasks, Task.ENDPOINTS)) {
+				Logger.info("Spawning EndPointMiner.");
+				final EndPointMiner endPointMiner = new EndPointMiner(this.cloneDir, this.database, this.depot,
+				                                                      branchHeads, changeSets, this.graph);
+				final Thread epmThread = new Thread(endPointMiner, "EndPointMiner:" + this.depot.getName());
+				epmThread.start();
+				epmThread.join();
 			}
 			
 			if (ArrayUtils.contains(this.tasks, Task.GRAPH)) {

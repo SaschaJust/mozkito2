@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.collection.UnmodifiableCollection;
 import org.apache.commons.collections4.iterators.UnmodifiableIterator;
 import org.apache.commons.collections4.set.UnmodifiableSet;
 import org.jgrapht.alg.DijkstraShortestPath;
@@ -39,6 +40,7 @@ import org.jgrapht.traverse.GraphIterator;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
+import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
@@ -204,6 +206,9 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 		FORWARD;
 	}
 	
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = -1312749091519616410L;
+	
 	/**
 	 * Load.
 	 *
@@ -221,13 +226,14 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 	/** The graph. */
 	private final org.jgrapht.DirectedGraph<ChangeSet, Edge> graph;
 	
-	/** The branch heads. */
-	private final Map<Branch, ChangeSet>                     branchHeads = new HashMap<Branch, ChangeSet>();
-	
 	/** The depot. */
 	private final Depot                                      depot;
 	
+	/** The id. */
 	private long                                             id;
+	
+	/** The endpoints. */
+	private final Map<Branch, Endpoint>                      endpoints = new HashMap<>();
 	
 	/**
 	 * Instantiates a new depot graph.
@@ -240,25 +246,6 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 		
 		this.depot = depot;
 		this.graph = new DefaultDirectedGraph<ChangeSet, Edge>(Edge.class);
-	}
-	
-	/**
-	 * Adds the branch head.
-	 *
-	 * @param branch
-	 *            the branch
-	 * @param changeSet
-	 *            the change set
-	 * @return true, if successful
-	 */
-	public boolean addBranchHead(final Branch branch,
-	                             final ChangeSet changeSet) {
-		if (!this.branchHeads.containsKey(branch)) {
-			this.branchHeads.put(branch, changeSet);
-			return true;
-		} else {
-			return false;
-		}
 	}
 	
 	/**
@@ -292,6 +279,25 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 	}
 	
 	/**
+	 * Adds the end point.
+	 *
+	 * @param branch
+	 *            the branch
+	 * @param endpoint
+	 *            the endpoint
+	 * @return true, if successful
+	 */
+	public boolean addEndPoint(final Branch branch,
+	                           final Endpoint endpoint) {
+		if (!this.endpoints.containsKey(branch)) {
+			this.endpoints.put(branch, endpoint);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
 	 * Adds the vertex.
 	 *
 	 * @param changeSet
@@ -305,9 +311,15 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 		return this.graph.addVertex(changeSet);
 	}
 	
+	/**
+	 * Compute integration graph.
+	 *
+	 * @param branch
+	 *            the branch
+	 */
 	public void computeIntegrationGraph(final Branch branch) {
 		final ChangeSet head = getHead(branch);
-		final ChangeSet root = getRootCommit(branch);
+		final ChangeSet root = getRoot(branch);
 		
 		final LinkedList<ChangeSet> tempHeads = new LinkedList<ChangeSet>();
 		tempHeads.add(getBranchParent(head));
@@ -336,7 +348,7 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 	 * @return the branches
 	 */
 	public Set<Branch> getBranches() {
-		return UnmodifiableSet.unmodifiableSet(this.branchHeads.keySet());
+		return UnmodifiableSet.unmodifiableSet(this.endpoints.keySet());
 	}
 	
 	/**
@@ -383,7 +395,7 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = getBranchGraph(branch);
 		final EdgeReversedGraph<ChangeSet, Edge> reversedGraph = new EdgeReversedGraph<ChangeSet, Edge>(branchGraph);
 		
-		final ChangeSet head = this.branchHeads.get(branch);
+		final ChangeSet head = getHead(branch);
 		final DepthFirstIterator<ChangeSet, Edge> iterator = new DepthFirstIterator<ChangeSet, Edge>(reversedGraph,
 		                                                                                             head);
 		return UnmodifiableIterator.unmodifiableIterator(new ChangeSetIterator(iterator));
@@ -400,12 +412,36 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 	}
 	
 	/**
+	 * Gets the edge.
+	 *
+	 * @param from
+	 *            the from
+	 * @param to
+	 *            the to
+	 * @return the edge
+	 */
+	public Edge getEdge(final long from,
+	                    final long to) {
+		return this.graph.edgeSet().parallelStream().filter(e -> e.parent.id() == from && e.child.id() == to).findAny()
+		                 .get();
+	}
+	
+	/**
 	 * Gets the edges.
 	 *
 	 * @return the edges
 	 */
 	public Set<Edge> getEdges() {
 		return UnmodifiableSet.unmodifiableSet(this.graph.edgeSet());
+	}
+	
+	/**
+	 * Gets the end points.
+	 *
+	 * @return the end points
+	 */
+	public Collection<Endpoint> getEndPoints() {
+		return UnmodifiableCollection.unmodifiableCollection(this.endpoints.values());
 	}
 	
 	/**
@@ -428,9 +464,9 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 	 */
 	public ChangeSet getFirstCommitToBranch(final Branch branch) {
 		Requires.notNull(branch);
-		Asserts.notNull(this.branchHeads);
+		Asserts.notNull(this.endpoints);
 		
-		if (!this.branchHeads.containsKey(branch)) {
+		if (!this.endpoints.containsKey(branch)) {
 			throw new IllegalArgumentException(String.format("Branch '%s' not known to graph.", branch));
 		}
 		
@@ -448,7 +484,7 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 			                                                                                                    }
 		                                                                                                    });
 		
-		final ChangeSet head = this.branchHeads.get(branch);
+		final ChangeSet head = getHead(branch);
 		
 		final DepthFirstIterator<ChangeSet, Edge> iterator = new DepthFirstIterator<ChangeSet, Edge>(branchGraph, head);
 		ChangeSet commit = null;
@@ -474,13 +510,13 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 	 */
 	public ChangeSet getHead(final Branch branch) {
 		Requires.notNull(branch);
-		Asserts.notNull(this.branchHeads);
+		Asserts.notNull(this.endpoints);
 		
-		if (!this.branchHeads.containsKey(branch)) {
+		if (!this.endpoints.containsKey(branch)) {
 			throw new IllegalArgumentException(String.format("Branch '%s' not known to graph.", branch));
 		}
 		
-		return this.branchHeads.get(branch);
+		return getVertex(this.endpoints.get(branch).getHeadId());
 	}
 	
 	/**
@@ -508,8 +544,7 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 			                                                                                                         }
 		                                                                                                         });
 		
-		final List<Edge> path = DijkstraShortestPath.findPathBetween(integrationGraph, changeSet,
-		                                                             this.branchHeads.get(branch));
+		final List<Edge> path = DijkstraShortestPath.findPathBetween(integrationGraph, changeSet, getHead(branch));
 		final List<ChangeSet> entries = new ArrayList<ChangeSet>(path.size() + 1);
 		
 		if (!path.isEmpty()) {
@@ -539,11 +574,11 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 	 *            the branch
 	 * @return the root commit
 	 */
-	public ChangeSet getRootCommit(final Branch branch) {
+	public ChangeSet getRoot(final Branch branch) {
 		Requires.notNull(branch);
-		Asserts.notNull(this.branchHeads);
+		Asserts.notNull(this.endpoints);
 		
-		if (!this.branchHeads.containsKey(branch)) {
+		if (!this.endpoints.containsKey(branch)) {
 			throw new IllegalArgumentException(String.format("Branch '%s' not known to graph.", branch));
 		}
 		
@@ -551,7 +586,7 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 		
 		final EdgeReversedGraph<ChangeSet, Edge> reversedGraph = new EdgeReversedGraph<ChangeSet, Edge>(branchGraph);
 		
-		final ChangeSet head = this.branchHeads.get(branch);
+		final ChangeSet head = getHead(branch);
 		final DepthFirstIterator<ChangeSet, Edge> iterator = new DepthFirstIterator<ChangeSet, Edge>(reversedGraph,
 		                                                                                             head);
 		ChangeSet root = null;
@@ -573,6 +608,17 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 	public List<ChangeSet> getSpinOffs(final ChangeSet changeSet) {
 		return this.graph.outgoingEdgesOf(changeSet).stream().filter(x -> EdgeType.BRANCH.equals(x.type))
 		                 .map(x -> x.parent).collect(Collectors.toList());
+	}
+	
+	/**
+	 * Gets the vertex.
+	 *
+	 * @param id
+	 *            the id
+	 * @return the vertex
+	 */
+	public ChangeSet getVertex(final long id) {
+		return this.graph.vertexSet().stream().filter(x -> x.id() == id).findAny().get();
 	}
 	
 	/**

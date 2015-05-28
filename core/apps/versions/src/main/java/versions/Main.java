@@ -118,6 +118,9 @@ public class Main {
 		option = new Option("tc", "mine-changesets", false, "Mine changesets. Required for graph.");
 		options.addOption(option);
 		
+		option = new Option("te", "mine-endpoints", false, "Mine endpoints, i.e. branch root and head.");
+		options.addOption(option);
+		
 		option = new Option("tg", "mine-graph", false, "Mine graph. Required for integration and visibility.");
 		options.addOption(option);
 		
@@ -169,6 +172,10 @@ public class Main {
 			
 			if (line.hasOption("mine-changesets")) {
 				tasks.add(Task.CHANGESETS);
+			}
+			
+			if (line.hasOption("mine-endpoints")) {
+				tasks.add(Task.ENDPOINTS);
 			}
 			
 			if (line.hasOption("mine-graph")) {

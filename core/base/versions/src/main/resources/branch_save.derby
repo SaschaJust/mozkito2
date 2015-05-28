@@ -1,2 +1,2 @@
-INSERT INTO branches (id, depot_id, name, head, root)
-VALUES (?, ?, ?, ?, ?)
+INSERT INTO branches (id, depot_id, name)
+VALUES (?, ?, ?)
