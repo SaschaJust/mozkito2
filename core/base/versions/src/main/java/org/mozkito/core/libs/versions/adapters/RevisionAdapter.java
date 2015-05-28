@@ -122,6 +122,8 @@ public class RevisionAdapter extends AbstractSequelAdapter<Revision> {
 			saveStatement.setInt(++index, revision.getNewMode());
 			saveStatement.setString(++index, revision.getOldHash());
 			saveStatement.setString(++index, revision.getNewHash());
+			saveStatement.setInt(++index, revision.getLinesIn());
+			saveStatement.setInt(++index, revision.getLinesOut());
 			
 			saveStatement.executeUpdate();
 			

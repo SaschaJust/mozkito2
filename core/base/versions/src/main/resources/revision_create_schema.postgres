@@ -11,5 +11,7 @@ CREATE TABLE revisions (
 	old_mode INT,
 	new_mode INT,
 	old_hash CHAR(40),
-	new_hash CHAR(40)
+	new_hash CHAR(40),
+	lines_in INT,
+	lines_out INT
 );
