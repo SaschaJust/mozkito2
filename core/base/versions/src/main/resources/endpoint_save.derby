@@ -1,0 +1,2 @@
+INSERT INTO branch_endpoints (id, depot_id, branch_id, head_id, root_id)
+VALUES (?, ?, ?, ?, ?)

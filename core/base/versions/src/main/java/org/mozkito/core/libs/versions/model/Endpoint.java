@@ -20,7 +20,7 @@ import org.mozkito.skeleton.sequel.ISequelEntity;
  *
  * @author Sascha Just
  */
-public class BranchHead implements ISequelEntity {
+public class Endpoint implements ISequelEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -1010755719141984103L;
@@ -31,8 +31,11 @@ public class BranchHead implements ISequelEntity {
 	/** The depot id. */
 	private final long        depotId;
 	
-	/** The change set id. */
-	private final long        changeSetId;
+	/** The head id. */
+	private final long        headId;
+	
+	/** The root id. */
+	private final long        rootId;
 	
 	/** The branch id. */
 	private final long        branchId;
@@ -44,14 +47,17 @@ public class BranchHead implements ISequelEntity {
 	 *            the depot
 	 * @param branch
 	 *            the branch
-	 * @param changeSet
-	 *            the change set
+	 * @param head
+	 *            the head
+	 * @param root
+	 *            the root
 	 */
-	public BranchHead(final Depot depot, final Branch branch, final ChangeSet changeSet) {
+	public Endpoint(final Depot depot, final Branch branch, final ChangeSet head, final ChangeSet root) {
 		super();
 		this.depotId = depot.id();
 		this.branchId = branch.id();
-		this.changeSetId = changeSet.id();
+		this.headId = head.id();
+		this.rootId = root.id();
 	}
 	
 	/**
@@ -70,7 +76,7 @@ public class BranchHead implements ISequelEntity {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final BranchHead other = (BranchHead) obj;
+		final Endpoint other = (Endpoint) obj;
 		if (this.branchId != other.branchId) {
 			return false;
 		}
@@ -90,21 +96,26 @@ public class BranchHead implements ISequelEntity {
 	}
 	
 	/**
-	 * Gets the change set id.
-	 *
-	 * @return the changeSetId
-	 */
-	public final long getChangeSetId() {
-		return this.changeSetId;
-	}
-	
-	/**
 	 * Gets the depot id.
 	 *
 	 * @return the depotId
 	 */
 	public final long getDepotId() {
 		return this.depotId;
+	}
+	
+	/**
+	 * @return the headId
+	 */
+	public final long getHeadId() {
+		return this.headId;
+	}
+	
+	/**
+	 * @return the rootId
+	 */
+	public final long getRootId() {
+		return this.rootId;
 	}
 	
 	/**
@@ -137,26 +148,6 @@ public class BranchHead implements ISequelEntity {
 	 */
 	public void id(final long id) {
 		this.id = id;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("BranchHead [id=");
-		builder.append(this.id);
-		builder.append(", depotId=");
-		builder.append(this.depotId);
-		builder.append(", branchId=");
-		builder.append(this.branchId);
-		builder.append(", changeSetId=");
-		builder.append(this.changeSetId);
-		builder.append("]");
-		return builder.toString();
 	}
 	
 }
