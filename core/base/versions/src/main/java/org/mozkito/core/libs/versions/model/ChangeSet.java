@@ -108,10 +108,8 @@ public class ChangeSet implements ISequelEntity {
 		Requires.notNull(treeHash);
 		Requires.length(treeHash, 40);
 		Requires.notNull(authoredTime);
-		Requires.greater(authoredTime.getEpochSecond(), 315532800l); // 1980
 		Requires.positive(authorId);
 		Requires.notNull(commitTime);
-		Requires.greater(commitTime.getEpochSecond(), 315532800l); // 1980
 		Requires.positive(committerId);
 		Requires.notNull(subject);
 		Requires.notNull(body);

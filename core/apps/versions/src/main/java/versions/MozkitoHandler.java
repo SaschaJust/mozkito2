@@ -24,7 +24,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
-import java.nio.file.Paths;
 
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.io.FileUtils;
@@ -207,7 +206,7 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 					File file;
 					Logger.fatal(e, "%s: Unhandled exception. Terminated.", t.getName());
 					try {
-						file = File.createTempFile("mozkito-", ".crash", Paths.get("").toFile());
+						file = File.createTempFile("mozkito-", ".crash", new File("."));
 						Logger.fatal("Writing crash report to " + file.getAbsolutePath());
 						try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
 							writer.println(t.getName() + ": Unhandled exception. Terminated.");
