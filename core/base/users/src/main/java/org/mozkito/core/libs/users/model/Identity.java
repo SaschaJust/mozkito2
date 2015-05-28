@@ -13,8 +13,8 @@
 
 package org.mozkito.core.libs.users.model;
 
-import org.mozkito.libraries.sequel.ISequelEntity;
 import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
  * The Class User.
@@ -146,7 +146,7 @@ public class Identity implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
 	@Override
 	public Integer id() {
@@ -156,7 +156,7 @@ public class Identity implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
 	 */
 	@Override
 	public void id(final Object id) {

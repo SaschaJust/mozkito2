@@ -14,8 +14,8 @@
 package org.mozkito.core.libs.versions.model;
 
 import org.mozkito.core.libs.versions.ChangeType;
-import org.mozkito.libraries.sequel.ISequelEntity;
 import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.skeleton.sequel.ISequelEntity;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -276,7 +276,7 @@ public class Revision implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
 	@Override
 	public Object id() {
@@ -286,7 +286,7 @@ public class Revision implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
 	 */
 	@Override
 	public void id(final Object id) {

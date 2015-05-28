@@ -24,11 +24,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mozkito.core.libs.versions.model.Depot;
-import org.mozkito.libraries.sequel.ISequelAdapter;
-import org.mozkito.libraries.sequel.SequelDatabase;
-import org.mozkito.libraries.sequel.SequelManager;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.skeleton.sequel.ISequelAdapter;
+import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.SequelManager;
 
 /**
  * @author Sascha Just
@@ -57,7 +57,7 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
 	public Depot create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -69,7 +69,7 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createConstraints()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
 	 */
 	public void createConstraints() {
 		try {
@@ -84,7 +84,7 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createIndexes()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
 	 */
 	public void createIndexes() {
 		try {
@@ -99,7 +99,7 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createScheme()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
 	 */
 	public void createScheme() {
 		try {
@@ -114,7 +114,7 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
 	public void delete(final Depot object) {
 		// TODO Auto-generated method stub
@@ -126,7 +126,7 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
 	public Iterator<Depot> load() {
 		// TODO Auto-generated method stub
@@ -138,7 +138,7 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
 	 */
 	public List<Depot> load(final Object... ids) {
 		// TODO Auto-generated method stub
@@ -150,7 +150,7 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
 	 */
 	public Depot load(final Object id) {
 		// TODO Auto-generated method stub
@@ -162,7 +162,7 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#save(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
 	 */
 	public void save(final Depot... depots) {
 		Requires.notNull(depots);
@@ -195,7 +195,7 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
 	public void update(final Depot... objects) {
 		// TODO Auto-generated method stub

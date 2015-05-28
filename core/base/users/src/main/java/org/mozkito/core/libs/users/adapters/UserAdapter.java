@@ -26,14 +26,14 @@ import java.util.NoSuchElementException;
 
 import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.users.model.User;
-import org.mozkito.libraries.sequel.ISequelAdapter;
-import org.mozkito.libraries.sequel.SequelDatabase;
-import org.mozkito.libraries.sequel.SequelManager;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Ensures;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.logging.Logger;
+import org.mozkito.skeleton.sequel.ISequelAdapter;
+import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.SequelManager;
 
 /**
  * The Class UserAdapter.
@@ -179,7 +179,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
 	public User create(final ResultSet results) {
 		Requires.notNull(results);
@@ -223,7 +223,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createConstraints()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
 	 */
 	public void createConstraints() {
 		try {
@@ -243,7 +243,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createIndexes()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
 	 */
 	public void createIndexes() {
 		try {
@@ -263,7 +263,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createScheme()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
 	 */
 	public void createScheme() {
 		try {
@@ -278,7 +278,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
 	public void delete(final User user) {
 		Requires.notNull(user);
@@ -327,7 +327,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
 	public Iterator<User> load() {
 		Asserts.notNull(this.database);
@@ -346,7 +346,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
 	 */
 	public User load(final Object id) {
 		Asserts.notNull(id);
@@ -377,7 +377,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
 	 */
 	public List<User> load(final Object... ids) {
 		Asserts.notNull(this.database);
@@ -474,7 +474,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#save(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
 	 */
 	public void save(final User... users) {
 		Requires.notNull(users);
@@ -500,7 +500,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
 	public void update(final User... objects) {
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

@@ -39,10 +39,10 @@ import org.jgrapht.traverse.GraphIterator;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
-import org.mozkito.libraries.sequel.SequelDatabase;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
  * The Class DepotGraph represents a multi-layer view on the Git repository. Once built, it does not require the

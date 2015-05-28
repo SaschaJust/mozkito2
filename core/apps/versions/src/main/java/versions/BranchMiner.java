@@ -23,10 +23,10 @@ import org.mozkito.core.libs.versions.adapters.BranchAdapter;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.BranchHead;
 import org.mozkito.core.libs.versions.model.Depot;
-import org.mozkito.libraries.sequel.SequelDatabase;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.exec.Command;
+import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
  * The BranchMiner is used to collect all branches known to the underlying depot. The {@link Branch}es are stored in the

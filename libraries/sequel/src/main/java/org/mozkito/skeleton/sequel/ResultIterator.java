@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.libraries.sequel;
+package org.mozkito.skeleton.sequel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

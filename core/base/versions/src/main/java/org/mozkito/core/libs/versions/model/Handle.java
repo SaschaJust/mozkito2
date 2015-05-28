@@ -13,8 +13,8 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.libraries.sequel.ISequelEntity;
 import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.skeleton.sequel.ISequelEntity;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -75,7 +75,7 @@ public class Handle implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
 	public Long id() {
 		return this.id;
@@ -84,7 +84,7 @@ public class Handle implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
 	 */
 	public void id(final Object id) {
 		Requires.notNull(id);

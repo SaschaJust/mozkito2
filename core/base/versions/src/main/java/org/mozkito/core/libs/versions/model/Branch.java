@@ -13,8 +13,8 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.libraries.sequel.ISequelEntity;
 import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
  * The Class Branch models a branch in a version archive.
@@ -141,7 +141,7 @@ public class Branch implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
 	public Integer id() {
 		return this.id;
@@ -150,7 +150,7 @@ public class Branch implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
 	 */
 	public void id(final Object id) {
 		Requires.notNull(id);

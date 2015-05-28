@@ -21,8 +21,8 @@ import org.mozkito.core.libs.versions.adapters.BranchAdapter;
 import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
-import org.mozkito.libraries.sequel.SequelDatabase;
-import org.mozkito.libraries.sequel.SequelDatabase.Type;
+import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.SequelDatabase.Type;
 
 /**
  * @author Sascha Just
@@ -33,7 +33,7 @@ public class VelocityMiner {
 	public static void main(final String[] args) throws SQLException {
 		final String monitoredBranchString = "master";
 		
-		final SequelDatabase database = new SequelDatabase(Type.DERBY, "test", null, null, null, null, 1);
+		final SequelDatabase database = new SequelDatabase(Type.DERBY, "test", null, null, null, null);
 		final DepotGraph graph = DepotGraph.load(database);
 		
 		final ChangeSetAdapter changeSetAdapter = new ChangeSetAdapter(database);

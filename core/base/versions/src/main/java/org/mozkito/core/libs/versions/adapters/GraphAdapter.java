@@ -23,11 +23,11 @@ import java.util.List;
 
 import org.mozkito.core.libs.versions.DepotGraph;
 import org.mozkito.core.libs.versions.DepotGraph.Edge;
-import org.mozkito.libraries.sequel.ISequelAdapter;
-import org.mozkito.libraries.sequel.SequelDatabase;
-import org.mozkito.libraries.sequel.SequelManager;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.skeleton.sequel.ISequelAdapter;
+import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.SequelManager;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -77,7 +77,7 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
 	public DepotGraph create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -89,7 +89,7 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createConstraints()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
 	 */
 	public void createConstraints() {
 		// TODO Auto-generated method stub
@@ -101,7 +101,7 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createIndexes()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
 	 */
 	public void createIndexes() {
 		// TODO Auto-generated method stub
@@ -113,7 +113,7 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createScheme()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
 	 */
 	public void createScheme() {
 		try {
@@ -130,7 +130,7 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
 	public void delete(final DepotGraph object) {
 		// TODO Auto-generated method stub
@@ -142,7 +142,7 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
 	public Iterator<DepotGraph> load() {
 		// TODO Auto-generated method stub
@@ -154,7 +154,7 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
 	 */
 	public List<DepotGraph> load(final Object... ids) {
 		// TODO Auto-generated method stub
@@ -166,7 +166,7 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
 	 */
 	public DepotGraph load(final Object id) {
 		// TODO Auto-generated method stub
@@ -178,7 +178,7 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#save(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
 	 */
 	public void save(final DepotGraph... depotGraphs) {
 		Requires.notNull(depotGraphs);
@@ -291,7 +291,7 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
 	public void update(final DepotGraph... objects) {
 		// TODO Auto-generated method stub

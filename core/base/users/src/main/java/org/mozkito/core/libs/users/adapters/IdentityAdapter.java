@@ -24,15 +24,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.mozkito.core.libs.users.model.Identity;
-import org.mozkito.libraries.sequel.ISequelAdapter;
-import org.mozkito.libraries.sequel.ResultIterator;
-import org.mozkito.libraries.sequel.SequelDatabase;
-import org.mozkito.libraries.sequel.SequelManager;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Ensures;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.logging.Logger;
+import org.mozkito.skeleton.sequel.ISequelAdapter;
+import org.mozkito.skeleton.sequel.ResultIterator;
+import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.SequelManager;
 
 /**
  * The Class UserSequelAdapter.
@@ -73,7 +73,7 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
 	@Override
 	public Identity create(final ResultSet result) {
@@ -89,7 +89,7 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createConstraints()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
 	 */
 	@Override
 	public void createConstraints() {
@@ -111,7 +111,7 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createIndexes()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
 	 */
 	@Override
 	public void createIndexes() {
@@ -132,7 +132,7 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#createScheme()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
 	 */
 	@Override
 	public void createScheme() {
@@ -148,7 +148,7 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
 	@Override
 	public void delete(final Identity identity) {
@@ -180,7 +180,7 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
 	@Override
 	public Iterator<Identity> load() {
@@ -197,7 +197,7 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
 	 */
 	@Override
 	public Identity load(final Object id) {
@@ -231,7 +231,7 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#load(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
 	 */
 	@Override
 	public List<Identity> load(final Object... ids) {
@@ -271,7 +271,7 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#save(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
 	 */
 	@Override
 	public void save(final Identity... identities) {
@@ -333,7 +333,7 @@ public class IdentityAdapter implements ISequelAdapter<Identity> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
 	@Override
 	public void update(final Identity... identities) {

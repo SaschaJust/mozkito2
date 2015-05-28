@@ -20,9 +20,9 @@ import java.util.Set;
 
 import org.apache.commons.collections4.collection.UnmodifiableCollection;
 
-import org.mozkito.libraries.sequel.ISequelEntity;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
  * The Class ChangeSet.
@@ -107,8 +107,10 @@ public class ChangeSet implements ISequelEntity {
 		Requires.notNull(treeHash);
 		Requires.length(treeHash, 40);
 		Requires.notNull(authoredTime);
+		Requires.greater(authoredTime.getEpochSecond(), 315532800l); // 1980
 		Requires.positive(authorId);
 		Requires.notNull(commitTime);
+		Requires.greater(commitTime.getEpochSecond(), 315532800l); // 1980
 		Requires.positive(committerId);
 		Requires.notNull(subject);
 		Requires.notNull(body);
@@ -274,7 +276,7 @@ public class ChangeSet implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
 	@Override
 	public Long id() {
@@ -284,7 +286,7 @@ public class ChangeSet implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
 	 */
 	@Override
 	public void id(final Object id) {
