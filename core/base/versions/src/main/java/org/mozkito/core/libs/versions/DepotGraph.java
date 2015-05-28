@@ -147,6 +147,43 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 		}
 		
 		/**
+		 * {@inheritDoc}
+		 * 
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(final Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			final Edge other = (Edge) obj;
+			if (!getOuterType().equals(other.getOuterType())) {
+				return false;
+			}
+			if (this.child == null) {
+				if (other.child != null) {
+					return false;
+				}
+			} else if (!this.child.equals(other.child)) {
+				return false;
+			}
+			if (this.parent == null) {
+				if (other.parent != null) {
+					return false;
+				}
+			} else if (!this.parent.equals(other.parent)) {
+				return false;
+			}
+			return true;
+		}
+		
+		/**
 		 * Gets the branch ids.
 		 *
 		 * @return the branch ids
@@ -162,6 +199,10 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 		 */
 		public Collection<Long> getIntegrationPathIds() {
 			return this.integrationPath.stream().map(x -> x.id()).collect(Collectors.toList());
+		}
+		
+		private DepotGraph getOuterType() {
+			return DepotGraph.this;
 		}
 		
 		/**
@@ -189,6 +230,25 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 		 */
 		public short getType() {
 			return (short) this.type.ordinal();
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + (this.child == null
+			                                             ? 0
+			                                             : this.child.hashCode());
+			result = prime * result + (this.parent == null
+			                                              ? 0
+			                                              : this.parent.hashCode());
+			return result;
 		}
 		
 	}

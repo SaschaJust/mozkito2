@@ -32,9 +32,9 @@ import org.mozkito.skeleton.io.FileUtils;
  * The Class MozkitoHandler.
  */
 public class MozkitoHandler implements UncaughtExceptionHandler {
-
+	
 	private static boolean caughtOne = false;
-
+	
 	private String getClassLoadingInformation() {
 		final ClassLoadingMXBean bean = ManagementFactory.getClassLoadingMXBean();
 		final StringBuilder builder = new StringBuilder();
@@ -45,19 +45,19 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 		builder.append(FileUtils.lineSeparator);
 		return builder.toString();
 	}
-
+	
 	private String getCrashReport(final Throwable e) {
 		final StringBuilder body = new StringBuilder();
-
+		
 		try {
 			body.append(">>> Crash Report >>>");
 			body.append(FileUtils.lineSeparator);
 			body.append(FileUtils.lineSeparator);
-
+			
 			StringWriter stack = new StringWriter();
 			PrintWriter writer = new PrintWriter(stack);
 			e.printStackTrace(writer);
-
+			
 			// body.append(FileUtils.lineSeparator);
 			// body.append(FileUtils.lineSeparator);
 			body.append("Stacktrace:");
@@ -65,30 +65,30 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 			body.append(FileUtils.lineSeparator);
 			body.append(stack.toString());
 			body.append(FileUtils.lineSeparator);
-
+			
 			Throwable t = e.getCause();
 			while (t != null) {
 				stack = new StringWriter();
 				writer = new PrintWriter(stack);
 				t.printStackTrace(writer);
-
+				
 				body.append(FileUtils.lineSeparator);
 				body.append("Cause Stacktrace:");
 				body.append(FileUtils.lineSeparator);
 				body.append(FileUtils.lineSeparator);
 				body.append(stack.toString());
 				body.append(FileUtils.lineSeparator);
-
+				
 				t = t.getCause();
 			}
-
+			
 			body.append("<<< Crash Report <<<");
 			body.append(FileUtils.lineSeparator);
 			body.append(FileUtils.lineSeparator);
 		} catch (final Throwable ignore) {
 			// ignore
 		}
-
+		
 		try {
 			body.append(">>> System Information >>>");
 			body.append(FileUtils.lineSeparator);
@@ -104,7 +104,7 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 		} catch (final Throwable ignore) {
 			// ignore
 		}
-
+		
 		try {
 			body.append(">>> Active Threads >>>");
 			body.append(FileUtils.lineSeparator);
@@ -116,7 +116,7 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 		} catch (final Throwable ignore) {
 			// ignore
 		}
-
+		
 		try {
 			body.append(">>> Memory Usage >>>");
 			body.append(FileUtils.lineSeparator);
@@ -128,17 +128,17 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 		} catch (final Throwable ignore) {
 			// ignore
 		}
-
+		
 		return body.toString();
 	}
-
+	
 	private String getJavaInformation() {
 		final StringBuilder builder = new StringBuilder();
-
+		
 		builder.append("Java class path: ").append(System.getProperty("java.class.path"))
-		.append(FileUtils.lineSeparator);
+		       .append(FileUtils.lineSeparator);
 		builder.append("Java class version: ").append(System.getProperty("java.class.version"))
-		.append(FileUtils.lineSeparator);
+		       .append(FileUtils.lineSeparator);
 		builder.append("Java compiler: ").append(System.getProperty("java.compiler")).append(FileUtils.lineSeparator);
 		builder.append("Java home: ").append(System.getProperty("java.home")).append(FileUtils.lineSeparator);
 		builder.append("Java tempdir: ").append(System.getProperty("java.io.tmpdir")).append(FileUtils.lineSeparator);
@@ -149,7 +149,7 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 		builder.append("OS version: ").append(System.getProperty("os.version")).append(FileUtils.lineSeparator);
 		return builder.toString();
 	}
-
+	
 	/**
 	 * @return
 	 */
@@ -159,7 +159,7 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 		                                             runtime.totalMemory(), runtime.maxMemory());
 		return memUsage.toString();
 	}
-
+	
 	private String getRuntimeInformation() {
 		final RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
 		final StringBuilder builder = new StringBuilder();
@@ -169,29 +169,29 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 		builder.append(bean.getVmVersion());
 		builder.append(FileUtils.lineSeparator);
 		return builder.toString();
-
+		
 	}
-
+	
 	private String getSystemInformation() {
 		final OperatingSystemMXBean systemMXBean = ManagementFactory.getOperatingSystemMXBean();
 		final StringBuilder builder = new StringBuilder();
 		builder.append("Operating System: ");
 		builder.append(systemMXBean.getName()).append(" ").append(systemMXBean.getVersion()).append(" ")
-		.append(systemMXBean.getArch());
+		       .append(systemMXBean.getArch());
 		builder.append(FileUtils.lineSeparator);
 		return builder.toString();
 	}
-
+	
 	private String getThreadInformation() {
 		ThreadGroup root = Thread.currentThread().getThreadGroup().getParent();
 		while (root.getParent() != null) {
 			root = root.getParent();
 		}
-
+		
 		// Visit each thread group
 		return visit(root, 0) + FileUtils.lineSeparator;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -213,19 +213,20 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 							e.printStackTrace(writer);
 							writer.println(getCrashReport(e));
 							writer.flush();
+							writer.close();
 						}
 					} catch (final IOException e1) {
 						Logger.fatal("Could not write crash file.");
 						Logger.fatal(getCrashReport(e));
 					}
-
+					
 					System.exit(404);
 				}
 			}
-
+			
 		}
 	}
-
+	
 	private String visit(final ThreadGroup group,
 	                     final int level) {
 		// Get threads in `group'
@@ -233,12 +234,12 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 		int numThreads = group.activeCount();
 		final Thread[] threads = new Thread[numThreads * 2];
 		numThreads = group.enumerate(threads, false);
-
+		
 		final StringBuilder indent = new StringBuilder();
 		for (int i = 0; i < level; ++i) {
 			indent.append("  ");
 		}
-
+		
 		// Enumerate each thread in `group'
 		for (int i = 0; i < numThreads; i++) {
 			// Get thread
@@ -258,18 +259,18 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 			}
 			// builder.append(FileUtils.lineSeparator);
 		}
-
+		
 		// Get thread subgroups of `group'
 		int numGroups = group.activeGroupCount();
 		final ThreadGroup[] groups = new ThreadGroup[numGroups * 2];
 		numGroups = group.enumerate(groups, false);
-
+		
 		// Recursively visit each subgroup
 		for (int i = 0; i < numGroups; i++) {
 			builder.append(indent);
 			builder.append(visit(groups[i], level + 1));
 		}
-
+		
 		return builder.toString();
 	}
 }
