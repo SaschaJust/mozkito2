@@ -27,9 +27,6 @@ import org.mozkito.libraries.logging.internal.LogStream;
  */
 public class Logger {
 	
-	/** The file consumer. */
-	private static LogConsumer      fileConsumer;
-	
 	/** The log consumer. */
 	private static LogConsumer      logConsumer;
 	

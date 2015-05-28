@@ -103,7 +103,7 @@ public class TerminalAppender extends Appender {
 		switch (level) {
 			case FATAL:
 				return TerminalColor.isSupported()
-				                                  ? TerminalColor.BGRED + TerminalColor.BLACK.getTag()
+				                                  ? TerminalColor.BGRED.getTag() + TerminalColor.BLACK.getTag()
 				                                  : "";
 			case ERROR:
 				return TerminalColor.isSupported()
@@ -165,7 +165,7 @@ public class TerminalAppender extends Appender {
 			
 			for (String additionalLine : additionalLines) {
 				if (event.matcher() != null) {
-					line = this.highlighters.get(event.matcher()).highlight(line);
+					additionalLine = this.highlighters.get(event.matcher()).highlight(additionalLine);
 				}
 				
 				additionalLine = String.format("%s%-5s%s [%s] [%s] %s%s",
