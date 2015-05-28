@@ -82,7 +82,14 @@ public class DatabaseDumper<T extends ISequelEntity> extends Thread {
 				try {
 					entity = this.queue.take();
 					++counter;
-					this.adapter.save(this.save, entity.id(), entity);
+					try {
+						this.adapter.save(this.save, entity.id(), entity);
+					} catch (final RuntimeException e) {
+						if (Logger.logError()) {
+							Logger.error("Could not save '%s'.", entity);
+						}
+						throw e;
+					}
 					if (counter % BATCH_SIZE == 0) {
 						this.save.getConnection().commit();
 						counter = 0;
