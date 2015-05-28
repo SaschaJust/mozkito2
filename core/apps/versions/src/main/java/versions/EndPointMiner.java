@@ -17,15 +17,13 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.mozkito.core.libs.versions.DepotGraph;
+import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
-import org.mozkito.skeleton.sequel.DatabaseDumper;
-import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
  * The Class EndPointMiner.
@@ -35,21 +33,18 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
 public class EndPointMiner implements Runnable {
 	
 	/** The clone dir. */
-	private final File                     cloneDir;
+	private final File                   cloneDir;
 	
 	/** The branch heads. */
-	private final Map<String, Branch>      branchHeads;
+	private final Map<String, Branch>    branchHeads;
 	
 	/** The change sets. */
-	private final Map<String, ChangeSet>   changeSets;
-	
-	/** The dumper. */
-	private final DatabaseDumper<Endpoint> dumper;
+	private final Map<String, ChangeSet> changeSets;
 	
 	/** The depot. */
-	private final Depot                    depot;
+	private final Depot                  depot;
 	
-	private final DepotGraph               graph;
+	private final Graph             graph;
 	
 	/**
 	 * Instantiates a new end point miner.
@@ -67,14 +62,13 @@ public class EndPointMiner implements Runnable {
 	 * @param graph
 	 *            the graph
 	 */
-	public EndPointMiner(final File cloneDir, final SequelDatabase database, final Depot depot,
-	        final Map<String, Branch> heads, final Map<String, ChangeSet> changeSets, final DepotGraph graph) {
+	public EndPointMiner(final File cloneDir, final Depot depot, final Map<String, Branch> heads,
+	        final Map<String, ChangeSet> changeSets, final Graph graph) {
 		this.cloneDir = cloneDir;
 		this.branchHeads = heads;
 		this.changeSets = changeSets;
 		this.depot = depot;
 		this.graph = graph;
-		this.dumper = new DatabaseDumper<Endpoint>(database.getAdapter(Endpoint.class));
 	}
 	
 	/**
@@ -90,8 +84,6 @@ public class EndPointMiner implements Runnable {
 			
 			Asserts.containsKey(this.changeSets, root);
 			
-			this.dumper.saveLater(new Endpoint(this.depot, entry.getValue(), this.changeSets.get(entry.getKey()),
-			                                   this.changeSets.get(root)));
 			this.graph.addEndPoint(entry.getValue(),
 			                       new Endpoint(this.depot, entry.getValue(), this.changeSets.get(entry.getKey()),
 			                                    this.changeSets.get(root)));

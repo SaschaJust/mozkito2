@@ -13,7 +13,7 @@
 
 package versions;
 
-import org.mozkito.core.libs.versions.DepotGraph;
+import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.libraries.logging.Logger;
 
@@ -23,7 +23,7 @@ import org.mozkito.libraries.logging.Logger;
  */
 public class IntegrationMiner implements Runnable {
 	
-	private final DepotGraph graph;
+	private final Graph graph;
 	
 	/**
 	 * Instantiates a new integration miner.
@@ -31,7 +31,7 @@ public class IntegrationMiner implements Runnable {
 	 * @param graph
 	 *            the graph
 	 */
-	public IntegrationMiner(final DepotGraph graph) {
+	public IntegrationMiner(final Graph graph) {
 		this.graph = graph;
 	}
 	

@@ -21,17 +21,18 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import org.mozkito.core.libs.versions.DepotGraph;
+import org.mozkito.core.libs.users.model.Identity;
+import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
+import org.mozkito.core.libs.versions.model.Handle;
+import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.commons.URIUtils;
 import org.mozkito.skeleton.exec.Command;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.DatabaseDumper;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class TaskRunner.
  *
@@ -69,28 +70,46 @@ public class TaskRunner implements Runnable {
 	}
 	
 	/** The work dir. */
-	private final File           workDir;
+	private final File                      workDir;
 	
 	/** The clone dir. */
-	private final File           cloneDir;
-	
-	/** The database. */
-	private final SequelDatabase database;
+	private final File                      cloneDir;
 	
 	/** The graph. */
-	private final DepotGraph     graph;
+	private final Graph                     graph;
 	
 	/** The uri. */
-	private final URI            uri;
+	private final URI                       uri;
 	
 	/** The tasks. */
-	private final Task[]         tasks;
+	private final Task[]                    tasks;
 	
 	/** The depot. */
-	private final Depot          depot;
+	private final Depot                     depot;
 	
 	/** The clone name. */
-	private final String         cloneName;
+	private final String                    cloneName;
+	
+	/** The change set dumper. */
+	private final DatabaseDumper<ChangeSet> changeSetDumper;
+	
+	/** The identity dumper. */
+	private final DatabaseDumper<Identity>  identityDumper;
+	
+	/** The revision dumper. */
+	private final DatabaseDumper<Revision>  revisionDumper;
+	
+	/** The branch dumper. */
+	private final DatabaseDumper<Branch>    branchDumper;
+	
+	/** The handle dumper. */
+	private final DatabaseDumper<Handle>    handleDumper;
+	
+	/** The graph dumper. */
+	private final DatabaseDumper<Graph>     graphDumper;
+	
+	/** The depot dumper. */
+	private final DatabaseDumper<Depot>     depotDumper;
 	
 	/**
 	 * Instantiates a new task runner.
@@ -101,18 +120,40 @@ public class TaskRunner implements Runnable {
 	 *            the work dir
 	 * @param depotURI
 	 *            the depot uri
-	 * @param database
-	 *            the database
 	 * @param tasks
 	 *            the tasks
+	 * @param identityDumper
+	 *            the identity dumper
+	 * @param changeSetDumper
+	 *            the change set dumper
+	 * @param revisionDumper
+	 *            the revision dumper
+	 * @param branchDumper
+	 *            the branch dumper
+	 * @param handleDumper
+	 *            the handle dumper
+	 * @param graphDumper
+	 *            the graph dumper
+	 * @param depotDumper
+	 *            the depot dumper
 	 */
-	public TaskRunner(final File baseDir, final File workDir, final URI depotURI, final SequelDatabase database,
-	        final Task[] tasks) {
+	public TaskRunner(final File baseDir, final File workDir, final URI depotURI, final Task[] tasks,
+	        final DatabaseDumper<Identity> identityDumper, final DatabaseDumper<ChangeSet> changeSetDumper,
+	        final DatabaseDumper<Revision> revisionDumper, final DatabaseDumper<Branch> branchDumper,
+	        final DatabaseDumper<Handle> handleDumper, final DatabaseDumper<Graph> graphDumper,
+	        final DatabaseDumper<Depot> depotDumper) {
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
+		
+		this.identityDumper = identityDumper;
+		this.changeSetDumper = changeSetDumper;
+		this.revisionDumper = revisionDumper;
+		this.branchDumper = branchDumper;
+		this.handleDumper = handleDumper;
+		this.graphDumper = graphDumper;
+		this.depotDumper = depotDumper;
 		
 		this.workDir = workDir;
 		this.uri = depotURI;
-		this.database = database;
 		this.tasks = tasks;
 		final URI baseURI = baseDir.toURI();
 		if (depotURI.equals(baseURI)) {
@@ -123,8 +164,8 @@ public class TaskRunner implements Runnable {
 		}
 		this.cloneDir = new File(workDir, this.cloneName);
 		this.depot = new Depot(this.cloneName, depotURI, Instant.now());
-		this.graph = new DepotGraph(this.depot);
-		Thread.currentThread().setName("Miner:" + this.depot.getName());
+		this.depotDumper.saveLater(this.depot);
+		this.graph = new Graph(this.depot);
 	}
 	
 	/**
@@ -133,7 +174,7 @@ public class TaskRunner implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		this.database.getAdapter(Depot.class).save(this.depot);
+		Thread.currentThread().setName("Runner:" + this.depot.getName());
 		
 		Logger.info("Cloning depot '%s'.", this.cloneName);
 		final Command command = Command.execute("git",
@@ -152,81 +193,53 @@ public class TaskRunner implements Runnable {
 			return;
 		}
 		
-		try {
-			Map<String, Branch> branchHeads;
-			if (ArrayUtils.contains(this.tasks, Task.BRANCHES)) {
-				Logger.info("Spawning BranchMiner.");
-				
-				final BranchMiner branchMiner = new BranchMiner(this.cloneDir, this.database, this.depot);
-				final Thread bmThread = new Thread(branchMiner, "BranchMiner:" + this.depot.getName());
-				bmThread.start();
-				bmThread.join();
-				branchHeads = branchMiner.getBranchHeads();
-			} else {
-				// TODO load from DB
-				branchHeads = new HashMap<String, Branch>();
-			}
+		Map<String, Branch> branchHeads;
+		if (ArrayUtils.contains(this.tasks, Task.BRANCHES)) {
+			Logger.info("Spawning BranchMiner.");
 			
-			final ISequelAdapter<DepotGraph> graphAdapter = this.database.getAdapter(DepotGraph.class);
-			Map<String, ChangeSet> changeSets = new HashMap<String, ChangeSet>();
-			
-			if (ArrayUtils.contains(this.tasks, Task.CHANGESETS)) {
-				Logger.info("Spawning ChangeSetMiner.");
-				final ChangeSetMiner changeSetMiner = new ChangeSetMiner(this.cloneDir, this.database, this.depot,
-				                                                         this.graph);
-				final Thread csmThread = new Thread(changeSetMiner, "ChangeSetMiner:" + this.depot.getName());
-				csmThread.start();
-				csmThread.join();
-				changeSets = changeSetMiner.getChangeSets();
-			} else {
-				// TODO load changesets and add to graph and the hashmap
-			}
-			
-			if (ArrayUtils.contains(this.tasks, Task.ENDPOINTS)) {
-				Logger.info("Spawning EndPointMiner.");
-				final EndPointMiner endPointMiner = new EndPointMiner(this.cloneDir, this.database, this.depot,
-				                                                      branchHeads, changeSets, this.graph);
-				final Thread epmThread = new Thread(endPointMiner, "EndPointMiner:" + this.depot.getName());
-				epmThread.start();
-				epmThread.join();
-			}
-			
-			if (ArrayUtils.contains(this.tasks, Task.GRAPH)) {
-				Logger.info("Spawning GraphBuilder.");
-				final GraphMiner graphMiner = new GraphMiner(this.cloneDir, this.graph, changeSets);
-				final Thread gmThread = new Thread(graphMiner, "GraphMiner:" + this.depot.getName());
-				gmThread.start();
-				gmThread.join();
-				graphAdapter.save(this.graph);
-				this.database.commit();
-			}
-			
-			if (ArrayUtils.contains(this.tasks, Task.INTEGRATION)) {
-				Logger.info("Spawning IntegrationBuilder.");
-				
-				final IntegrationMiner integrationMiner = new IntegrationMiner(this.graph);
-				final Thread imThread = new Thread(integrationMiner, "IntegrationMiner:" + this.depot.getName());
-				imThread.start();
-				imThread.join();
-				
-				// final ChangeSet invest = changeSets.get("d14d00ee51abf5f939651070e8eef4b3d9873aa0");
-				//
-				// final Branch monitored = this.graph.getBranches().stream().filter(b -> "master".equals(b.getName()))
-				// .findFirst().get();
-				// final Iterator<ChangeSet> monitoredChangeSets = this.graph.getChangeSets(monitored);
-				//
-				// while (monitoredChangeSets.hasNext()) {
-				// Logger.info(monitoredChangeSets.next().getCommitHash());
-				// }
-				//
-				// final List<ChangeSet> path = this.graph.getIntegrationPath(invest, monitored);
-				// for (final ChangeSet changeSet : path) {
-				// Logger.info(changeSet.toString());
-				// }
-			}
-		} catch (final InterruptedException e) {
-			throw new RuntimeException(e);
+			final BranchMiner branchMiner = new BranchMiner(this.cloneDir, this.depot, this.branchDumper);
+			branchMiner.run();
+			branchHeads = branchMiner.getBranchHeads();
+		} else {
+			// TODO load from DB
+			branchHeads = new HashMap<String, Branch>();
 		}
+		
+		Map<String, ChangeSet> changeSets = new HashMap<String, ChangeSet>();
+		
+		if (ArrayUtils.contains(this.tasks, Task.CHANGESETS)) {
+			Logger.info("Spawning ChangeSetMiner.");
+			final ChangeSetMiner changeSetMiner = new ChangeSetMiner(this.cloneDir, this.depot, this.graph,
+			                                                         this.identityDumper, this.changeSetDumper,
+			                                                         this.revisionDumper, this.handleDumper);
+			changeSetMiner.run();
+			changeSets = changeSetMiner.getChangeSets();
+		} else {
+			// TODO load changesets and add to graph and the hashmap
+		}
+		
+		if (ArrayUtils.contains(this.tasks, Task.ENDPOINTS)) {
+			Logger.info("Spawning EndPointMiner.");
+			final EndPointMiner endPointMiner = new EndPointMiner(this.cloneDir, this.depot, branchHeads, changeSets,
+			                                                      this.graph);
+			endPointMiner.run();
+		}
+		
+		if (ArrayUtils.contains(this.tasks, Task.GRAPH)) {
+			Logger.info("Spawning GraphBuilder.");
+			final GraphMiner graphMiner = new GraphMiner(this.cloneDir, this.graph, changeSets);
+			graphMiner.run();
+			this.graphDumper.saveLater(this.graph);
+		}
+		
+		if (ArrayUtils.contains(this.tasks, Task.INTEGRATION)) {
+			Logger.info("Spawning IntegrationBuilder.");
+			
+			final IntegrationMiner integrationMiner = new IntegrationMiner(this.graph);
+			integrationMiner.run();
+			
+		}
+		
 	}
 	
 }

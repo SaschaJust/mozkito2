@@ -16,8 +16,8 @@ package versions;
 import java.io.File;
 import java.util.Map;
 
-import org.mozkito.core.libs.versions.DepotGraph;
-import org.mozkito.core.libs.versions.DepotGraph.EdgeType;
+import org.mozkito.core.libs.versions.Graph;
+import org.mozkito.core.libs.versions.Graph.EdgeType;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.skeleton.contracts.Asserts;
@@ -34,7 +34,7 @@ public class GraphMiner implements Runnable {
 	private final File                   cloneDir;
 	
 	/** The graph. */
-	private final DepotGraph             graph;
+	private final Graph             graph;
 	
 	/** The change sets. */
 	private final Map<String, ChangeSet> changeSets;
@@ -49,7 +49,7 @@ public class GraphMiner implements Runnable {
 	 * @param changeSets
 	 *            the change sets
 	 */
-	public GraphMiner(final File cloneDir, final DepotGraph graph, final Map<String, ChangeSet> changeSets) {
+	public GraphMiner(final File cloneDir, final Graph graph, final Map<String, ChangeSet> changeSets) {
 		this.cloneDir = cloneDir;
 		this.graph = graph;
 		this.changeSets = changeSets;

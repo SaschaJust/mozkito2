@@ -19,8 +19,8 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.DepotGraph;
-import org.mozkito.core.libs.versions.DepotGraph.Edge;
+import org.mozkito.core.libs.versions.Graph;
+import org.mozkito.core.libs.versions.Graph.Edge;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.core.libs.versions.model.GraphEdge;
@@ -35,7 +35,7 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
  *
  * @author Sascha Just
  */
-public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
+public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	
 	/** The edge adapter. */
 	private final ISequelAdapter<GraphEdge>       edgeAdapter;
@@ -76,7 +76,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
-	public DepotGraph create(final ResultSet result) {
+	public Graph create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -88,7 +88,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
-	public void delete(final DepotGraph object) {
+	public void delete(final Graph object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -100,7 +100,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
-	public Iterator<DepotGraph> load() {
+	public Iterator<Graph> load() {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -112,7 +112,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
 	 */
-	public List<DepotGraph> load(final long... ids) {
+	public List<Graph> load(final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -124,7 +124,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
 	 */
-	public DepotGraph load(final long id) {
+	public Graph load(final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -138,7 +138,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
-	                 final DepotGraph entity) {
+	                 final Graph entity) {
 		Requires.notNull(saveStatement);
 		Requires.notNull(entity);
 		
@@ -195,7 +195,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
-	public void update(final DepotGraph... objects) {
+	public void update(final Graph... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

@@ -25,7 +25,7 @@ import org.apache.commons.collections4.map.UnmodifiableMap;
 import org.mozkito.core.libs.users.IdentityCache;
 import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.ChangeType;
-import org.mozkito.core.libs.versions.DepotGraph;
+import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.builders.ChangeSetBuilder;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
@@ -36,7 +36,6 @@ import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.sequel.DatabaseDumper;
-import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
  * The Class ChangeSetMiner.
@@ -72,13 +71,10 @@ public class ChangeSetMiner implements Runnable {
 	/** The clone dir. */
 	private final File                      cloneDir;
 	
-	/** The database. */
-	private final SequelDatabase            database;
-	
 	/** The depot. */
 	private final Depot                     depot;
 	/** The graph. */
-	private final DepotGraph                graph;
+	private final Graph                     graph;
 	
 	/** The change sets. */
 	private final Map<String, ChangeSet>    changeSets            = new HashMap<String, ChangeSet>();
@@ -108,27 +104,32 @@ public class ChangeSetMiner implements Runnable {
 	 *
 	 * @param cloneDir
 	 *            the clone dir
-	 * @param database
-	 *            the database
 	 * @param depot
 	 *            the depot
 	 * @param graph
 	 *            the graph
+	 * @param identityDumper
+	 *            the identity dumper
+	 * @param changeSetDumper
+	 *            the change set dumper
+	 * @param revisionDumper
+	 *            the revision dumper
+	 * @param handleDumper
+	 *            the handle dumper
 	 */
-	public ChangeSetMiner(final File cloneDir, final SequelDatabase database, final Depot depot, final DepotGraph graph) {
+	public ChangeSetMiner(final File cloneDir, final Depot depot, final Graph graph,
+	        final DatabaseDumper<Identity> identityDumper, final DatabaseDumper<ChangeSet> changeSetDumper,
+	        final DatabaseDumper<Revision> revisionDumper, final DatabaseDumper<Handle> handleDumper) {
+		
 		this.cloneDir = cloneDir;
-		this.database = database;
 		this.depot = depot;
 		this.graph = graph;
 		
-		this.identityDumper = new DatabaseDumper<Identity>(database.getAdapter(Identity.class));
-		this.identityDumper.start();
-		this.changeSetDumper = new DatabaseDumper<ChangeSet>(database.getAdapter(ChangeSet.class));
-		this.changeSetDumper.start();
-		this.revisionDumper = new DatabaseDumper<Revision>(database.getAdapter(Revision.class));
-		this.revisionDumper.start();
-		this.handleDumper = new DatabaseDumper<Handle>(database.getAdapter(Handle.class));
-		this.handleDumper.start();
+		this.identityDumper = identityDumper;
+		this.changeSetDumper = changeSetDumper;
+		this.revisionDumper = revisionDumper;
+		this.handleDumper = handleDumper;
+		
 	}
 	
 	/**
@@ -308,12 +309,9 @@ public class ChangeSetMiner implements Runnable {
 		
 		this.line = null;
 		
-		int batch = 0;
 		int i = 0;
 		
 		while ((this.line = command.nextOutput()) != null) {
-			++batch;
-			
 			if (START_TAG.equalsIgnoreCase(this.line)) {
 				this.line = command.nextOutput();
 			}
@@ -415,32 +413,12 @@ public class ChangeSetMiner implements Runnable {
 			revisions.clear();
 			i = 0;
 			
-			if (batch % 1000 == 0) {
-				this.database.commit();
-			}
-			
 			assert changeSet != null; // stupid eclipse warning workaround
 			this.changeSets.put(changeSet.getCommitHash(), changeSet);
 			
 			this.graph.addVertex(changeSet);
 		}
 		
-		try {
-			this.changeSetDumper.interrupt();
-			this.changeSetDumper.join();
-			this.revisionDumper.interrupt();
-			this.revisionDumper.join();
-			this.handleDumper.interrupt();
-			this.handleDumper.join();
-			this.identityDumper.interrupt();
-			this.identityDumper.join();
-		} catch (final InterruptedException e) {
-			if (Logger.logWarn()) {
-				Logger.warn(e);
-			}
-		}
-		
-		this.database.commit();
 		command.waitFor();
 		
 		if (Logger.logInfo()) {

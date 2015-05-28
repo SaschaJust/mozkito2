@@ -38,7 +38,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 
 import org.mozkito.core.libs.users.adapters.IdentityAdapter;
 import org.mozkito.core.libs.users.model.Identity;
-import org.mozkito.core.libs.versions.DepotGraph;
+import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.adapters.BranchAdapter;
 import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
 import org.mozkito.core.libs.versions.adapters.DepotAdapter;
@@ -52,6 +52,7 @@ import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.libraries.logging.Level;
 import org.mozkito.libraries.logging.Logger;
+import org.mozkito.skeleton.sequel.DatabaseDumper;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 import org.mozkito.skeleton.sequel.SequelDatabase.Type;
 
@@ -248,22 +249,61 @@ public class Main {
 			database.register(Identity.class, new IdentityAdapter(database));
 			database.register(ChangeSet.class, new ChangeSetAdapter(database));
 			database.register(Revision.class, new RevisionAdapter(database));
-			database.register(DepotGraph.class, new GraphAdapter(database));
+			database.register(Graph.class, new GraphAdapter(database));
 			database.register(Branch.class, new BranchAdapter(database));
 			database.register(Handle.class, new HandleAdapter(database));
 			database.createScheme();
+			
+			final DatabaseDumper<Identity> identityDumper = new DatabaseDumper<>(database.getAdapter(Identity.class));
+			final DatabaseDumper<ChangeSet> changeSetDumper = new DatabaseDumper<>(database.getAdapter(ChangeSet.class));
+			final DatabaseDumper<Revision> revisionDumper = new DatabaseDumper<>(database.getAdapter(Revision.class));
+			final DatabaseDumper<Branch> branchDumper = new DatabaseDumper<>(database.getAdapter(Branch.class));
+			final DatabaseDumper<Handle> handleDumper = new DatabaseDumper<>(database.getAdapter(Handle.class));
+			final DatabaseDumper<Graph> graphDumper = new DatabaseDumper<>(database.getAdapter(Graph.class));
+			final DatabaseDumper<Depot> depotDumper = new DatabaseDumper<>(database.getAdapter(Depot.class));
+			
+			identityDumper.start();
+			changeSetDumper.start();
+			revisionDumper.start();
+			branchDumper.start();
+			handleDumper.start();
+			graphDumper.start();
+			depotDumper.start();
+			
+			System.out.println("Database setup complete.");
 			
 			final ExecutorService es = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors() - 2);
 			
 			for (final File cloneDir : depotDirs) {
 				final URI depotURI = cloneDir.toURI();
 				
-				es.execute(new TaskRunner(baseDir, workDir, depotURI, database, tasks.toArray(new Task[0])));
-				
+				es.execute(new TaskRunner(baseDir, workDir, depotURI, tasks.toArray(new Task[0]), identityDumper,
+				                          changeSetDumper, revisionDumper, branchDumper, handleDumper, graphDumper,
+				                          depotDumper));
 			}
+			
 			es.shutdown();
-			System.out.println("————————————————————————————————————————");
+			System.out.println("Tasks deployed.");
+			
 			final boolean ret = es.awaitTermination(30, TimeUnit.DAYS);
+			System.out.println("————————————————————————————————————————");
+			
+			identityDumper.interrupt();
+			changeSetDumper.interrupt();
+			revisionDumper.interrupt();
+			branchDumper.interrupt();
+			handleDumper.interrupt();
+			graphDumper.interrupt();
+			depotDumper.interrupt();
+			
+			identityDumper.join();
+			changeSetDumper.join();
+			revisionDumper.join();
+			branchDumper.join();
+			handleDumper.join();
+			graphDumper.join();
+			depotDumper.join();
+			
 			database.close();
 			System.out.println("All tasks are finished! Timeout: " + !ret);
 		} catch (final URISyntaxException | SQLException | InterruptedException | IOException e) {

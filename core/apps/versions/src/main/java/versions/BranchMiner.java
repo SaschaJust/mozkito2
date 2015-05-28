@@ -25,7 +25,7 @@ import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.exec.Command;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
+import org.mozkito.skeleton.sequel.DatabaseDumper;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
@@ -37,34 +37,33 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
 public class BranchMiner implements Runnable {
 	
 	/** The Constant TAG. */
-	private static final String       TAG              = "refs/heads/";
+	private static final String          TAG              = "refs/heads/";
 	
 	/** The clone dir. */
-	private final File                cloneDir;
-	
-	/** The database. */
-	private final SequelDatabase      database;
+	private final File                   cloneDir;
 	
 	/** The depot. */
-	private final Depot               depot;
+	private final Depot                  depot;
 	
 	/** The branch head hashes. */
-	private final Map<String, Branch> branchHeadHashes = new HashMap<String, Branch>();
+	private final Map<String, Branch>    branchHeadHashes = new HashMap<String, Branch>();
+	
+	private final DatabaseDumper<Branch> branchDumper;
 	
 	/**
 	 * Instantiates a new branch miner.
 	 *
 	 * @param cloneDir
 	 *            the clone dir
-	 * @param database
-	 *            the database
 	 * @param depot
 	 *            the depot
+	 * @param branchDumper
+	 *            the branch dumper
 	 */
-	public BranchMiner(final File cloneDir, final SequelDatabase database, final Depot depot) {
+	public BranchMiner(final File cloneDir, final Depot depot, final DatabaseDumper<Branch> branchDumper) {
 		this.cloneDir = cloneDir;
-		this.database = database;
 		this.depot = depot;
+		this.branchDumper = branchDumper;
 	}
 	
 	/**
@@ -82,9 +81,6 @@ public class BranchMiner implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		Asserts.notNull(this.database);
-		final ISequelAdapter<Branch> branchAdapter = this.database.getAdapter(Branch.class);
-		
 		final Command command = Command.execute("git", new String[] { "ls-remote", "--heads" }, this.cloneDir);
 		
 		String line;
@@ -93,19 +89,18 @@ public class BranchMiner implements Runnable {
 			if (line.startsWith("From ")) {
 				continue RESULTS;
 			}
+			
 			final String headHash = line.substring(0, 40);
 			String branchName = line.substring(40).trim();
 			Contract.asserts(branchName.startsWith(TAG));
 			branchName = branchName.substring(TAG.length());
 			
 			final Branch branch = new Branch(this.depot, branchName);
-			branchAdapter.save(branch);
+			this.branchDumper.saveLater(branch);
 			
 			Asserts.notNull(this.branchHeadHashes);
 			this.branchHeadHashes.put(headHash, branch);
 		}
-		
-		this.database.commit();
 	}
 	
 }

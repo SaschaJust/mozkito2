@@ -53,7 +53,7 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
  *
  * @author Sascha Just
  */
-public class DepotGraph extends DirectedGraph implements ISequelEntity {
+public class Graph extends DirectedGraph implements ISequelEntity {
 	
 	/**
 	 * The Class ChangeSetIterator.
@@ -201,8 +201,8 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 			return this.integrationPath.stream().map(x -> x.id()).collect(Collectors.toList());
 		}
 		
-		private DepotGraph getOuterType() {
-			return DepotGraph.this;
+		private Graph getOuterType() {
+			return Graph.this;
 		}
 		
 		/**
@@ -276,7 +276,7 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 	 *            the database
 	 * @return the depot graph
 	 */
-	public static DepotGraph load(final SequelDatabase database) {
+	public static Graph load(final SequelDatabase database) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -301,7 +301,7 @@ public class DepotGraph extends DirectedGraph implements ISequelEntity {
 	 * @param depot
 	 *            the depot
 	 */
-	public DepotGraph(final Depot depot) {
+	public Graph(final Depot depot) {
 		Requires.notNull(depot);
 		
 		this.depot = depot;
