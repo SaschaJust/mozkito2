@@ -1,1 +1,1 @@
-VALUES (NEXT VALUE FOR seq_branch_endpoints_id)
+VALUES (NEXT VALUE FOR seq_endpoints_id)

@@ -1,1 +1,1 @@
-SELECT NEXTVAL('seq_branch_endpoints_id')
+SELECT NEXTVAL('seq_endpoints_id')
