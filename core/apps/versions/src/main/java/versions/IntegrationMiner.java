@@ -15,7 +15,7 @@ package versions;
 
 import org.mozkito.core.libs.versions.DepotGraph;
 import org.mozkito.core.libs.versions.model.Branch;
-import org.mozkito.skeleton.logging.Logger;
+import org.mozkito.libraries.logging.Logger;
 
 /**
  * @author Sascha Just

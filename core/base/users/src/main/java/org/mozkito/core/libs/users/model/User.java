@@ -31,7 +31,7 @@ public class User implements ISequelEntity {
 	private static final long   serialVersionUID = 2009808652533819571L;
 	
 	/** The id. */
-	private Integer             id               = -1;
+	private long                id               = -1;
 	
 	/** The identities. */
 	private final Set<Identity> identities       = new HashSet<Identity>();
@@ -63,20 +63,17 @@ public class User implements ISequelEntity {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
-	public Integer id() {
+	public long id() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
 	 */
-	public void id(final Object id) {
-		Requires.notNull(id);
-		Requires.isInteger(id);
-		
-		this.id = (Integer) id;
+	public void id(final long id) {
+		this.id = id;
 	}
 	
 }

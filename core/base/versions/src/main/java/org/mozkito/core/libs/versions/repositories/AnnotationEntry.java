@@ -14,7 +14,7 @@ package org.mozkito.core.libs.versions.repositories;
 
 import java.time.Instant;
 
-import org.mozkito.skeleton.logging.Logger;
+import org.mozkito.libraries.logging.Logger;
 
 /**
  * The Class AnnotationEntry.

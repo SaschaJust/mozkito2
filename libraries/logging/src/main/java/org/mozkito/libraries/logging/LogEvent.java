@@ -11,11 +11,12 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.logging;
+package org.mozkito.libraries.logging;
 
 import java.time.Instant;
 import java.util.Arrays;
 
+import org.mozkito.libraries.logging.matchers.IMatcher;
 import org.mozkito.skeleton.contracts.Requires;
 
 /**
@@ -45,6 +46,9 @@ public class LogEvent {
 	
 	/** The arguments. */
 	private final Object[]  arguments;
+	
+	/** The matcher. */
+	private IMatcher        matcher;
 	
 	/**
 	 * Instantiates a new log event.
@@ -105,6 +109,31 @@ public class LogEvent {
 	 */
 	public final Level level() {
 		return this.level;
+	}
+	
+	/**
+	 * Matcher.
+	 *
+	 * @return the i matcher
+	 */
+	public IMatcher matcher() {
+		return this.matcher;
+	}
+	
+	/**
+	 * Adds the matcher.
+	 *
+	 * @param matcher
+	 *            the matcher
+	 * @return true, if successful
+	 */
+	public boolean matcher(final IMatcher matcher) {
+		if (matcher == null) {
+			this.matcher = matcher;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**

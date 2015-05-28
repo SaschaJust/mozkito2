@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.logging;
+package org.mozkito.libraries.logging;
 
 /**
  * The Enum Line.

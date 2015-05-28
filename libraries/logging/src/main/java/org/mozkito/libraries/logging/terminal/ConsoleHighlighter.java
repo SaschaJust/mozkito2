@@ -10,35 +10,45 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
-
-package org.mozkito.skeleton.logging;
-
-import java.time.Instant;
+package org.mozkito.libraries.logging.terminal;
 
 /**
- * The Class NotificationEvent.
+ * The Class Highlighter.
  *
  * @author Sascha Just
  */
-public class NotificationEvent extends LogEvent {
-
+public abstract class ConsoleHighlighter implements IHighlighter {
+	
+	/** The color format. */
+	private String colorFormat = null;
+	
 	/**
-	 * Instantiates a new notification event.
+	 * Colors.
 	 *
-	 * @param timestamp
-	 *            the timestamp
-	 * @param level
-	 *            the level
-	 * @param throwable
-	 *            the throwable
-	 * @param message
-	 *            the message
-	 * @param args
-	 *            the args
+	 * @return the terminal color[]
 	 */
-	public NotificationEvent(final Instant timestamp, final Level level, final Throwable throwable,
-	                         final String message, final Object[] args) {
-		super(timestamp, level, throwable, message, args);
+	public abstract TerminalColor[] colors();
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.libraries.logging.terminal.IHighlighter#highlight(java.lang.String)
+	 */
+	@Override
+	public final String highlight(final String message) {
+		if (this.colorFormat == null) {
+			synchronized (this) {
+				if (this.colorFormat == null) {
+					final StringBuilder builder = new StringBuilder();
+					for (final TerminalColor color : colors()) {
+						builder.append(color.getTag());
+					}
+					this.colorFormat = builder.toString();
+				}
+			}
+		}
+		
+		return this.colorFormat + message + TerminalColor.NONE.getTag();
 	}
-
+	
 }

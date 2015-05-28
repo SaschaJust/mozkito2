@@ -13,9 +13,7 @@
 
 package org.mozkito.core.libs.versions.adapters;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,23 +22,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mozkito.core.libs.versions.model.Depot;
-import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
+import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelManager;
 
 /**
  * @author Sascha Just
  *
  */
-public class DepotAdapter implements ISequelAdapter<Depot> {
-	
-	private final SequelDatabase database;
-	
-	private final String         saveStatement;
-	
-	private final String         nextIdStatement;
+public class DepotAdapter extends AbstractSequelAdapter<Depot> {
 	
 	/**
 	 * Instantiates a new depot adapter.
@@ -49,9 +39,7 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	 *            the database
 	 */
 	public DepotAdapter(final SequelDatabase database) {
-		this.database = database;
-		this.nextIdStatement = SequelManager.loadStatement(database, "depot_nextid");
-		this.saveStatement = SequelManager.loadStatement(database, "depot_save");
+		super(database, "depot");
 	}
 	
 	/**
@@ -64,51 +52,6 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
 		
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
-	 */
-	public void createConstraints() {
-		try {
-			synchronized (this.database) {
-				SequelManager.executeSQL(this.database, "depot_create_constraints");
-			}
-		} catch (final SQLException | IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
-	 */
-	public void createIndexes() {
-		try {
-			synchronized (this.database) {
-				SequelManager.executeSQL(this.database, "depot_create_indexes");
-			}
-		} catch (final SQLException | IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
-	 */
-	public void createScheme() {
-		try {
-			synchronized (this.database) {
-				SequelManager.executeSQL(this.database, "depot_create_schema");
-			}
-		} catch (final SQLException | IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 	
 	/**
@@ -138,9 +81,9 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
 	 */
-	public List<Depot> load(final Object... ids) {
+	public List<Depot> load(final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -150,9 +93,9 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
 	 */
-	public Depot load(final Object id) {
+	public Depot load(final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -164,32 +107,39 @@ public class DepotAdapter implements ISequelAdapter<Depot> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
 	 */
+	@Override
 	public void save(final Depot... depots) {
 		Requires.notNull(depots);
 		
+		final PreparedStatement idStatement = prepareNextIdStatement();
+		final PreparedStatement statement = prepareSaveStatement();
+		
+		for (final Depot depot : depots) {
+			save(statement, idStatement, depot);
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 */
+	public void save(final PreparedStatement saveStatement,
+	                 final long id,
+	                 final Depot depot) {
 		try {
-			final Connection connection = this.database.getConnection();
 			
-			for (final Depot depot : depots) {
-				final ResultSet idResult = connection.createStatement().executeQuery(this.nextIdStatement);
-				final boolean hasNext = idResult.next();
-				Contract.asserts(hasNext);
-				
-				final int id = idResult.getInt(1);
-				
-				final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
-				int index = 0;
-				statement.setInt(++index, id);
-				statement.setString(++index, depot.getName());
-				statement.setString(++index, depot.getOrigin().toURL().toString());
-				statement.setTimestamp(++index, Timestamp.from(depot.getMined()));
-				statement.executeUpdate();
-				
-				depot.id(id);
-			}
-		} catch (final SQLException | MalformedURLException e) {
+			int index = 0;
+			saveStatement.setLong(++index, id);
+			saveStatement.setString(++index, depot.getName());
+			saveStatement.setString(++index, depot.getOrigin().toURL().toString());
+			saveStatement.setTimestamp(++index, Timestamp.from(depot.getMined()));
+			saveStatement.executeUpdate();
+			depot.id(id);
+		} catch (SQLException | MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
+		
 	}
 	
 	/**

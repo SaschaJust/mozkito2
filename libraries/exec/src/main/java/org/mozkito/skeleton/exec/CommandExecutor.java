@@ -29,11 +29,11 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.commons.JavaUtils;
 import org.mozkito.skeleton.datastructures.Tuple;
 import org.mozkito.skeleton.io.FileUtils;
 import org.mozkito.skeleton.io.exceptions.ExternalExecutableException;
-import org.mozkito.skeleton.logging.Logger;
 
 /**
  * Command line process interaction wrapper class.

@@ -55,12 +55,12 @@ import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.datastructures.RawContent;
 import org.mozkito.skeleton.io.FileUtils.FileShutdownAction;
 import org.mozkito.skeleton.io.exceptions.FetchException;
 import org.mozkito.skeleton.io.exceptions.FilePermissionException;
 import org.mozkito.skeleton.io.exceptions.UnsupportedProtocolException;
-import org.mozkito.skeleton.logging.Logger;
 
 /**
  * The Class IOUtils.

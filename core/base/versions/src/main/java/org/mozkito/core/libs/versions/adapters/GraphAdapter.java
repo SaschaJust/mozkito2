@@ -13,8 +13,6 @@
 
 package org.mozkito.core.libs.versions.adapters;
 
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,40 +21,27 @@ import java.util.List;
 
 import org.mozkito.core.libs.versions.DepotGraph;
 import org.mozkito.core.libs.versions.DepotGraph.Edge;
-import org.mozkito.skeleton.contracts.Contract;
+import org.mozkito.core.libs.versions.model.BranchEdge;
+import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
+import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelManager;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class GraphAdapter.
  *
  * @author Sascha Just
  */
-public class GraphAdapter implements ISequelAdapter<DepotGraph> {
+public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 	
-	/** The database. */
-	private final SequelDatabase database;
+	/** The edge adapter. */
+	private final GraphEdgeAdapter   edgeAdapter;
 	
-	/** The edge save statement. */
-	private final String         edgeSaveStatement;
+	/** The branch adapter. */
+	private final GraphBranchAdapter branchAdapter;
 	
-	/** The edge next id statement. */
-	private final String         edgeNextIdStatement;
-	
-	/** The branch edge next id statement. */
-	private final String         branchEdgeNextIdStatement;
-	
-	/** The branch edge save statement. */
-	private final String         branchEdgeSaveStatement;
-	
-	/** The integration edge next id statement. */
-	private final String         integrationEdgeNextIdStatement;
-	
-	/** The integration edge save statement. */
-	private final String         integrationEdgeSaveStatement;
+	/** The integration adapter. */
+	private final GraphBranchAdapter integrationAdapter;
 	
 	/**
 	 * Instantiates a new graph adapter.
@@ -65,13 +50,11 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	 *            the database
 	 */
 	public GraphAdapter(final SequelDatabase database) {
-		this.database = database;
-		this.edgeSaveStatement = SequelManager.loadStatement(database, "graph_edge_save");
-		this.edgeNextIdStatement = SequelManager.loadStatement(database, "graph_edge_nextid");
-		this.branchEdgeSaveStatement = SequelManager.loadStatement(database, "graph_branch_edge_save");
-		this.branchEdgeNextIdStatement = SequelManager.loadStatement(database, "graph_branch_edge_nextid");
-		this.integrationEdgeSaveStatement = SequelManager.loadStatement(database, "graph_integration_edge_save");
-		this.integrationEdgeNextIdStatement = SequelManager.loadStatement(database, "graph_integration_edge_nextid");
+		super(database, "graph");
+		
+		this.edgeAdapter = new GraphEdgeAdapter(database);
+		this.branchAdapter = new GraphBranchAdapter(database, "graph_branch_edge");
+		this.integrationAdapter = new GraphBranchAdapter(database, "graph_integration_edge");
 	}
 	
 	/**
@@ -91,11 +74,13 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
 	 */
+	@Override
 	public void createConstraints() {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'createConstraints' has not yet been implemented."); //$NON-NLS-1$
+		super.createConstraints();
 		
+		this.edgeAdapter.createConstraints();
+		this.branchAdapter.createConstraints();
+		this.integrationAdapter.createConstraints();
 	}
 	
 	/**
@@ -103,11 +88,13 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
 	 */
+	@Override
 	public void createIndexes() {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'createIndexes' has not yet been implemented."); //$NON-NLS-1$
+		super.createIndexes();
 		
+		this.edgeAdapter.createIndexes();
+		this.branchAdapter.createIndexes();
+		this.integrationAdapter.createIndexes();
 	}
 	
 	/**
@@ -115,16 +102,13 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
 	 */
+	@Override
 	public void createScheme() {
-		try {
-			synchronized (this.database) {
-				SequelManager.executeSQL(this.database, "graph_edge_create_schema");
-				SequelManager.executeSQL(this.database, "graph_branch_edge_create_schema");
-				SequelManager.executeSQL(this.database, "graph_integration_edge_create_schema");
-			}
-		} catch (final SQLException | IOException e) {
-			throw new RuntimeException(e);
-		}
+		super.createScheme();
+		
+		this.edgeAdapter.createScheme();
+		this.branchAdapter.createScheme();
+		this.integrationAdapter.createScheme();
 	}
 	
 	/**
@@ -154,9 +138,9 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
 	 */
-	public List<DepotGraph> load(final Object... ids) {
+	public List<DepotGraph> load(final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -166,9 +150,9 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
 	 */
-	public DepotGraph load(final Object id) {
+	public DepotGraph load(final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -178,109 +162,49 @@ public class GraphAdapter implements ISequelAdapter<DepotGraph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
-	public void save(final DepotGraph... depotGraphs) {
-		Requires.notNull(depotGraphs);
+	public void save(final PreparedStatement saveStatement,
+	                 final long id,
+	                 final DepotGraph entity) {
+		Requires.notNull(saveStatement);
+		Requires.notNull(entity);
 		
 		try {
-			final Connection connection = this.database.getConnection();
-			final PreparedStatement edgeStatement = connection.prepareStatement(this.edgeSaveStatement);
-			final PreparedStatement edgeIdStatement = connection.prepareStatement(this.edgeNextIdStatement);
-			final PreparedStatement branchEdgeStatement = connection.prepareStatement(this.branchEdgeSaveStatement);
-			final PreparedStatement branchEdgeIdStatement = connection.prepareStatement(this.branchEdgeNextIdStatement);
-			final PreparedStatement integrationEdgeStatement = connection.prepareStatement(this.integrationEdgeSaveStatement);
-			final PreparedStatement integrationEdgeIdStatement = connection.prepareStatement(this.integrationEdgeNextIdStatement);
 			
-			for (final DepotGraph depotGraph : depotGraphs) {
-				save(edgeStatement, edgeIdStatement, branchEdgeStatement, branchEdgeIdStatement,
-				     integrationEdgeStatement, integrationEdgeIdStatement, depotGraph);
-			}
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * Save.
-	 *
-	 * @param edgeStatement
-	 *            the edge statement
-	 * @param edgeIdStatement
-	 *            the edge id statement
-	 * @param branchEdgeStatement
-	 *            the branch edge statement
-	 * @param branchEdgeIdStatement
-	 *            the branch edge id statement
-	 * @param integrationEdgeStatement
-	 *            the integration edge statement
-	 * @param integrationEdgeIdStatement
-	 *            the integration edge id statement
-	 * @param depotGraph
-	 *            the depot graph
-	 */
-	private void save(final PreparedStatement edgeStatement,
-	                  final PreparedStatement edgeIdStatement,
-	                  final PreparedStatement branchEdgeStatement,
-	                  final PreparedStatement branchEdgeIdStatement,
-	                  final PreparedStatement integrationEdgeStatement,
-	                  final PreparedStatement integrationEdgeIdStatement,
-	                  final DepotGraph depotGraph) {
-		Requires.notNull(edgeStatement);
-		Requires.notNull(edgeIdStatement);
-		Requires.notNull(branchEdgeStatement);
-		Requires.notNull(branchEdgeIdStatement);
-		Requires.notNull(integrationEdgeStatement);
-		Requires.notNull(integrationEdgeIdStatement);
-		
-		try {
-			ResultSet edgeIdResult;
-			boolean result;
-			long edgeId, branchEdgeId;
-			long integrationEdgeId;
 			int index = 0;
 			
-			for (final Edge edge : depotGraph.getEdges()) {
-				edgeIdResult = edgeIdStatement.executeQuery();
-				result = edgeIdResult.next();
-				Contract.asserts(result);
-				edgeId = edgeIdResult.getLong(1);
-				index = 0;
+			final PreparedStatement edgeStmt = this.edgeAdapter.prepareSaveStatement();
+			final PreparedStatement edgeNextIdStmt = this.edgeAdapter.prepareNextIdStatement();
+			final PreparedStatement branchStmt = this.branchAdapter.prepareSaveStatement();
+			final PreparedStatement branchNextIdStmt = this.branchAdapter.prepareNextIdStatement();
+			final PreparedStatement integrationStmt = this.integrationAdapter.prepareSaveStatement();
+			final PreparedStatement integrationNextIdStmt = this.integrationAdapter.prepareNextIdStatement();
+			
+			saveStatement.setLong(++index, id);
+			saveStatement.setLong(++index, entity.getDepot().id());
+			
+			saveStatement.executeUpdate();
+			
+			entity.id(id);
+			
+			GraphEdge gEdge;
+			BranchEdge bEdge, iEdge;
+			
+			for (final Edge edge : entity.getEdges()) {
+				gEdge = new GraphEdge(entity.getDepot().id(), edge.getSourceId(), edge.getTargetId(), edge.getType());
+				this.edgeAdapter.save(edgeStmt, edgeNextIdStmt, gEdge);
 				
-				edgeStatement.setLong(++index, edgeId);
-				edgeStatement.setInt(++index, depotGraph.getDepot().id());
-				edgeStatement.setLong(++index, edge.getSourceId());
-				edgeStatement.setLong(++index, edge.getTargetId());
-				edgeStatement.setShort(++index, edge.getType());
-				edgeStatement.executeUpdate();
-				
-				for (final Integer branchId : edge.getBranchIds()) {
-					edgeIdResult = branchEdgeIdStatement.executeQuery();
-					result = edgeIdResult.next();
-					Contract.asserts(result);
-					branchEdgeId = edgeIdResult.getLong(1);
-					index = 0;
-					
-					branchEdgeStatement.setLong(++index, branchEdgeId);
-					branchEdgeStatement.setInt(++index, depotGraph.getDepot().id());
-					branchEdgeStatement.setLong(++index, edgeId);
-					branchEdgeStatement.setInt(++index, branchId);
-					branchEdgeStatement.executeUpdate();
+				for (final long branchId : edge.getBranchIds()) {
+					bEdge = new BranchEdge(entity.getDepot().id(), gEdge.id(), branchId);
+					this.branchAdapter.save(branchStmt, branchNextIdStmt, bEdge);
 				}
 				
-				for (final Integer branchId : edge.getIntegrationPathIds()) {
-					edgeIdResult = integrationEdgeIdStatement.executeQuery();
-					result = edgeIdResult.next();
-					Contract.asserts(result);
-					integrationEdgeId = edgeIdResult.getLong(1);
-					index = 0;
-					
-					integrationEdgeStatement.setLong(++index, integrationEdgeId);
-					integrationEdgeStatement.setInt(++index, depotGraph.getDepot().id());
-					integrationEdgeStatement.setLong(++index, edgeId);
-					integrationEdgeStatement.setInt(++index, branchId);
-					integrationEdgeStatement.executeUpdate();
+				for (final long branchId : edge.getIntegrationPathIds()) {
+					iEdge = new BranchEdge(entity.getDepot().id(), gEdge.id(), branchId);
+					this.integrationAdapter.save(integrationStmt, integrationNextIdStmt, iEdge);
 				}
+				
 			}
 			
 		} catch (final SQLException e) {

@@ -52,10 +52,10 @@ import org.apache.commons.io.LineIterator;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.StringUtils;
 
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.io.exceptions.ExternalExecutableException;
 import org.mozkito.skeleton.io.exceptions.FilePermissionException;
-import org.mozkito.skeleton.logging.Logger;
 
 /**
  * The Class FileUtils.

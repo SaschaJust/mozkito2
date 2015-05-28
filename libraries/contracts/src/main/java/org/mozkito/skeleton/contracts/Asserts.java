@@ -83,7 +83,29 @@ public class Asserts {
 	 */
 	public static void equalTo(final Object lhs,
 	                           final Object rhs) {
-		assert lhs == rhs : Messages.get("skeleton.contracts.asserts.equalTo", Contract.getCallerString());
+		assert lhs == null || lhs.equals(rhs) : Messages.get("skeleton.contracts.asserts.equalTo",
+		                                                     Contract.getCallerString(), "");
+	}
+	
+	/**
+	 * Equal to.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
+	 * @param formatString
+	 *            the format string
+	 * @param args
+	 *            the args
+	 */
+	public static void equalTo(final Object lhs,
+	                           final Object rhs,
+	                           final String formatString,
+	                           final Object... args) {
+		assert lhs == null || lhs.equals(rhs) : Messages.get("skeleton.contracts.asserts.equalTo",
+		                                                     Contract.getCallerString(),
+		                                                     String.format(formatString, args));
 	}
 	
 	/**
@@ -255,6 +277,17 @@ public class Asserts {
 	 * @param id
 	 */
 	public static void positive(final Integer id) {
+		assert id == null || id > 0 : Messages.get("skeleton.contracts.asserts.positive", Contract.getCallerString(),
+		                                           "");
+	}
+	
+	/**
+	 * Positive.
+	 *
+	 * @param id
+	 *            the id
+	 */
+	public static void positive(final Long id) {
 		assert id == null || id > 0 : Messages.get("skeleton.contracts.asserts.positive", Contract.getCallerString(),
 		                                           "");
 	}

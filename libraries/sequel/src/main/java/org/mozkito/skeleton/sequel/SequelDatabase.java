@@ -39,6 +39,17 @@ import org.mozkito.skeleton.contracts.Requires;
 public class SequelDatabase implements DataSource, Closeable {
 	
 	/**
+	 * The Enum IdMode.
+	 */
+	public static enum IdMode {
+		
+		/** The sequence. */
+		SEQUENCE,
+		/** The local. */
+		LOCAL;
+	}
+	
+	/**
 	 * The Enum Type.
 	 */
 	public static enum Type {
@@ -62,6 +73,8 @@ public class SequelDatabase implements DataSource, Closeable {
 	
 	/** The adapters. */
 	private final Map<Class<?>, ISequelAdapter<?>> adapters = new HashMap<>();
+	
+	private IdMode                                 idMode;
 	
 	/**
 	 * Instantiates a new sequel database.
@@ -100,6 +113,7 @@ public class SequelDatabase implements DataSource, Closeable {
 		}
 		
 		this.type = type;
+		this.idMode = IdMode.LOCAL;
 		
 		this.dataSource = new HikariDataSource(config);
 		this.dataSource.getConnection().setAutoCommit(false);
@@ -174,6 +188,13 @@ public class SequelDatabase implements DataSource, Closeable {
 	}
 	
 	/**
+	 * @return the idMode
+	 */
+	public final IdMode getIdMode() {
+		return this.idMode;
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @see javax.sql.CommonDataSource#getLoginTimeout()
@@ -235,6 +256,14 @@ public class SequelDatabase implements DataSource, Closeable {
 	public <T> void register(final Class<T> managedEntityType,
 	                         final ISequelAdapter<T> adapter) {
 		this.adapters.put(managedEntityType, adapter);
+	}
+	
+	/**
+	 * @param idMode
+	 *            the idMode to set
+	 */
+	public final void setIdMode(final IdMode idMode) {
+		this.idMode = idMode;
 	}
 	
 	/**

@@ -11,14 +11,17 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.logging;
+package org.mozkito.libraries.logging;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
+import org.mozkito.libraries.logging.consumer.LogConsumer;
+import org.mozkito.libraries.logging.matchers.IMatcher;
 import org.mozkito.skeleton.contracts.Asserts;
-import org.mozkito.skeleton.logging.consumer.LogConsumer;
 
 /**
  * The Class Bus.
@@ -26,21 +29,21 @@ import org.mozkito.skeleton.logging.consumer.LogConsumer;
  * @author Sascha Just
  */
 public class Bus {
-
+	
 	/**
 	 * The Class Caller.
 	 */
 	public static class Caller {
-
+		
 		/** The class name. */
 		public final String className;
-
+		
 		/** The method name. */
 		public final String methodName;
-
+		
 		/** The line number. */
 		public final int    lineNumber;
-
+		
 		/**
 		 * Instantiates a new caller.
 		 *
@@ -56,7 +59,7 @@ public class Bus {
 			this.methodName = methodName;
 			this.lineNumber = lineNumber;
 		}
-
+		
 		/**
 		 * {@inheritDoc}
 		 *
@@ -67,30 +70,43 @@ public class Bus {
 			return this.className + "::" + this.methodName + "#" + this.lineNumber;
 		}
 	}
-
+	
 	/**
 	 * The Class LogProvider.
 	 */
 	public static class LogProvider {
-
+		
 		/** The fatal. */
-		private final Set<IConsumer> fatal = new HashSet<IConsumer>();
-
+		private final Set<IConsumer> fatal    = new HashSet<IConsumer>();
+		
 		/** The error. */
-		private final Set<IConsumer> error = new HashSet<IConsumer>();
-
+		private final Set<IConsumer> error    = new HashSet<IConsumer>();
+		
 		/** The warn. */
-		private final Set<IConsumer> warn  = new HashSet<IConsumer>();
-
+		private final Set<IConsumer> warn     = new HashSet<IConsumer>();
+		
 		/** The info. */
-		private final Set<IConsumer> info  = new HashSet<IConsumer>();
-
+		private final Set<IConsumer> info     = new HashSet<IConsumer>();
+		
 		/** The debug. */
-		private final Set<IConsumer> debug = new HashSet<IConsumer>();
-
+		private final Set<IConsumer> debug    = new HashSet<IConsumer>();
+		
 		/** The trace. */
-		private final Set<IConsumer> trace = new HashSet<IConsumer>();
-
+		private final Set<IConsumer> trace    = new HashSet<IConsumer>();
+		
+		/** The matchers. */
+		private final List<IMatcher> matchers = new LinkedList<>();
+		
+		/**
+		 * Highlight.
+		 *
+		 * @param matcher
+		 *            the matcher
+		 */
+		public void highlight(final IMatcher matcher) {
+			this.matchers.add(matcher);
+		}
+		
 		/**
 		 * Notify.
 		 *
@@ -122,12 +138,21 @@ public class Bus {
 					// ignore anything else
 					break;
 			}
-
+			
+			if (!affected.isEmpty()) {
+				for (final IMatcher matcher : this.matchers) {
+					if (matcher.matches(logEvent.message(), logEvent.level(), logEvent.threadName())) {
+						logEvent.matcher(matcher);
+						break;
+					}
+				}
+			}
+			
 			for (final IConsumer l : affected) {
 				l.consume(logEvent);
 			}
 		}
-
+		
 		/**
 		 * Subscribe.
 		 *
@@ -155,14 +180,14 @@ public class Bus {
 				}
 			}
 		}
-
+		
 		/**
 		 * Update subscription.
 		 *
 		 * @param consumer
 		 *            the consumer
 		 */
-		public void updateSubscription(final LogConsumer consumer) {
+		public void unsubscribe(final LogConsumer consumer) {
 			synchronized (this) {
 				this.trace.remove(consumer);
 				this.debug.remove(consumer);
@@ -170,20 +195,19 @@ public class Bus {
 				this.warn.remove(consumer);
 				this.error.remove(consumer);
 				this.fatal.remove(consumer);
-				subscribe(consumer);
 			}
 		}
 	}
-
+	
 	/** The Constant DEBUG_ENABLED. */
 	public static final boolean     DEBUG_ENABLED   = System.getProperty("debug") != null;
-
+	
 	/** The Constant LOGGING_PACKAGE. */
 	private static final String     LOGGING_PACKAGE = Logger.class.getPackage().getName();
-
+	
 	/** The provider. */
 	public static final LogProvider provider        = new LogProvider();
-
+	
 	/**
 	 * Entry point.
 	 *
@@ -192,7 +216,7 @@ public class Bus {
 	public static Caller entryPoint() {
 		final Throwable throwable = new Throwable();
 		throwable.fillInStackTrace();
-
+		
 		final StackTraceElement[] stackTrace = throwable.getStackTrace();
 		int offset = 0;
 		OFFSET_SEARCH: for (offset = 0; offset < stackTrace.length; ++offset) {
@@ -200,18 +224,27 @@ public class Bus {
 				break OFFSET_SEARCH;
 			}
 		}
-
+		
 		Asserts.greater(stackTrace.length,
 		                offset,
 		                "The length of the created stacktrace must never be less than the specified offset (which determines the original location).");
-
+		
 		final Caller caller = new Caller(throwable.getStackTrace()[offset].getClassName(),
 		                                 throwable.getStackTrace()[offset].getMethodName(),
 		                                 throwable.getStackTrace()[offset].getLineNumber());
-
+		
 		return caller;
 	}
-
+	
+	/**
+	 * Gets the log provider.
+	 *
+	 * @return the log provider
+	 */
+	public static LogProvider getLogProvider() {
+		return provider;
+	}
+	
 	/**
 	 * Notify.
 	 *
@@ -227,7 +260,7 @@ public class Bus {
 	                          final String message) {
 		notify(level, line, null, message);
 	}
-
+	
 	/**
 	 * Notify.
 	 *
@@ -260,7 +293,7 @@ public class Bus {
 				break;
 		}
 	}
-
+	
 	/**
 	 * Instantiates a new bus.
 	 */

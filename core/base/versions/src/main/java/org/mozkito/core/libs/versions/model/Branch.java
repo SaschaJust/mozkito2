@@ -13,7 +13,6 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
@@ -27,10 +26,10 @@ public class Branch implements ISequelEntity {
 	private static final long serialVersionUID = 6406059989807143676L;
 	
 	/** The depot id. */
-	private final int         depotId;
+	private final long        depotId;
 	
 	/** The id. */
-	private int               id;
+	private long              id;
 	
 	/** The name. */
 	private final String      name;
@@ -91,7 +90,7 @@ public class Branch implements ISequelEntity {
 	 *
 	 * @return the depotId
 	 */
-	public final int getDepotId() {
+	public final long getDepotId() {
 		return this.depotId;
 	}
 	
@@ -131,7 +130,7 @@ public class Branch implements ISequelEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + this.depotId;
+		result = prime * result + (int) (this.depotId ^ this.depotId >>> 32);
 		result = prime * result + (this.name == null
 		                                            ? 0
 		                                            : this.name.hashCode());
@@ -143,19 +142,16 @@ public class Branch implements ISequelEntity {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
-	public Integer id() {
+	public long id() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
 	 */
-	public void id(final Object id) {
-		Requires.notNull(id);
-		Requires.isInteger(id);
-		
+	public void id(final long id) {
 		this.id = (int) id;
 	}
 	

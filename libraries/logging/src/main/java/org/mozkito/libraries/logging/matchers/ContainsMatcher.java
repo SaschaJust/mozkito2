@@ -11,26 +11,41 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.logging.slf4j;
+package org.mozkito.libraries.logging.matchers;
 
-import org.slf4j.ILoggerFactory;
-import org.slf4j.Logger;
+import org.mozkito.libraries.logging.Level;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class StaticLoggerBinder.
+ * The Class ContainsMatcher.
  *
  * @author Sascha Just
  */
-public class MozkitoLoggerFactory implements ILoggerFactory {
+public class ContainsMatcher extends AbstractMatcher {
+	
+	/** The substring. */
+	private final String substring;
+	
+	/**
+	 * Instantiates a new contains matcher.
+	 *
+	 * @param substring
+	 *            the substring
+	 */
+	public ContainsMatcher(final String substring) {
+		this.substring = substring;
+	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.slf4j.ILoggerFactory#getLogger(java.lang.String)
+	 * @see org.mozkito.libraries.logging.matchers.AbstractMatcher#matches(java.lang.String,
+	 *      org.mozkito.libraries.logging.Level, java.lang.String)
 	 */
-	public Logger getLogger(final String arg0) {
-		return new MozkitoLoggerAdapter();
+	@Override
+	public final boolean matches(final String message,
+	                             final Level level,
+	                             final String threadName) {
+		return message.contains(this.substring);
 	}
 	
 }

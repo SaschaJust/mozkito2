@@ -28,7 +28,7 @@ package org.mozkito.skeleton.commons;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.mozkito.skeleton.logging.Logger;
+import org.mozkito.libraries.logging.Logger;
 
 /**
  * The Class URIUtils.

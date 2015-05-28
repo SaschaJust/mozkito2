@@ -78,7 +78,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<extraJvmArguments>-Xms1024m</extraJvmArguments>
+					<extraJvmArguments>-Xms4096m -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -ea -Ddebug</extraJvmArguments>
 					<programs>
 						<program>
 							<mainClass>${mainClass}</mainClass>

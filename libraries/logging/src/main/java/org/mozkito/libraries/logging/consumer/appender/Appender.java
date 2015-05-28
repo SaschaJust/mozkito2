@@ -11,44 +11,37 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.logging.consumer.appender;
+package org.mozkito.libraries.logging.consumer.appender;
 
-import java.io.PrintStream;
 import java.time.format.DateTimeFormatter;
 
-import org.mozkito.skeleton.logging.Level;
-import org.mozkito.skeleton.logging.LogEvent;
+import org.mozkito.libraries.logging.Level;
+import org.mozkito.libraries.logging.LogEvent;
 
 /**
  * The Class Appender.
  */
 public abstract class Appender {
-
-	/** The stream. */
-	protected final PrintStream       stream;
-
+	
 	/** The dt formatter. */
 	protected final DateTimeFormatter dtFormatter;
-
+	
 	/** The level. */
-	private final Level               level;
-
+	private Level                     level;
+	
 	/**
 	 * Instantiates a new appender.
 	 *
 	 * @param level
 	 *            the level
-	 * @param stream
-	 *            the stream
 	 * @param formatter
 	 *            the formatter
 	 */
-	public Appender(final Level level, final PrintStream stream, final DateTimeFormatter formatter) {
+	public Appender(final Level level, final DateTimeFormatter formatter) {
 		this.level = level;
-		this.stream = stream;
 		this.dtFormatter = formatter;
 	}
-
+	
 	/**
 	 * Gets the level.
 	 *
@@ -57,7 +50,7 @@ public abstract class Appender {
 	public Level getLevel() {
 		return this.level;
 	}
-
+	
 	/**
 	 * Log.
 	 *
@@ -65,4 +58,14 @@ public abstract class Appender {
 	 *            the event
 	 */
 	public abstract void log(LogEvent event);
+	
+	/**
+	 * Sets the level.
+	 *
+	 * @param level
+	 *            the new level
+	 */
+	public void setLevel(final Level level) {
+		this.level = level;
+	}
 }

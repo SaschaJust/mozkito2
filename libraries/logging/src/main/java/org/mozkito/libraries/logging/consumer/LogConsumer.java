@@ -11,18 +11,18 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.logging.consumer;
+package org.mozkito.libraries.logging.consumer;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.mozkito.skeleton.logging.Bus.LogProvider;
-import org.mozkito.skeleton.logging.IConsumer;
-import org.mozkito.skeleton.logging.Level;
-import org.mozkito.skeleton.logging.LogEvent;
-import org.mozkito.skeleton.logging.consumer.appender.Appender;
+import org.mozkito.libraries.logging.Bus.LogProvider;
+import org.mozkito.libraries.logging.IConsumer;
+import org.mozkito.libraries.logging.Level;
+import org.mozkito.libraries.logging.LogEvent;
+import org.mozkito.libraries.logging.consumer.appender.Appender;
 
 /**
  * The Class LogConsumer.
@@ -30,13 +30,13 @@ import org.mozkito.skeleton.logging.consumer.appender.Appender;
  * @author Sascha Just
  */
 public class LogConsumer implements IConsumer {
-
+	
 	/** The appenders. */
 	private final Map<Level, Set<Appender>> appenders = new HashMap<Level, Set<Appender>>();
-
+	
 	/** The provider. */
 	private final LogProvider               provider;
-
+	
 	/**
 	 * Instantiates a new log consumer.
 	 *
@@ -47,11 +47,11 @@ public class LogConsumer implements IConsumer {
 		this.provider = provider;
 		provider.subscribe(this);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.logging.IConsumer#consume(org.mozkito.skeleton.logging.LogEvent)
+	 * @see org.mozkito.libraries.logging.IConsumer#consume(org.mozkito.libraries.logging.LogEvent)
 	 */
 	@Override
 	public void consume(final LogEvent event) {
@@ -59,7 +59,7 @@ public class LogConsumer implements IConsumer {
 			appender.log(event);
 		}
 	}
-
+	
 	/**
 	 * Max level.
 	 *
@@ -72,10 +72,10 @@ public class LogConsumer implements IConsumer {
 				level = l;
 			}
 		}
-
+		
 		return level;
 	}
-
+	
 	/**
 	 * Register.
 	 *
@@ -84,18 +84,18 @@ public class LogConsumer implements IConsumer {
 	 * @return true, if successful
 	 */
 	public boolean register(final Appender appender) {
+		this.provider.unsubscribe(this);
+		
 		if (!this.appenders.containsKey(appender.getLevel())) {
 			this.appenders.put(appender.getLevel(), new HashSet<Appender>());
 		}
 		final boolean success = this.appenders.get(appender.getLevel()).add(appender);
-
-		if (success) {
-			this.provider.updateSubscription(this);
-		}
-
+		
+		this.provider.subscribe(this);
+		
 		return success;
 	}
-
+	
 	/**
 	 * Responsible.
 	 *
@@ -114,8 +114,24 @@ public class LogConsumer implements IConsumer {
 				}
 			}
 		}
-
+		
 		return responsibles;
 	}
-
+	
+	/**
+	 * Unregister.
+	 *
+	 * @param appender
+	 *            the appender
+	 */
+	public void unregister(final Appender appender) {
+		this.provider.unsubscribe(this);
+		
+		for (final Map.Entry<Level, Set<Appender>> entry : this.appenders.entrySet()) {
+			entry.getValue().remove(appender);
+		}
+		
+		this.provider.subscribe(this);
+	}
+	
 }

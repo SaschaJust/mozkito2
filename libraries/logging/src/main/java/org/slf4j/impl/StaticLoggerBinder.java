@@ -16,7 +16,7 @@ package org.slf4j.impl;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.spi.LoggerFactoryBinder;
 
-import org.mozkito.skeleton.logging.slf4j.MozkitoLoggerFactory;
+import org.mozkito.libraries.logging.slf4j.MozkitoLoggerFactory;
 
 /**
  * @author Sascha Just

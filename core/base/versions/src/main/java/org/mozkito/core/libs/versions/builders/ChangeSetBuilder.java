@@ -19,7 +19,6 @@ import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.skeleton.sequel.IBuilder;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ChangeSetBuilder.
  *
@@ -28,31 +27,31 @@ import org.mozkito.skeleton.sequel.IBuilder;
 public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	
 	/** The application time. */
-	private Instant   authoredTime;
+	private Instant    authoredTime;
 	
 	/** The author id. */
-	private int       authorId;
+	private long       authorId;
 	
 	/** The commit hash. */
-	private String    commitHash;
+	private String     commitHash;
 	
 	/** The committer id. */
-	private int       committerId;
+	private long       committerId;
 	
 	/** The commit time. */
-	private Instant   commitTime;
+	private Instant    commitTime;
 	
 	/** The depot id. */
-	private final int depotId;
+	private final long depotId;
 	
 	/** The tree hash. */
-	private String    treeHash;
+	private String     treeHash;
 	
 	/** The subject. */
-	private String    subject;
+	private String     subject;
 	
 	/** The body. */
-	private String    body;
+	private String     body;
 	
 	/**
 	 * Instantiates a new change set builder.
@@ -60,7 +59,7 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	 * @param depotId
 	 *            the depot id
 	 */
-	public ChangeSetBuilder(final int depotId) {
+	public ChangeSetBuilder(final long depotId) {
 		this.depotId = depotId;
 	}
 	
@@ -139,7 +138,7 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	 */
 	public ChangeSet create() {
 		if (this.commitTime == null) {
-			this.authoredTime = Instant.EPOCH;
+			this.commitTime = Instant.EPOCH;
 		}
 		
 		if (this.authoredTime == null) {

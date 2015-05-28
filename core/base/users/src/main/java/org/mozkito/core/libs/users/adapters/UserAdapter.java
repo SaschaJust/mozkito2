@@ -13,12 +13,9 @@
 
 package org.mozkito.core.libs.users.adapters;
 
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,20 +24,16 @@ import java.util.NoSuchElementException;
 import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.users.model.User;
 import org.mozkito.skeleton.contracts.Asserts;
-import org.mozkito.skeleton.contracts.Contract;
-import org.mozkito.skeleton.contracts.Ensures;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.logging.Logger;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
+import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelManager;
 
 /**
  * The Class UserAdapter.
  *
  * @author Sascha Just
  */
-public class UserAdapter implements ISequelAdapter<User> {
+public class UserAdapter extends AbstractSequelAdapter<User> {
 	
 	/**
 	 * The Class UserIterator.
@@ -147,19 +140,6 @@ public class UserAdapter implements ISequelAdapter<User> {
 		}
 	}
 	
-	/** The Constant TABLE_NAME. */
-	private static final String  TABLE_NAME  = "users";
-	
-	/** The Constant ID_SEQUENCE. */
-	private static final String  ID_SEQUENCE = "seq_" + TABLE_NAME + "_id";
-	
-	/** The database. */
-	private final SequelDatabase database;
-	
-	private final String         saveStatement;
-	
-	private final String         nextIdStatement;
-	
 	/**
 	 * Instantiates a new user adapter.
 	 *
@@ -167,13 +147,7 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 *            the database
 	 */
 	public UserAdapter(final SequelDatabase database) {
-		Requires.notNull(database);
-		
-		this.database = database;
-		this.saveStatement = SequelManager.loadStatement(database, "user_save");
-		this.nextIdStatement = SequelManager.loadStatement(database, "user_nextid");
-		
-		Ensures.notNull(database);
+		super(database, "user");
 	}
 	
 	/**
@@ -223,105 +197,13 @@ public class UserAdapter implements ISequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
-	 */
-	public void createConstraints() {
-		try {
-			synchronized (this.database) {
-				final Connection connection = this.database.getConnection();
-				final Statement statement = connection.createStatement();
-				statement.execute("CREATE TABLE " + TABLE_NAME + " (user_id smallint, identity_id smallint)");
-				statement.execute("CREATE SEQUENCE " + ID_SEQUENCE + " MINVALUE 1" + " START WITH 1"
-				        + " INCREMENT BY 1");
-				connection.commit();
-			}
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
-	 */
-	public void createIndexes() {
-		try {
-			synchronized (this.database) {
-				final Connection connection = this.database.getConnection();
-				final Statement statement = connection.createStatement();
-				statement.execute("CREATE INDEX idx_" + TABLE_NAME + "_user_id_identity_id ON " + TABLE_NAME
-				        + "(user_id, identity_id)");
-				statement.execute("CREATE INDEX idx_" + TABLE_NAME + "_identity_id ON " + TABLE_NAME + "(identity_id)");
-				connection.commit();
-			}
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
-	 */
-	public void createScheme() {
-		try {
-			synchronized (this.database) {
-				SequelManager.executeSQL(this.database, "user_create_schema");
-			}
-		} catch (final SQLException | IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
-	public void delete(final User user) {
-		Requires.notNull(user);
+	public void delete(final User object) {
+		// TODO Auto-generated method stub
+		//
+		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
 		
-		final Object idO = user.id();
-		
-		Asserts.notNull(idO);
-		Asserts.isInteger(idO);
-		
-		try {
-			final int id = (int) idO;
-			
-			if (id > 0) {
-				synchronized (this.database) {
-					final Connection connection = this.database.getConnection();
-					final PreparedStatement statement = connection.prepareStatement("DELETE FROM " + TABLE_NAME
-					        + " WHERE id = ?");
-					statement.setInt(1, id);
-					statement.executeUpdate();
-					
-					try {
-						connection.commit();
-					} catch (final SQLException e) {
-						Logger.error(e, "Executing DELETE failed on user %s.", user);
-						try {
-							connection.rollback();
-						} catch (final SQLException e2) {
-							Logger.error(e2, "Rolling back DELETE attempt failed on user %s.", user);
-							throw e2;
-						}
-						throw e;
-					}
-					
-				}
-				user.id(-1);
-			} else {
-				if (Logger.logWarn()) {
-					Logger.warn("Cannot delete user from table " + TABLE_NAME + " with id <= 0.");
-				}
-			}
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
 	}
 	
 	/**
@@ -330,168 +212,59 @@ public class UserAdapter implements ISequelAdapter<User> {
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
 	public Iterator<User> load() {
-		Asserts.notNull(this.database);
-		try {
-			final Connection connection = this.database.getConnection();
-			final Statement statement = connection.createStatement();
-			final ResultSet results = statement.executeQuery("SELECT ut.id user_id, identity_id, username, email, fullname FROM "
-			        + TABLE_NAME + " ut INNER JOIN " + IdentityAdapter.TABLE_NAME + " it ON (ut.identity_id = it.id)");
-			
-			return new UserIterator(results);
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object)
-	 */
-	public User load(final Object id) {
-		Asserts.notNull(id);
-		Asserts.isInteger(id);
-		try {
-			final int theId = (int) id;
-			final Connection connection = this.database.getConnection();
-			final PreparedStatement statement = connection.prepareStatement("SELECT identity_id FROM " + TABLE_NAME
-			        + " WHERE user_id = ?");
-			
-			statement.setInt(1, theId);
-			
-			final User user = new User();
-			final ResultSet results = statement.executeQuery();
-			final ISequelAdapter<Identity> adapter = new IdentityAdapter(this.database);
-			while (results.next()) {
-				user.addIdentity(adapter.load(results.getInt(1)));
-			}
-			
-			user.id(theId);
-			
-			return user;
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(java.lang.Object[])
-	 */
-	public List<User> load(final Object... ids) {
-		Asserts.notNull(this.database);
+		// TODO Auto-generated method stub
+		// return null;
+		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
 		
-		try {
-			final Connection connection = this.database.getConnection();
-			
-			final StringBuilder builder = new StringBuilder();
-			builder.append("SELECT user_id, identity_id FROM, username, email, password ");
-			builder.append(TABLE_NAME);
-			builder.append(" ut INNER JOIN ");
-			builder.append(IdentityAdapter.TABLE_NAME);
-			builder.append(" it ON (ut.identity_id = it.id) WHERE user_id IN (");
-			final StringBuilder marks = new StringBuilder();
-			for (@SuppressWarnings ("unused")
-			final Object id : ids) {
-				if (marks.length() != 0) {
-					marks.append(", ");
-				}
-				marks.append("?");
-			}
-			builder.append(")");
-			
-			final String query = builder.toString();
-			final PreparedStatement statement = connection.prepareStatement(query);
-			
-			for (int i = 0; i < ids.length; ++i) {
-				Asserts.validIndex(i, ids);
-				Requires.isInteger(ids[i]);
-				statement.setInt(i + 1, (Integer) ids[i]);
-			}
-			
-			final ResultSet results = statement.executeQuery();
-			
-			User user = new User();
-			int id;
-			int lastId = -1;
-			Identity identity;
-			final List<User> list = new LinkedList<>();
-			
-			while (results.next()) {
-				id = results.getInt(1);
-				if (id != lastId) {
-					lastId = id;
-					list.add(user);
-					user = new User();
-					user.id(id);
-					
-					identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
-					identity.id(results.getInt(2));
-					user.addIdentity(identity);
-				} else {
-					identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
-					identity.id(results.getInt(2));
-					user.addIdentity(identity);
-				}
-			}
-			
-			return list;
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
 	}
 	
 	/**
-	 * @param statement
-	 * @param id
-	 * @param users
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
 	 */
-	private void save(final PreparedStatement statement,
-	                  final int id,
-	                  final User user) {
+	public List<User> load(final long... ids) {
+		// TODO Auto-generated method stub
+		// return null;
+		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
+		
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
+	 */
+	public User load(final long id) {
+		// TODO Auto-generated method stub
+		// return null;
+		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
+		
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 */
+	public void save(final PreparedStatement statement,
+	                 final long id,
+	                 final User user) {
 		Requires.notNull(statement);
-		Requires.notNull(id);
-		Requires.isInteger(id);
 		Requires.notNull(user);
 		
 		try {
-			
 			for (final Identity identity : user.getIdentities()) {
 				int index = 0;
-				statement.setInt(++index, id);
-				statement.setInt(++index, identity.id());
-				statement.executeUpdate();
+				statement.setLong(++index, id);
+				statement.setLong(++index, identity.id());
+				index = 0;
 			}
+			
+			statement.executeUpdate();
 			
 			user.id(id);
 			Asserts.positive(user.id());
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
-	 */
-	public void save(final User... users) {
-		Requires.notNull(users);
-		
-		try {
-			final Connection connection = this.database.getConnection();
-			final PreparedStatement statement = connection.prepareStatement(this.saveStatement);
-			final PreparedStatement idStatement = connection.prepareStatement(this.nextIdStatement);
-			
-			for (final User user : users) {
-				final ResultSet idResult = idStatement.executeQuery();
-				final boolean result = idResult.next();
-				Contract.asserts(result);
-				final int id = idResult.getInt(1);
-				
-				save(statement, id, user);
-			}
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

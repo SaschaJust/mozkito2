@@ -50,7 +50,8 @@ import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Revision;
-import org.mozkito.skeleton.logging.Logger;
+import org.mozkito.libraries.logging.Level;
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 import org.mozkito.skeleton.sequel.SequelDatabase.Type;
 
@@ -133,6 +134,8 @@ public class Main {
 	 *            the arguments
 	 */
 	public static void main(final String[] args) {
+		Logger.fileLevel(Level.DEBUG);
+		Logger.consoleLevel(Level.WARN);
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
 		// create the command line parser
@@ -254,6 +257,7 @@ public class Main {
 			es.shutdown();
 			System.out.println("————————————————————————————————————————");
 			final boolean ret = es.awaitTermination(30, TimeUnit.DAYS);
+			database.close();
 			System.out.println("All tasks are finished! Timeout: " + !ret);
 		} catch (final URISyntaxException | SQLException | InterruptedException | IOException e) {
 			Logger.error(e);

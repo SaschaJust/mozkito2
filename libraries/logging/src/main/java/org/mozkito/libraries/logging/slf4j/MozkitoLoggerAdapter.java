@@ -11,11 +11,11 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.logging.slf4j;
+package org.mozkito.libraries.logging.slf4j;
 
 import org.slf4j.helpers.MarkerIgnoringBase;
 
-import org.mozkito.skeleton.logging.Logger;
+import org.mozkito.libraries.logging.Logger;
 
 /**
  * The Class MozkitoLoggerAdapter.
