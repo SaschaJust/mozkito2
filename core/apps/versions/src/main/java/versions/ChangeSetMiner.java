@@ -176,7 +176,6 @@ public class ChangeSetMiner implements Runnable {
 		final int nameOffset = line.indexOf('\t', linesOutOffset) + 1;
 		
 		int lineIn, lineOut;
-		final String filename;
 		
 		final String lineInString = line.substring(linesInOffset, linesOutOffset - 1);
 		final String lineOutString = line.substring(linesOutOffset, nameOffset - 1);
@@ -375,7 +374,9 @@ public class ChangeSetMiner implements Runnable {
 			
 			this.line = command.nextOutput();
 			Asserts.notNull(this.line, "Awaiting commit timestamp.");
-			changeSetBuilder.committedOn(Instant.ofEpochSecond(Long.parseLong(this.line)));
+			if (!this.line.isEmpty()) {
+				changeSetBuilder.committedOn(Instant.ofEpochSecond(Long.parseLong(this.line)));
+			}
 			
 			this.line = command.nextOutput();
 			Asserts.notNull(this.line, "Awaiting subject.");
