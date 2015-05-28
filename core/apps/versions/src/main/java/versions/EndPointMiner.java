@@ -22,6 +22,7 @@ import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Endpoint;
+import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.sequel.DatabaseDumper;
 import org.mozkito.skeleton.sequel.SequelDatabase;
@@ -83,8 +84,12 @@ public class EndPointMiner implements Runnable {
 	 */
 	public void run() {
 		for (final Entry<String, Branch> entry : this.branchHeads.entrySet()) {
-			final Command command = Command.execute("git", new String[] { "ls-remote", "--heads" }, this.cloneDir);
+			final Command command = Command.execute("git", new String[] { "log", "--reverse", "--format=%H", "-1" },
+			                                        this.cloneDir);
 			final String root = command.nextOutput();
+			
+			Asserts.containsKey(this.changeSets, root);
+			
 			this.dumper.saveLater(new Endpoint(this.depot, entry.getValue(), this.changeSets.get(entry.getKey()),
 			                                   this.changeSets.get(root)));
 			this.graph.addEndPoint(entry.getValue(),

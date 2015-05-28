@@ -25,21 +25,20 @@ import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
- * @author Sascha Just
+ * The Class GraphBranchAdapter.
  *
+ * @author Sascha Just
  */
-public class GraphBranchAdapter extends AbstractSequelAdapter<BranchEdge> {
+public class BranchEdgeAdapter extends AbstractSequelAdapter<BranchEdge> {
 	
 	/**
 	 * Instantiates a new graph branch adapter.
 	 *
 	 * @param database
 	 *            the database
-	 * @param identifier
-	 *            the identifier
 	 */
-	public GraphBranchAdapter(final SequelDatabase database, final String identifier) {
-		super(database, identifier);
+	public BranchEdgeAdapter(final SequelDatabase database) {
+		super(database, "branch_edge");
 	}
 	
 	/**

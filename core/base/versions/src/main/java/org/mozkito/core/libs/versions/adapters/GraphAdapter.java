@@ -24,8 +24,10 @@ import org.mozkito.core.libs.versions.DepotGraph.Edge;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.core.libs.versions.model.GraphEdge;
+import org.mozkito.core.libs.versions.model.IntegrationEdge;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
+import org.mozkito.skeleton.sequel.ISequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
@@ -36,15 +38,16 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
 public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 	
 	/** The edge adapter. */
-	private final GraphEdgeAdapter   edgeAdapter;
+	private final ISequelAdapter<GraphEdge>       edgeAdapter;
 	
 	/** The branch adapter. */
-	private final GraphBranchAdapter branchAdapter;
+	private final ISequelAdapter<BranchEdge>      branchAdapter;
 	
 	/** The integration adapter. */
-	private final GraphBranchAdapter integrationAdapter;
+	private final ISequelAdapter<IntegrationEdge> integrationAdapter;
 	
-	private final EndPointAdapter    endPointAdapter;
+	/** The end point adapter. */
+	private final ISequelAdapter<Endpoint>        endPointAdapter;
 	
 	/**
 	 * Instantiates a new graph adapter.
@@ -55,10 +58,17 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 	public GraphAdapter(final SequelDatabase database) {
 		super(database, "graph");
 		
-		this.edgeAdapter = new GraphEdgeAdapter(database);
-		this.branchAdapter = new GraphBranchAdapter(database, "graph_branch_edge");
-		this.integrationAdapter = new GraphBranchAdapter(database, "graph_integration_edge");
-		this.endPointAdapter = new EndPointAdapter(database);
+		database.register(GraphEdge.class, new GraphEdgeAdapter(database));
+		this.edgeAdapter = database.getAdapter(GraphEdge.class);
+		
+		database.register(BranchEdge.class, new BranchEdgeAdapter(database));
+		this.branchAdapter = database.getAdapter(BranchEdge.class);
+		
+		database.register(IntegrationEdge.class, new IntegrationEdgeAdapter(database));
+		this.integrationAdapter = database.getAdapter(IntegrationEdge.class);
+		
+		database.register(Endpoint.class, new EndPointAdapter(database));
+		this.endPointAdapter = database.getAdapter(Endpoint.class);
 	}
 	
 	/**
@@ -71,51 +81,6 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
 		
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
-	 */
-	@Override
-	public void createConstraints() {
-		super.createConstraints();
-		
-		this.edgeAdapter.createConstraints();
-		this.branchAdapter.createConstraints();
-		this.integrationAdapter.createConstraints();
-		this.endPointAdapter.createConstraints();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
-	 */
-	@Override
-	public void createIndexes() {
-		super.createIndexes();
-		
-		this.edgeAdapter.createIndexes();
-		this.branchAdapter.createIndexes();
-		this.integrationAdapter.createIndexes();
-		this.endPointAdapter.createIndexes();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
-	 */
-	@Override
-	public void createScheme() {
-		super.createScheme();
-		
-		this.edgeAdapter.createScheme();
-		this.branchAdapter.createScheme();
-		this.integrationAdapter.createScheme();
-		this.endPointAdapter.createScheme();
 	}
 	
 	/**
@@ -198,7 +163,8 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 			entity.id(id);
 			
 			GraphEdge gEdge;
-			BranchEdge bEdge, iEdge;
+			BranchEdge bEdge;
+			IntegrationEdge iEdge;
 			
 			for (final Edge edge : entity.getEdges()) {
 				gEdge = new GraphEdge(entity.getDepot().id(), edge.getSourceId(), edge.getTargetId(), edge.getType());
@@ -210,7 +176,7 @@ public class GraphAdapter extends AbstractSequelAdapter<DepotGraph> {
 				}
 				
 				for (final long branchId : edge.getIntegrationPathIds()) {
-					iEdge = new BranchEdge(entity.getDepot().id(), gEdge.id(), branchId);
+					iEdge = new IntegrationEdge(entity.getDepot().id(), gEdge.id(), branchId);
 					this.integrationAdapter.save(integrationStmt, integrationNextIdStmt, iEdge);
 				}
 			}
