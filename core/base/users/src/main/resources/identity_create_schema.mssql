@@ -4,5 +4,5 @@ CREATE TABLE identities (
 	id BIGINT PRIMARY KEY,
 	username VARCHAR(MAX),
 	email VARCHAR(MAX),
-	fullname VARCHAR
+	fullname VARCHAR(MAX)
 );
