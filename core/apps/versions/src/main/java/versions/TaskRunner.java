@@ -178,9 +178,8 @@ public class TaskRunner implements Runnable {
 		
 		Logger.info("Cloning depot '%s'.", this.cloneName);
 		final Command command = Command.execute("git",
-		                                        new String[] { "clone", "-b", "master", "-n", "-q",
-		                                                URIUtils.uri2String(this.uri), this.cloneDir.getAbsolutePath() },
-		                                        this.workDir);
+		                                        new String[] { "clone", "-n", "-q", URIUtils.uri2String(this.uri),
+		                                                this.cloneDir.getAbsolutePath() }, this.workDir);
 		command.waitFor();
 		
 		if (command.exitValue() != 0) {
