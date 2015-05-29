@@ -22,13 +22,13 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Requires;
 
 /**
@@ -97,7 +97,6 @@ public class SequelDatabase implements DataSource, Closeable {
 	public SequelDatabase(final Type type, final String name, final String host, final String username,
 	        final String password, final Integer port) throws SQLException {
 		HikariConfig config;
-		
 		switch (type) {
 			case POSTGRES:
 				config = setupPostgres(name, host, username, password, port);
@@ -112,10 +111,15 @@ public class SequelDatabase implements DataSource, Closeable {
 				throw new RuntimeException("Unsupported database type: " + type);
 		}
 		
+		Logger.info("Connecting to database using: " + config.getJdbcUrl());
+		
 		this.type = type;
 		this.idMode = IdMode.LOCAL;
 		
 		this.dataSource = new HikariDataSource(config);
+		if (port != null) {
+			this.dataSource.addDataSourceProperty("port", 1433);
+		}
 		this.dataSource.getConnection().setAutoCommit(false);
 		this.connection = this.dataSource.getConnection();
 	}
@@ -220,7 +224,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	 * @see javax.sql.CommonDataSource#getParentLogger()
 	 */
 	@Override
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+	public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		return this.dataSource.getParentLogger();
 	}
 	
@@ -335,10 +339,26 @@ public class SequelDatabase implements DataSource, Closeable {
 	                                final String username,
 	                                final String password,
 	                                final Integer port) {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'setupMSSQL' has not yet been implemented."); //$NON-NLS-1$
+		Requires.notNull(name);
 		
+		final Properties props = new Properties();
+		props.setProperty("dataSourceClassName", "com.microsoft.sqlserver.jdbc.SQLServerDataSource");
+		props.setProperty("dataSource.databaseName", name);
+		props.setProperty("dataSource.user", username);
+		props.setProperty("dataSource.password", password);
+		props.setProperty("dataSource.serverName", host != null
+		                                                       ? host
+		                                                       : "localhost");
+		
+		final HikariConfig config = new HikariConfig(props);
+		config.setJdbcUrl("jdbc:sqlserver://" + (host != null
+		                                                     ? host
+		                                                     : "localhost") + ":" + (port != null
+		                                                                                         ? port
+		                                                                                         : "1433")
+		        + ";databaseName=" + name + ";user=" + username + ";password=" + password + ";selectMethod=cursor;");
+		
+		return config;
 	}
 	
 	/**

@@ -255,6 +255,9 @@ public class Main {
 						}
 						
 						if (skips.contains(file)) {
+							if (Logger.logInfo()) {
+								Logger.info("Skipping depot at '%s' due to skip configuration.", file);
+							}
 							return false;
 						}
 						

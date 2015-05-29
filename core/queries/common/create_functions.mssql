@@ -1,0 +1,46 @@
+CREATE OR REPLACE FUNCTION describe (
+	table_name varchar
+) RETURNS TABLE (
+	name varchar,
+	description varchar
+) AS $$
+	SELECT ('<TABLE: ' || $1 || '>'), obj_description(oid)::varchar FROM pg_class WHERE relname = $1 AND obj_description(oid) IS NOT NULL
+	UNION
+	SELECT c.column_name AS name, pgd.description
+	FROM pg_catalog.pg_statio_all_tables AS st
+	INNER JOIN pg_catalog.pg_description pgd ON (pgd.objoid = st.relid)
+	INNER JOIN information_schema.columns c ON (
+		pgd.objsubid = c.ordinal_position
+    	AND c.table_schema=st.schemaname and c.table_name=st.relname
+	)
+	WHERE c.table_name = $1
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION rehash (
+	hash uuid,
+	crc int
+) RETURNS varchar 
+AS $$
+SELECT REPLACE(hash::text, '-', '') || lpad(to_hex(crc), 8, '0')
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION decompose_uuid(hash varchar)
+RETURNS UUID
+AS $$
+	SELECT LPAD($1, 32, '0')::uuid;
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION decompose_int(hash varchar)
+RETURNS int
+AS $$
+	SELECT ('x' || SUBSTRING(lpad($1, 40, '0') FROM 33 FOR 8))::bit(32)::int 
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION db_size() 
+RETURNS TABLE (
+	database name,
+	size bigint,
+	readable varchar
+) AS $$
+	SELECT pg_database.datname, pg_database_size(pg_database.datname), pg_size_pretty(pg_database_size(pg_database.datname)) FROM pg_database ORDER BY pg_database_size DESC
+$$ LANGUAGE SQL;
