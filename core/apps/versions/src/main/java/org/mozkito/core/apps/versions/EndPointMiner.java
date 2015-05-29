@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package versions;
+package org.mozkito.core.apps.versions;
 
 import java.io.File;
 import java.util.Map;
@@ -44,15 +44,13 @@ public class EndPointMiner implements Runnable {
 	/** The depot. */
 	private final Depot                  depot;
 	
-	private final Graph             graph;
+	private final Graph                  graph;
 	
 	/**
 	 * Instantiates a new end point miner.
 	 *
 	 * @param cloneDir
 	 *            the clone dir
-	 * @param database
-	 *            the database
 	 * @param depot
 	 *            the depot
 	 * @param heads

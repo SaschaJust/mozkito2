@@ -11,12 +11,49 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package versions;
+package org.mozkito.core.apps.versions;
+
+import org.mozkito.core.libs.versions.Graph;
+import org.mozkito.core.libs.versions.model.Branch;
+import org.mozkito.libraries.logging.Logger;
 
 /**
  * @author Sascha Just
  *
  */
-public class InjectionMiner extends Thread {
-	// stub
+public class IntegrationMiner implements Runnable {
+	
+	private final Graph graph;
+	
+	/**
+	 * Instantiates a new integration miner.
+	 *
+	 * @param graph
+	 *            the graph
+	 */
+	public IntegrationMiner(final Graph graph) {
+		this.graph = graph;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() {
+		for (final Branch branch : this.graph.getBranches()) {
+			if (Logger.logInfo()) {
+				Logger.info("Processing branch '%s'.", branch.getName());
+			}
+			this.graph.computeIntegrationGraph(branch);
+		}
+	}
+	
+	/**
+	 * Compute integration graph.
+	 *
+	 * @param branch
+	 *            the branch
+	 */
+	
 }

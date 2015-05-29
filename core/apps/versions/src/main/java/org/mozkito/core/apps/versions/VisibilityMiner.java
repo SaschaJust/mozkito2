@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package versions;
+package org.mozkito.core.apps.versions;
 
 
 /**
