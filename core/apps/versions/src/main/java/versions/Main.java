@@ -129,6 +129,10 @@ public class Main {
 		option = new Option("ti", "mine-integration", false, "Mine integration.");
 		options.addOption(option);
 		
+		option = new Option(null, "skip", true, "Skip depots.");
+		option.setArgName("repo/manifests");
+		options.addOption(option);
+		
 		return options;
 	}
 	
@@ -224,7 +228,13 @@ public class Main {
 			                                                                                      : null, null);
 			
 			final File baseDir = new File(uri);
-			
+			final List<File> skips = new LinkedList<>();
+			if (line.hasOption("skip")) {
+				final String[] splits = line.getOptionValue("skip").split(",");
+				for (final String split : splits) {
+					skips.add(new File(baseDir, split));
+				}
+			}
 			final List<File> depotDirs = new LinkedList<File>();
 			if (baseDir.getName().endsWith(".git")) {
 				depotDirs.add(baseDir);
@@ -241,6 +251,10 @@ public class Main {
 						}
 						
 						if (file.getName().startsWith(".")) {
+							return false;
+						}
+						
+						if (skips.contains(file)) {
 							return false;
 						}
 						
