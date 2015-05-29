@@ -231,6 +231,14 @@ public class Main {
 				FileUtils.listFilesAndDirs(baseDir, FalseFileFilter.FALSE, new IOFileFilter() {
 					
 					public boolean accept(final File file) {
+						try {
+							if (FileUtils.isSymlink(file)) {
+								return false;
+							}
+						} catch (final IOException e) {
+							// ignore
+						}
+						
 						if (file.isDirectory() && file.getName().endsWith(".git")) {
 							depotDirs.add(file);
 							return false;
