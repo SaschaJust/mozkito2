@@ -15,9 +15,7 @@ package org.mozkito.skeleton.sequel;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mozkito.libraries.logging.Logger;
 
@@ -31,19 +29,22 @@ import org.mozkito.libraries.logging.Logger;
 public class DatabaseDumper<T extends ISequelEntity> extends Thread {
 	
 	/** The batch size. */
-	private static int              BATCH_SIZE = 100;
+	private static int                     BATCH_SIZE = 100;
 	
 	/** The adapter. */
-	private final ISequelAdapter<T> adapter;
+	private final ISequelAdapter<T>        adapter;
 	
 	/** The save. */
-	private final PreparedStatement save;
+	private final PreparedStatement        save;
 	
 	/** The next id. */
-	private final PreparedStatement nextId;
+	private final PreparedStatement        nextId;
 	
 	/** The queue. */
-	private final BlockingQueue<T>  queue      = new LinkedBlockingQueue<>();
+	private final ConcurrentLinkedQueue<T> queue      = new ConcurrentLinkedQueue<>();
+	
+	/** The terminate. */
+	private volatile boolean               terminate  = false;
 	
 	/**
 	 * Instantiates a new database dumper.
@@ -78,36 +79,36 @@ public class DatabaseDumper<T extends ISequelEntity> extends Thread {
 			int counter = 0;
 			T entity;
 			
-			while (!Thread.currentThread().isInterrupted()) {
-				try {
-					entity = this.queue.take();
-					++counter;
+			while (!this.terminate) {
+				entity = this.queue.poll();
+				if (entity == null) {
 					try {
-						this.adapter.save(this.save, entity.id(), entity);
-					} catch (final Throwable e) {
-						if (Logger.logError()) {
-							Logger.error("Could not save '%s'.", entity);
-						}
-						throw e;
+						Thread.sleep(10000);
+					} catch (final InterruptedException e) {
+						this.terminate = true;
 					}
-					if (counter % BATCH_SIZE == 0) {
-						this.save.getConnection().commit();
-						counter = 0;
+					continue;
+				}
+				++counter;
+				try {
+					this.adapter.save(this.save, entity.id(), entity);
+				} catch (final Throwable e) {
+					if (Logger.logError()) {
+						Logger.error("Could not save '%s'.", entity);
 					}
-				} catch (final InterruptedException e) {
-					// Set interrupted flag.
-					Thread.currentThread().interrupt();
+					throw e;
+				}
+				if (counter % BATCH_SIZE == 0) {
+					this.save.getConnection().commit();
+					counter = 0;
 				}
 			}
 			
-			final LinkedList<T> remainingEntities = new LinkedList<>();
-			this.queue.drainTo(remainingEntities);
-			
 			if (Logger.logInfo()) {
-				Logger.info("Persisting remaining '%s' entities.", remainingEntities.size());
+				Logger.info("Persisting remaining entities.");
 			}
 			
-			for (final T entity2 : remainingEntities) {
+			for (final T entity2 : this.queue) {
 				this.adapter.save(this.save, entity2.id(), entity2);
 			}
 			this.save.getConnection().commit();
@@ -125,12 +126,16 @@ public class DatabaseDumper<T extends ISequelEntity> extends Thread {
 	 *            the entity
 	 */
 	public void saveLater(final T entity) {
-		try {
-			entity.id(nextId());
-			this.queue.put(entity);
-		} catch (final InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+		entity.id(nextId());
+		this.queue.add(entity);
+	}
+	
+	/**
+	 * Terminate.
+	 */
+	public void terminate() {
+		this.terminate = true;
+		interrupt();
 	}
 	
 }
