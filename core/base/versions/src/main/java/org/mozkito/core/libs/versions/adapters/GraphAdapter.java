@@ -16,6 +16,7 @@ package org.mozkito.core.libs.versions.adapters;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -166,18 +167,38 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 			BranchEdge bEdge;
 			IntegrationEdge iEdge;
 			
-			for (final Edge edge : entity.getEdges()) {
+			final Collection<Edge> edges = entity.getEdges();
+			int batchCounter = 0;
+			final int batchSize = 10000;
+			
+			for (final Edge edge : edges) {
+				++batchCounter;
 				gEdge = new GraphEdge(entity.getDepot().id(), edge.getSourceId(), edge.getTargetId(), edge.getType());
 				this.edgeAdapter.save(edgeStmt, edgeNextIdStmt, gEdge);
 				
 				for (final long branchId : edge.getBranchIds()) {
+					++batchCounter;
 					bEdge = new BranchEdge(entity.getDepot().id(), gEdge.id(), branchId);
 					this.branchAdapter.save(branchStmt, branchNextIdStmt, bEdge);
+					if (batchCounter >= batchSize) {
+						this.database.commit();
+						batchCounter = 0;
+					}
 				}
 				
 				for (final long branchId : edge.getIntegrationPathIds()) {
+					++batchCounter;
 					iEdge = new IntegrationEdge(entity.getDepot().id(), gEdge.id(), branchId);
 					this.integrationAdapter.save(integrationStmt, integrationNextIdStmt, iEdge);
+					if (batchCounter >= batchSize) {
+						this.database.commit();
+						batchCounter = 0;
+					}
+				}
+				
+				if (batchCounter >= batchSize) {
+					this.database.commit();
+					batchCounter = 0;
 				}
 			}
 			
