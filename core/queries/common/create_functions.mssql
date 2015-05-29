@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION describe (
 	table_name varchar
 ) RETURNS TABLE (
-	name varchar,
+	name VARCHAR(MAX),
 	description varchar
 ) AS $$
 	SELECT ('<TABLE: ' || $1 || '>'), obj_description(oid)::varchar FROM pg_class WHERE relname = $1 AND obj_description(oid) IS NOT NULL
