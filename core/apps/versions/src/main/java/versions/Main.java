@@ -240,6 +240,10 @@ public class Main {
 							// ignore
 						}
 						
+						if (file.getName().startsWith(".")) {
+							return false;
+						}
+						
 						if (file.isDirectory() && file.getName().endsWith(".git")) {
 							depotDirs.add(file);
 							return false;
