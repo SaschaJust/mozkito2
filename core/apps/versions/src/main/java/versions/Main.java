@@ -302,7 +302,8 @@ public class Main {
 			
 			System.out.println("Database setup complete.");
 			
-			final ExecutorService es = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors() - 2);
+			final ExecutorService es = Executors.newWorkStealingPool(Math.max(Runtime.getRuntime()
+			                                                                         .availableProcessors() - 2, 1));
 			
 			for (final File cloneDir : depotDirs) {
 				final URI depotURI = cloneDir.toURI();
