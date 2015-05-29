@@ -36,6 +36,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
+import org.mozkito.core.apps.versions.MozkitoHandler;
+import org.mozkito.core.apps.versions.TaskRunner;
+import org.mozkito.core.apps.versions.TaskRunner.Task;
 import org.mozkito.core.libs.users.adapters.IdentityAdapter;
 import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.Graph;
@@ -55,8 +58,6 @@ import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.sequel.DatabaseDumper;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 import org.mozkito.skeleton.sequel.SequelDatabase.Type;
-
-import versions.TaskRunner.Task;
 
 /**
  * The entry point of app: mozkito-versions

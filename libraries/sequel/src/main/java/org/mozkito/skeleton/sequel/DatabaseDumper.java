@@ -82,6 +82,14 @@ public class DatabaseDumper<T extends ISequelEntity> extends Thread {
 			while (!this.terminate) {
 				entity = this.queue.poll();
 				if (entity == null) {
+					// nothing to store right now. Persist pending stuff.
+					if (counter > 0) {
+						this.save.getConnection().commit();
+						counter = 0;
+						continue;
+					}
+					
+					// still nothing, go to sleep for 10s
 					try {
 						Thread.sleep(10000);
 					} catch (final InterruptedException e) {
