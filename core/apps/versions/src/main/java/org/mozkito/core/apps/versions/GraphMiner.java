@@ -30,11 +30,13 @@ import org.mozkito.skeleton.exec.Command;
  */
 public class GraphMiner implements Runnable {
 	
+	static final String                  ORIGIN = "origin/";
+	
 	/** The clone dir. */
 	private final File                   cloneDir;
 	
 	/** The graph. */
-	private final Graph             graph;
+	private final Graph                  graph;
 	
 	/** The change sets. */
 	private final Map<String, ChangeSet> changeSets;
@@ -63,8 +65,8 @@ public class GraphMiner implements Runnable {
 	public void run() {
 		for (final Branch branch : this.graph.getBranches()) {
 			
-			final Command command = Command.execute("git", new String[] { "rev-list", "--branches=" + branch,
-			        "--remotes", "--parents" }, this.cloneDir);
+			final Command command = Command.execute("git", new String[] { "log", "--no-abbrev", "--format=%H %P",
+			        ORIGIN + branch.getName() }, this.cloneDir);
 			
 			String line;
 			while ((line = command.nextOutput()) != null) {

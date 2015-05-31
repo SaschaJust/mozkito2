@@ -76,8 +76,8 @@ public class EndPointMiner implements Runnable {
 	 */
 	public void run() {
 		for (final Entry<String, Branch> entry : this.branchHeads.entrySet()) {
-			final Command command = Command.execute("git", new String[] { "log", "--reverse", "--format=%H", "-1" },
-			                                        this.cloneDir);
+			final Command command = Command.execute("git", new String[] { "log", "--reverse", "--format=%H", "-1",
+			        GraphMiner.ORIGIN + entry.getValue().getName() }, this.cloneDir);
 			final String root = command.nextOutput();
 			
 			Asserts.containsKey(this.changeSets, root);

@@ -48,6 +48,7 @@ public class BranchMiner implements Runnable {
 	/** The branch head hashes. */
 	private final Map<String, Branch>    branchHeadHashes = new HashMap<String, Branch>();
 	
+	/** The branch dumper. */
 	private final DatabaseDumper<Branch> branchDumper;
 	
 	/**

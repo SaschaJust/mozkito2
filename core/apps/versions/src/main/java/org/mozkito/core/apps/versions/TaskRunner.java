@@ -199,6 +199,7 @@ public class TaskRunner implements Runnable {
 			final BranchMiner branchMiner = new BranchMiner(this.cloneDir, this.depot, this.branchDumper);
 			branchMiner.run();
 			branchHeads = branchMiner.getBranchHeads();
+			this.graph.setBranchHeads(branchHeads);
 		} else {
 			// TODO load from DB
 			branchHeads = new HashMap<String, Branch>();
@@ -213,6 +214,7 @@ public class TaskRunner implements Runnable {
 			                                                         this.revisionDumper, this.handleDumper);
 			changeSetMiner.run();
 			changeSets = changeSetMiner.getChangeSets();
+			this.graph.setChangeSets(changeSets);
 		} else {
 			// TODO load changesets and add to graph and the hashmap
 		}
@@ -228,7 +230,6 @@ public class TaskRunner implements Runnable {
 			Logger.info("Spawning GraphBuilder.");
 			final GraphMiner graphMiner = new GraphMiner(this.cloneDir, this.graph, changeSets);
 			graphMiner.run();
-			this.graphDumper.saveLater(this.graph);
 		}
 		
 		if (ArrayUtils.contains(this.tasks, Task.INTEGRATION)) {
@@ -236,6 +237,7 @@ public class TaskRunner implements Runnable {
 			
 			final IntegrationMiner integrationMiner = new IntegrationMiner(this.graph);
 			integrationMiner.run();
+			this.graphDumper.saveLater(this.graph);
 			
 		}
 		

@@ -319,13 +319,13 @@ public class Main {
 			final boolean ret = es.awaitTermination(30, TimeUnit.DAYS);
 			System.out.println("————————————————————————————————————————");
 			
-			identityDumper.interrupt();
-			changeSetDumper.interrupt();
-			revisionDumper.interrupt();
-			branchDumper.interrupt();
-			handleDumper.interrupt();
-			graphDumper.interrupt();
-			depotDumper.interrupt();
+			identityDumper.terminate();
+			changeSetDumper.terminate();
+			revisionDumper.terminate();
+			branchDumper.terminate();
+			handleDumper.terminate();
+			graphDumper.terminate();
+			depotDumper.terminate();
 			
 			identityDumper.join();
 			changeSetDumper.join();

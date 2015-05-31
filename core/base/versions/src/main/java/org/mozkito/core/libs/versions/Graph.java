@@ -23,7 +23,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.collection.UnmodifiableCollection;
@@ -34,6 +36,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DirectedMaskSubgraph;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.graph.MaskFunctor;
+import org.jgrapht.graph.MaskSubgraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.GraphIterator;
 
@@ -41,8 +44,8 @@ import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Endpoint;
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Asserts;
-import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 import org.mozkito.skeleton.sequel.SequelDatabase;
@@ -266,6 +269,13 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		FORWARD;
 	}
 	
+	static class Pointer {
+		
+		ChangeSet        head;
+		ChangeSet        parent;
+		Stack<ChangeSet> mergeParents = new Stack<>();
+	}
+	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -1312749091519616410L;
 	
@@ -294,6 +304,14 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	
 	/** The endpoints. */
 	private final Map<Branch, Endpoint>                      endpoints = new HashMap<>();
+	
+	/** The edges. */
+	private final Collection<Edge>                           edges     = new LinkedList<>();
+	
+	/** The vertices. */
+	private Map<String, ChangeSet>                           vertices  = new HashMap<>();
+	
+	private Map<String, Branch>                              branchHeads;
 	
 	/**
 	 * Instantiates a new depot graph.
@@ -331,7 +349,9 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		Requires.notNull(branch);
 		
 		final Edge edge = new Edge(parent, child, type, branch);
+		
 		if (!this.graph.containsEdge(edge)) {
+			this.edges.add(edge);
 			return this.graph.addEdge(parent, child, edge);
 		} else {
 			return this.graph.getEdge(parent, child).addBranch(branch);
@@ -372,33 +392,209 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	}
 	
 	/**
+	 * Check path.
+	 *
+	 * @param pointers
+	 *            the pointers
+	 * @param current
+	 *            the current
+	 * @param delegate
+	 *            the delegate
+	 * @return true, if successful
+	 */
+	private boolean checkPath(final Stack<Pointer> pointers,
+	                          final Pointer current,
+	                          final ChangeSet delegate) {
+		for (final Pointer pointer : pointers) {
+			if (!pointer.equals(current)) {
+				if (DijkstraShortestPath.findPathBetween(this.graph, delegate, pointer.parent) != null) {
+					// found earlier integration
+					// next delegate
+					// System.err.println("Found earlier path " + delegate.getCommitHash() + " -> "
+					// + pointer.parent.getCommitHash());
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public void computeIntegrationGraph(final Branch branch) {
+		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = subGraph(branch);
+		final Collection<ChangeSet> roots = getRoots(branch);
+		
+		Pointer pointer = new Pointer();
+		pointer.head = getHead(branch);
+		pointer.parent = getBranchParent(pointer.head, branchGraph);
+		pointer.mergeParents.addAll(getMergeParents(pointer.head, branchGraph));
+		ChangeSet delegate;
+		
+		final Stack<Pointer> pointers = new Stack<>();
+		pointers.push(pointer);
+		
+		WHILE: while (!pointers.isEmpty()) {
+			// process first delegate
+			if (!pointer.mergeParents.isEmpty()) {
+				// descend
+				delegate = pointer.mergeParents.pop();
+				final Pointer p = new Pointer();
+				p.head = delegate;
+				p.parent = getBranchParent(delegate, branchGraph);
+				p.mergeParents.addAll(getMergeParents(delegate, branchGraph));
+				pointers.push(p);
+			} else if (pointer.parent != null) {
+				// dive
+				pointers.pop();
+				
+				if (checkPath(pointers, pointer, pointer.parent)) {
+					continue WHILE;
+				}
+				
+				final Pointer p = new Pointer();
+				p.head = pointer.parent;
+				p.parent = getBranchParent(p.head, branchGraph);
+				if (p.parent != null) {
+					p.mergeParents.addAll(getMergeParents(p.head, branchGraph));
+				}
+				pointers.push(p);
+				
+				// System.err.println("Adding edge " + pointer.head.getCommitHash() + " " +
+				// pointer.parent.getCommitHash());
+				this.graph.getEdge(pointer.parent, pointer.head).integrationPath.add(branch);
+				pointer = p;
+				continue WHILE;
+			} else {
+				// ascend
+				pointers.pop();
+				if (!pointers.isEmpty()) {
+					pointer = pointers.peek();
+				}
+				continue WHILE;
+			}
+			
+			if (checkPath(pointers, pointer, delegate)) {
+				continue WHILE;
+			}
+			
+			// there are no earlier paths towards
+			// add edge
+			// System.err.println("Adding edge " + pointer.head.getCommitHash() + " " + delegate.getCommitHash());
+			this.graph.getEdge(delegate, pointer.head).integrationPath.add(branch);
+			final Pointer p = new Pointer();
+			p.head = pointer.parent;
+			p.parent = getBranchParent(pointer.head, branchGraph);
+			if (p.parent != null) {
+				p.mergeParents.addAll(getMergeParents(delegate, branchGraph));
+				pointers.push(p);
+			}
+		}
+	}
+	
+	/**
 	 * Compute integration graph.
 	 *
 	 * @param branch
 	 *            the branch
 	 */
-	public void computeIntegrationGraph(final Branch branch) {
-		final ChangeSet head = getHead(branch);
-		final ChangeSet root = getRoot(branch);
+	public void computeIntegrationGraph2(final Branch branch) {
+		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = subGraph(branch);
 		
-		final LinkedList<ChangeSet> tempHeads = new LinkedList<ChangeSet>();
-		tempHeads.add(getBranchParent(head));
-		tempHeads.addAll(getMergeParents(head));
+		ChangeSet head = getHead(branch);
+		final Collection<ChangeSet> roots = getRoots(branch);
+		ChangeSet parent = null;
+		ChangeSet current = null;
 		
-		OUTER: while (!head.equals(root)) {
-			Contract.asserts(!tempHeads.isEmpty());
+		Logger.info("Building integration graph for branch '%s' using head '%s' and roots '%s'", branch.getName(),
+		            head.getCommitHash(), roots.stream().map(c -> c.getCommitHash()).collect(Collectors.joining(",")));
+		
+		final Stack<ChangeSet> delegates = new Stack<>();
+		final Stack<ChangeSet> heads = new Stack<>();
+		
+		parent = getBranchParent(head, branchGraph);
+		delegates.addAll(getMergeParents(head, branchGraph));
+		
+		ChangeSet previousHead = null;
+		
+		heads.push(head);
+		OUTER: while (!roots.isEmpty()) {
+			parent = getBranchParent(head, branchGraph);
 			
-			final ChangeSet current = tempHeads.pollLast();
-			for (final ChangeSet tempHead : tempHeads) {
-				if (DijkstraShortestPath.findPathBetween(this.graph, current, tempHead) != null) {
-					// skip
-					continue OUTER;
-				} else {
-					this.graph.getEdge(current, head).integrationPath.add(branch);
-					tempHeads.addLast(getBranchParent(current));
-					tempHeads.addAll(getMergeParents(current));
+			if (roots.contains(head)) {
+				roots.remove(head);
+				if (roots.isEmpty()) {
+					break OUTER;
 				}
 			}
+			
+			LINE: while (!delegates.isEmpty()) {
+				current = delegates.pop();
+				
+				if (DijkstraShortestPath.findPathBetween(this.graph, current, parent) != null) {
+					// end line
+					// next delegate
+					head = heads.pop();
+					if (roots.contains(head)) {
+						roots.remove(head);
+					}
+					parent = getBranchParent(head, branchGraph);
+					continue LINE;
+				} else {
+					for (final ChangeSet delegate : delegates) {
+						if (DijkstraShortestPath.findPathBetween(this.graph, current, delegate) != null) {
+							// there is an earlier path
+							// end this line
+							head = heads.pop();
+							if (roots.contains(head)) {
+								roots.remove(head);
+							}
+							parent = getBranchParent(head, branchGraph);
+							continue LINE;
+						}
+					}
+					
+					// do deeper that line
+					System.err.println(branch.getName() + ": d " + head.getCommitHash() + " " + current.getCommitHash());
+					this.graph.getEdge(current, head).integrationPath.add(branch);
+					head = current;
+					if (roots.contains(head)) {
+						roots.remove(head);
+					}
+					heads.pop();
+					heads.push(head);
+					parent = getBranchParent(head, branchGraph);
+					delegates.addAll(getMergeParents(current, branchGraph));
+					continue LINE;
+				}
+				
+			}
+			
+			// delegates are empty
+			if (parent != null) {
+				System.err.println(branch.getName() + ": b " + head.getCommitHash() + " " + parent.getCommitHash());
+				this.graph.getEdge(parent, head).integrationPath.add(branch);
+				head = parent;
+				heads.pop();
+				heads.push(head);
+				parent = getBranchParent(head, branchGraph);
+				if (parent != null) {
+					delegates.addAll(getMergeParents(head, branchGraph));
+				}
+			}
+			
+			if (head.equals(previousHead)) {
+				System.err.println("Stuck in a loop.");
+				System.exit(1);
+			} else {
+				previousHead = head;
+			}
+			
+			if (roots.contains(head)) {
+				roots.remove(head);
+			}
+			
+			System.err.println("roots: " + roots.stream().map(r -> r.getCommitHash()).collect(Collectors.joining(", ")));
+			System.err.println("stack: " + heads.stream().map(r -> r.getCommitHash()).collect(Collectors.joining(", ")));
 		}
 	}
 	
@@ -412,36 +608,25 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	}
 	
 	/**
-	 * Gets the branch graph.
-	 *
-	 * @param branch
-	 *            the branch
-	 * @return the branch graph
-	 */
-	private DirectedMaskSubgraph<ChangeSet, Edge> getBranchGraph(final Branch branch) {
-		return new DirectedMaskSubgraph<ChangeSet, Edge>(this.graph, new MaskFunctor<ChangeSet, Edge>() {
-			
-			public boolean isEdgeMasked(final Edge arg0) {
-				return arg0.branches.contains(branch);
-			}
-			
-			public boolean isVertexMasked(final ChangeSet arg0) {
-				return arg0.getBranchIds().contains(branch.id());
-			}
-		});
-	}
-	
-	/**
 	 * Gets the branch parent.
 	 *
 	 * @param changeSet
 	 *            the change set
+	 * @param graph
+	 *            the graph
 	 * @return the branch parent
 	 */
-	public ChangeSet getBranchParent(final ChangeSet changeSet) {
-		return this.graph.incomingEdgesOf(changeSet).stream()
-		                 .filter(x -> EdgeType.BRANCH.equals(x.type) || EdgeType.FORWARD.equals(x.type)).findFirst()
-		                 .get().parent;
+	public ChangeSet getBranchParent(final ChangeSet changeSet,
+	                                 final MaskSubgraph<ChangeSet, Edge> graph) {
+		final Optional<Edge> edge = graph.incomingEdgesOf(changeSet)
+		                                 .stream()
+		                                 .filter(x -> EdgeType.BRANCH.equals(x.type) || EdgeType.FORWARD.equals(x.type))
+		                                 .findFirst();
+		if (edge.isPresent()) {
+			return edge.get().parent;
+		} else {
+			return null;
+		}
 	}
 	
 	/**
@@ -452,7 +637,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 * @return the change sets
 	 */
 	public Iterator<ChangeSet> getChangeSets(final Branch branch) {
-		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = getBranchGraph(branch);
+		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = subGraph(branch);
 		final EdgeReversedGraph<ChangeSet, Edge> reversedGraph = new EdgeReversedGraph<ChangeSet, Edge>(branchGraph);
 		
 		final ChangeSet head = getHead(branch);
@@ -491,8 +676,8 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 *
 	 * @return the edges
 	 */
-	public Set<Edge> getEdges() {
-		return UnmodifiableSet.unmodifiableSet(this.graph.edgeSet());
+	public Collection<Edge> getEdges() {
+		return UnmodifiableCollection.unmodifiableCollection(this.edges);
 	}
 	
 	/**
@@ -571,13 +756,10 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 */
 	public ChangeSet getHead(final Branch branch) {
 		Requires.notNull(branch);
-		Asserts.notNull(this.endpoints);
 		
-		if (!this.endpoints.containsKey(branch)) {
-			throw new IllegalArgumentException(String.format("Branch '%s' not known to graph.", branch));
-		}
+		return this.vertices.get(this.branchHeads.entrySet().stream().filter(es -> es.getValue().equals(branch))
+		                                         .findAny().get().getKey());
 		
-		return getVertex(this.endpoints.get(branch).getHeadId());
 	}
 	
 	/**
@@ -621,11 +803,28 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 *
 	 * @param changeSet
 	 *            the change set
+	 * @param graph
+	 *            the graph
 	 * @return the merge parents
 	 */
-	public List<ChangeSet> getMergeParents(final ChangeSet changeSet) {
-		return this.graph.incomingEdgesOf(changeSet).stream().filter(x -> EdgeType.MERGE.equals(x.type))
-		                 .map(x -> x.parent).collect(Collectors.toList());
+	public List<ChangeSet> getMergeParents(final ChangeSet changeSet,
+	                                       final MaskSubgraph<ChangeSet, Edge> graph) {
+		return graph.incomingEdgesOf(changeSet).stream().filter(x -> EdgeType.MERGE.equals(x.type)).map(x -> x.parent)
+		            .collect(Collectors.toList());
+	}
+	
+	/**
+	 * Gets the parents.
+	 *
+	 * @param changeSet
+	 *            the change set
+	 * @param graph
+	 *            the graph
+	 * @return the parents
+	 */
+	public Set<Edge> getParents(final ChangeSet changeSet,
+	                            final MaskSubgraph<ChangeSet, Edge> graph) {
+		return graph.incomingEdgesOf(changeSet);
 	}
 	
 	/**
@@ -635,7 +834,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 *            the branch
 	 * @return the root commit
 	 */
-	public ChangeSet getRoot(final Branch branch) {
+	public Collection<ChangeSet> getRoots(final Branch branch) {
 		Requires.notNull(branch);
 		Asserts.notNull(this.endpoints);
 		
@@ -643,20 +842,28 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 			throw new IllegalArgumentException(String.format("Branch '%s' not known to graph.", branch));
 		}
 		
-		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = getBranchGraph(branch);
+		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = subGraph(branch);
 		
 		final EdgeReversedGraph<ChangeSet, Edge> reversedGraph = new EdgeReversedGraph<ChangeSet, Edge>(branchGraph);
 		
 		final ChangeSet head = getHead(branch);
+		
+		Logger.info("Fetching reversed tier1 graph for branch '%s' starting at HEAD '%s'", branch.getName(),
+		            head.getCommitHash());
+		
 		final DepthFirstIterator<ChangeSet, Edge> iterator = new DepthFirstIterator<ChangeSet, Edge>(reversedGraph,
 		                                                                                             head);
-		ChangeSet root = null;
+		final List<ChangeSet> roots = new LinkedList<>();
+		ChangeSet current = null;
 		
 		while (iterator.hasNext()) {
-			root = iterator.next();
+			current = iterator.next();
+			if (getParents(current, branchGraph).isEmpty()) {
+				roots.add(current);
+			}
 		}
 		
-		return root;
+		return roots;
 	}
 	
 	/**
@@ -701,6 +908,20 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	}
 	
 	/**
+	 * @param branchHeads
+	 */
+	public void setBranchHeads(final Map<String, Branch> branchHeads) {
+		this.branchHeads = branchHeads;
+	}
+	
+	/**
+	 * @param changeSets
+	 */
+	public void setChangeSets(final Map<String, ChangeSet> changeSets) {
+		this.vertices = changeSets;
+	}
+	
+	/**
 	 * Skip forwards.
 	 *
 	 * @param changeSet
@@ -715,6 +936,26 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		}
 		
 		return incomingEdges.iterator().next().child;
+	}
+	
+	/**
+	 * Gets the branch graph.
+	 *
+	 * @param branch
+	 *            the branch
+	 * @return the branch graph
+	 */
+	private DirectedMaskSubgraph<ChangeSet, Edge> subGraph(final Branch branch) {
+		return new DirectedMaskSubgraph<ChangeSet, Edge>(this.graph, new MaskFunctor<ChangeSet, Edge>() {
+			
+			public boolean isEdgeMasked(final Edge arg0) {
+				return !arg0.branches.contains(branch);
+			}
+			
+			public boolean isVertexMasked(final ChangeSet arg0) {
+				return !arg0.getBranchIds().contains(branch.id());
+			}
+		});
 	}
 	
 }

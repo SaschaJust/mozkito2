@@ -143,7 +143,6 @@ public class DatabaseDumper<T extends ISequelEntity> extends Thread {
 	 */
 	public void terminate() {
 		this.terminate = true;
-		interrupt();
 	}
 	
 }
