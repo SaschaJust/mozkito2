@@ -13,12 +13,24 @@
 
 package org.mozkito.skeleton.contracts;
 
+import java.util.Collection;
+
 import org.mozkito.skeleton.i18n.Messages;
 
 /**
  * The Class Ensures.
  */
 public class Ensures {
+	
+	/**
+	 * Empty.
+	 *
+	 * @param arg
+	 *            the arg
+	 */
+	public static void empty(final Collection<?> arg) {
+		assert arg == null || arg.isEmpty();
+	}
 	
 	/**
 	 * Not null.

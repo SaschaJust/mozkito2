@@ -59,16 +59,24 @@ import org.mozkito.skeleton.sequel.DatabaseDumper;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 import org.mozkito.skeleton.sequel.SequelDatabase.Type;
 
+// TODO: Auto-generated Javadoc
 /**
- * The entry point of app: mozkito-versions
+ * The entry point of app: mozkito-versions.
  *
  * @author Sascha Just
  */
 public class Main {
 	
+	/** The Constant EXIT_ERR_SETTINGS. */
 	private static final int EXIT_ERR_SETTINGS = 1;
+	
+	/** The Constant EXIT_HELP. */
 	private static final int EXIT_HELP         = 0;
+	
+	/** The Constant EXIT_ERR_DB_TYPE. */
 	private static final int EXIT_ERR_DB_TYPE  = 2;
+	
+	/** The Constant EXIT_ERR_TASKS. */
 	private static final int EXIT_ERR_TASKS    = 4;
 	
 	/**
@@ -143,8 +151,8 @@ public class Main {
 	 *            the arguments
 	 */
 	public static void main(final String[] args) {
+		Logger.consoleLevel(Level.DEBUG);
 		Logger.fileLevel(Level.DEBUG);
-		Logger.consoleLevel(Level.WARN);
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
 		// create the command line parser
@@ -307,10 +315,10 @@ public class Main {
 			
 			for (final File cloneDir : depotDirs) {
 				final URI depotURI = cloneDir.toURI();
-				
-				es.execute(new TaskRunner(baseDir, workDir, depotURI, tasks.toArray(new Task[0]), identityDumper,
-				                          changeSetDumper, revisionDumper, branchDumper, handleDumper, graphDumper,
-				                          depotDumper));
+				final TaskRunner runner = new TaskRunner(baseDir, workDir, depotURI, tasks.toArray(new Task[0]),
+				                                         identityDumper, changeSetDumper, revisionDumper, branchDumper,
+				                                         handleDumper, graphDumper, depotDumper);
+				es.execute(runner);
 			}
 			
 			es.shutdown();
@@ -336,6 +344,7 @@ public class Main {
 			depotDumper.join();
 			
 			database.close();
+			
 			System.out.println("All tasks are finished! Timeout: " + !ret);
 		} catch (final URISyntaxException | SQLException | InterruptedException | IOException e) {
 			Logger.error(e);
@@ -346,8 +355,11 @@ public class Main {
 	}
 	
 	/**
-     * 
-     */
+	 * Prints the help.
+	 *
+	 * @param options
+	 *            the options
+	 */
 	private static void printHelp(final Options options) {
 		final HelpFormatter formatter = new HelpFormatter();
 		formatter.setWidth(120);

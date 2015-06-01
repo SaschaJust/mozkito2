@@ -34,6 +34,36 @@ public class Contract {
 	}
 	
 	/**
+	 * Asserts.
+	 *
+	 * @param value
+	 *            the value
+	 * @param message
+	 *            the message
+	 */
+	public static void asserts(final boolean value,
+	                           final String message) {
+		assert value : Messages.get("skeleton.contracts.asserts.failed", getCallerString(), message);
+	}
+	
+	/**
+	 * Asserts.
+	 *
+	 * @param value
+	 *            the value
+	 * @param formatString
+	 *            the format string
+	 * @param args
+	 *            the args
+	 */
+	public static void asserts(final boolean value,
+	                           final String formatString,
+	                           final Object... args) {
+		assert value : Messages.get("skeleton.contracts.asserts.failed", getCallerString(),
+		                            String.format(formatString, args));
+	}
+	
+	/**
 	 * Ensures.
 	 *
 	 * @param value
