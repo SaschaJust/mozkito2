@@ -46,7 +46,6 @@ import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Asserts;
-import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Ensures;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
@@ -505,8 +504,6 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 				}
 			} else {
 				// root
-				Contract.asserts(roots.contains(pointer.head), "ChangeSet %s is not a root in branch %s", pointer,
-				                 branch.getName());
 				roots.remove(pointer.head);
 				pointers.pop();
 			}
