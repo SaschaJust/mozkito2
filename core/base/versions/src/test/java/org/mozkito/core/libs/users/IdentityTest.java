@@ -27,11 +27,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.mozkito.core.libs.users.adapters.IdentityAdapter;
-import org.mozkito.core.libs.users.adapters.UserAdapter;
-import org.mozkito.core.libs.users.adapters.UserAdapter.UserIterator;
-import org.mozkito.core.libs.users.model.Identity;
-import org.mozkito.core.libs.users.model.User;
+import org.mozkito.core.libs.versions.adapters.IdentityAdapter;
+import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.skeleton.io.FileUtils;
 import org.mozkito.skeleton.sequel.ISequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
@@ -81,15 +78,15 @@ public class IdentityTest {
 	}
 	
 	/**
-	 * Test load.
-	 *
+	 * Test load. .
+	 * 
 	 * @throws Exception
 	 *             the exception
 	 */
 	@Test
 	@Ignore
 	public void testLoad() throws Exception {
-		final Identity identity = new Identity("sjust", "sascha.just@mozkito.org", "Sascha Just");
+		final Identity identity = new Identity("sascha.just@mozkito.org", "Sascha Just");
 		this.adapter.save(identity);
 		
 		final Iterator<Identity> iterator = this.adapter.load();
@@ -107,67 +104,8 @@ public class IdentityTest {
 	 */
 	@Test
 	public final void testSave() throws SQLException {
-		final Identity identity = new Identity("sjust", "sascha.just@mozkito.org", "Sascha Just");
+		final Identity identity = new Identity("sascha.just@mozkito.org", "Sascha Just");
 		this.adapter.save(identity);
-	}
-	
-	/**
-	 * Test user.
-	 *
-	 * @throws Exception
-	 *             the exception
-	 */
-	@Test
-	@Ignore
-	public void testUser() throws Exception {
-		final User user = new User();
-		
-		Identity identity = new Identity("sjust", "sascha.just@mozkito.org", "Sascha Just");
-		user.addIdentity(identity);
-		this.adapter.save(identity);
-		
-		identity = new Identity("sjust2", "sascha.just2@mozkito.org", "Sascha Just2");
-		user.addIdentity(identity);
-		this.adapter.save(identity);
-		
-		identity = new Identity("sjust3", "sascha.just3@mozkito.org", "Sascha Just3");
-		user.addIdentity(identity);
-		this.adapter.save(identity);
-		
-		final UserAdapter uAdapter = new UserAdapter(this.database);
-		uAdapter.createScheme();
-		
-		uAdapter.save(user);
-		
-		final User user2 = new User();
-		
-		identity = new Identity("kimh", "kim.herzig@mozkito.org", "Kim Herzig");
-		user2.addIdentity(identity);
-		this.adapter.save(identity);
-		
-		identity = new Identity("kimh2", "kim.herzig2@mozkito.org", "Kim Herzig2");
-		user2.addIdentity(identity);
-		this.adapter.save(identity);
-		
-		uAdapter.save(user2);
-		
-		final UserIterator iterator = (UserIterator) uAdapter.load();
-		assertTrue(iterator.hasNext());
-		
-		final User uc1 = iterator.next();
-		if (uc1.getIdentities().stream().anyMatch(x -> "kimh".equals(x.getUserName()))) {
-			assertThat(user2.getIdentities(), equalTo(uc1.getIdentities()));
-		} else {
-			assertThat(user.getIdentities(), equalTo(uc1.getIdentities()));
-		}
-		
-		assertTrue(iterator.hasNext());
-		final User uc2 = iterator.next();
-		if (uc2.getIdentities().stream().anyMatch(x -> "kimh".equals(x.getUserName()))) {
-			assertThat(user2.getIdentities(), equalTo(uc2.getIdentities()));
-		} else {
-			assertThat(user.getIdentities(), equalTo(uc2.getIdentities()));
-		}
 	}
 	
 }

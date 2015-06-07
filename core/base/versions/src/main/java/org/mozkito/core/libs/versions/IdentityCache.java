@@ -11,12 +11,12 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.users;
+package org.mozkito.core.libs.versions;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mozkito.core.libs.users.model.Identity;
+import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.skeleton.contracts.Asserts;
 
 /**
@@ -36,24 +36,7 @@ public class IdentityCache {
 	 * Instantiates a new identity cache.
 	 */
 	public IdentityCache() {
-		request(UNKNOWN_IDENTITY, null, null);
-	}
-	
-	/**
-	 * Exists.
-	 *
-	 * @param username
-	 *            the username
-	 * @param fullname
-	 *            the fullname
-	 * @param email
-	 *            the email
-	 * @return true, if successful
-	 */
-	public boolean exists(final String username,
-	                      final String fullname,
-	                      final String email) {
-		return this.identities.containsKey(new Identity(username, email, fullname));
+		getUnknown();
 	}
 	
 	/**
@@ -62,31 +45,33 @@ public class IdentityCache {
 	 * @return the unknown
 	 */
 	public Identity getUnknown() {
-		return request(UNKNOWN_IDENTITY, null, null);
+		return request(UNKNOWN_IDENTITY, UNKNOWN_IDENTITY);
 	}
 	
 	/**
 	 * Gets the.
 	 *
-	 * @param username
-	 *            the username
-	 * @param fullname
-	 *            the fullname
 	 * @param email
 	 *            the email
+	 * @param fullname
+	 *            the fullname
 	 * @return the identity
 	 */
-	public Identity request(final String username,
-	                        final String fullname,
-	                        final String email) {
-		final Identity identity = new Identity(username, fullname, email);
+	public Identity request(final String email,
+	                        final String fullname) {
+		final Identity identity = new Identity(email, fullname);
 		
 		Asserts.notNull(this.identities);
 		
 		if (!this.identities.containsKey(identity)) {
-			this.identities.put(identity, identity);
+			synchronized (this.identities) {
+				if (!this.identities.containsKey(identity)) {
+					this.identities.put(identity, identity);
+				}
+			}
 		}
 		
 		return this.identities.get(identity);
 	}
+	
 }

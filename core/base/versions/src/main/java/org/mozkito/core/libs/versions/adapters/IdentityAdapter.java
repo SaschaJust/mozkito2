@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.users.adapters;
+package org.mozkito.core.libs.versions.adapters;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.mozkito.core.libs.users.model.Identity;
+import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.contracts.Requires;
@@ -55,7 +55,7 @@ public class IdentityAdapter extends AbstractSequelAdapter<Identity> {
 	@Override
 	public Identity create(final ResultSet result) {
 		try {
-			final Identity identity = new Identity(result.getString(2), result.getString(3), result.getString(4));
+			final Identity identity = new Identity(result.getString(2), result.getString(3));
 			identity.id(result.getInt(1));
 			return identity;
 		} catch (final SQLException e) {
@@ -85,8 +85,7 @@ public class IdentityAdapter extends AbstractSequelAdapter<Identity> {
 		try {
 			final Connection connection = this.database.getConnection();
 			final Statement statement = connection.createStatement();
-			final ResultSet results = statement.executeQuery("SELECT id, username, email, fullname FROM "
-			        + "identities");
+			final ResultSet results = statement.executeQuery("SELECT id, email, fullname FROM " + "identities");
 			return new ResultIterator<Identity>(this, results);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
@@ -102,7 +101,7 @@ public class IdentityAdapter extends AbstractSequelAdapter<Identity> {
 		
 		try {
 			final Connection connection = this.database.getConnection();
-			final PreparedStatement statement = connection.prepareStatement("SELECT id, username, email, fullname FROM "
+			final PreparedStatement statement = connection.prepareStatement("SELECT id, email, fullname FROM "
 			        + "identities" + " WHERE id = ?");
 			statement.setInt(1, theId);
 			
@@ -137,7 +136,7 @@ public class IdentityAdapter extends AbstractSequelAdapter<Identity> {
 				Requires.positive(theId);
 				
 				final Connection connection = this.database.getConnection();
-				final PreparedStatement statement = connection.prepareStatement("SELECT id, username, email, fullname FROM "
+				final PreparedStatement statement = connection.prepareStatement("SELECT id, email, fullname FROM "
 				        + "identities" + " WHERE id = ?");
 				statement.setInt(1, theId);
 				
@@ -172,7 +171,6 @@ public class IdentityAdapter extends AbstractSequelAdapter<Identity> {
 			int index = 0;
 			statement.setLong(++index, id);
 			
-			statement.setString(++index, identity.getUserName());
 			statement.setString(++index, identity.getEmail());
 			statement.setString(++index, identity.getFullName());
 			
@@ -210,19 +208,17 @@ public class IdentityAdapter extends AbstractSequelAdapter<Identity> {
 					id = idResult.getInt(1);
 					
 					statement = connection.prepareStatement("INSERT INTO " + "identities"
-					        + " (id, username, email, fullname) VALUES (?, ?, ?, ?)");
+					        + " (id, email, fullname) VALUES (?, ?, ?)");
 					statement.setLong(1, id);
-					statement.setString(2, identity.getUserName());
-					statement.setString(3, identity.getEmail());
-					statement.setString(4, identity.getFullName());
+					statement.setString(2, identity.getEmail());
+					statement.setString(3, identity.getFullName());
 					identity.id(id);
 				} else {
 					statement = connection.prepareStatement("UPDATE " + "identities"
-					        + " SET (username, email, fullname) = (?, ?, ?) WHERE id = ?");
-					statement.setString(1, identity.getUserName());
-					statement.setString(2, identity.getEmail());
-					statement.setString(3, identity.getFullName());
-					statement.setLong(4, id);
+					        + " SET (email, fullname) = (?, ?) WHERE id = ?");
+					statement.setString(1, identity.getEmail());
+					statement.setString(2, identity.getFullName());
+					statement.setLong(3, id);
 				}
 				
 				final int updates = statement.executeUpdate();

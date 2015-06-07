@@ -11,9 +11,9 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.users.model;
+package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.core.libs.users.IdentityCache;
+import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.skeleton.sequel.IBuilder;
 
 /**
@@ -24,9 +24,6 @@ import org.mozkito.skeleton.sequel.IBuilder;
  * @author Sascha Just
  */
 public class IdentityBuilder implements IBuilder<Identity> {
-	
-	/** The username. */
-	private String username;
 	
 	/** The email. */
 	private String email;
@@ -40,7 +37,7 @@ public class IdentityBuilder implements IBuilder<Identity> {
 	 * @see org.mozkito.skeleton.sequel.IBuilder#create()
 	 */
 	public Identity create() {
-		return new Identity(this.username, this.email, this.fullname);
+		return new Identity(this.email, this.fullname);
 	}
 	
 	/**
@@ -64,18 +61,6 @@ public class IdentityBuilder implements IBuilder<Identity> {
 	 */
 	public IdentityBuilder fullname(final String fullname) {
 		this.fullname = fullname;
-		return this;
-	}
-	
-	/**
-	 * Username.
-	 *
-	 * @param username
-	 *            the username
-	 * @return the identity builder
-	 */
-	public IdentityBuilder username(final String username) {
-		this.username = username;
 		return this;
 	}
 	

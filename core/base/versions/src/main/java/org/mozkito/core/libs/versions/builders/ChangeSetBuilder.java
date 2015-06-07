@@ -15,8 +15,8 @@ package org.mozkito.core.libs.versions.builders;
 
 import java.time.Instant;
 
-import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.skeleton.sequel.IBuilder;
 
 /**

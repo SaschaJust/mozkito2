@@ -39,19 +39,22 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.mozkito.core.apps.versions.MozkitoHandler;
 import org.mozkito.core.apps.versions.TaskRunner;
 import org.mozkito.core.apps.versions.TaskRunner.Task;
-import org.mozkito.core.libs.users.adapters.IdentityAdapter;
-import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.Graph;
+import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.adapters.BranchAdapter;
 import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
 import org.mozkito.core.libs.versions.adapters.DepotAdapter;
 import org.mozkito.core.libs.versions.adapters.GraphAdapter;
 import org.mozkito.core.libs.versions.adapters.HandleAdapter;
+import org.mozkito.core.libs.versions.adapters.IdentityAdapter;
+import org.mozkito.core.libs.versions.adapters.RenamingAdapter;
 import org.mozkito.core.libs.versions.adapters.RevisionAdapter;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
+import org.mozkito.core.libs.versions.model.Identity;
+import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.libraries.logging.Level;
 import org.mozkito.libraries.logging.Logger;
@@ -290,6 +293,7 @@ public class Main {
 			database.register(Graph.class, new GraphAdapter(database));
 			database.register(Branch.class, new BranchAdapter(database));
 			database.register(Handle.class, new HandleAdapter(database));
+			database.register(Renaming.class, new RenamingAdapter(database));
 			database.createScheme();
 			
 			final DatabaseDumper<Identity> identityDumper = new DatabaseDumper<>(database.getAdapter(Identity.class));
@@ -299,6 +303,7 @@ public class Main {
 			final DatabaseDumper<Handle> handleDumper = new DatabaseDumper<>(database.getAdapter(Handle.class));
 			final DatabaseDumper<Graph> graphDumper = new DatabaseDumper<>(database.getAdapter(Graph.class));
 			final DatabaseDumper<Depot> depotDumper = new DatabaseDumper<>(database.getAdapter(Depot.class));
+			final DatabaseDumper<Renaming> renamingDumper = new DatabaseDumper<>(database.getAdapter(Renaming.class));
 			
 			identityDumper.start();
 			changeSetDumper.start();
@@ -307,6 +312,9 @@ public class Main {
 			handleDumper.start();
 			graphDumper.start();
 			depotDumper.start();
+			renamingDumper.start();
+			
+			final IdentityCache identityCache = new IdentityCache();
 			
 			System.out.println("Database setup complete.");
 			
@@ -316,8 +324,9 @@ public class Main {
 			for (final File cloneDir : depotDirs) {
 				final URI depotURI = cloneDir.toURI();
 				final TaskRunner runner = new TaskRunner(baseDir, workDir, depotURI, tasks.toArray(new Task[0]),
-				                                         identityDumper, changeSetDumper, revisionDumper, branchDumper,
-				                                         handleDumper, graphDumper, depotDumper);
+				                                         identityCache, identityDumper, changeSetDumper,
+				                                         revisionDumper, branchDumper, handleDumper, graphDumper,
+				                                         depotDumper, renamingDumper);
 				es.execute(runner);
 			}
 			
@@ -334,6 +343,7 @@ public class Main {
 			handleDumper.terminate();
 			graphDumper.terminate();
 			depotDumper.terminate();
+			renamingDumper.terminate();
 			
 			identityDumper.join();
 			changeSetDumper.join();
@@ -342,6 +352,7 @@ public class Main {
 			handleDumper.join();
 			graphDumper.join();
 			depotDumper.join();
+			renamingDumper.join();
 			
 			database.close();
 			

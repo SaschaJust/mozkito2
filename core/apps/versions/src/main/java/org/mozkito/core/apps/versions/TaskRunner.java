@@ -21,12 +21,14 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.Graph;
+import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
+import org.mozkito.core.libs.versions.model.Identity;
+import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.commons.URIUtils;
@@ -111,6 +113,10 @@ public class TaskRunner implements Runnable {
 	/** The depot dumper. */
 	private final DatabaseDumper<Depot>     depotDumper;
 	
+	private final DatabaseDumper<Renaming>  renamingDumper;
+	
+	private final IdentityCache             identityCache;
+	
 	/**
 	 * Instantiates a new task runner.
 	 *
@@ -122,6 +128,8 @@ public class TaskRunner implements Runnable {
 	 *            the depot uri
 	 * @param tasks
 	 *            the tasks
+	 * @param identityCache
+	 *            the identity cache
 	 * @param identityDumper
 	 *            the identity dumper
 	 * @param changeSetDumper
@@ -136,12 +144,15 @@ public class TaskRunner implements Runnable {
 	 *            the graph dumper
 	 * @param depotDumper
 	 *            the depot dumper
+	 * @param renamingDumper
+	 *            the renaming dumper
 	 */
 	public TaskRunner(final File baseDir, final File workDir, final URI depotURI, final Task[] tasks,
-	        final DatabaseDumper<Identity> identityDumper, final DatabaseDumper<ChangeSet> changeSetDumper,
-	        final DatabaseDumper<Revision> revisionDumper, final DatabaseDumper<Branch> branchDumper,
-	        final DatabaseDumper<Handle> handleDumper, final DatabaseDumper<Graph> graphDumper,
-	        final DatabaseDumper<Depot> depotDumper) {
+	        final IdentityCache identityCache, final DatabaseDumper<Identity> identityDumper,
+	        final DatabaseDumper<ChangeSet> changeSetDumper, final DatabaseDumper<Revision> revisionDumper,
+	        final DatabaseDumper<Branch> branchDumper, final DatabaseDumper<Handle> handleDumper,
+	        final DatabaseDumper<Graph> graphDumper, final DatabaseDumper<Depot> depotDumper,
+	        final DatabaseDumper<Renaming> renamingDumper) {
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
 		this.identityDumper = identityDumper;
@@ -151,6 +162,8 @@ public class TaskRunner implements Runnable {
 		this.handleDumper = handleDumper;
 		this.graphDumper = graphDumper;
 		this.depotDumper = depotDumper;
+		this.renamingDumper = renamingDumper;
+		this.identityCache = identityCache;
 		
 		this.workDir = workDir;
 		this.uri = depotURI;
@@ -210,8 +223,9 @@ public class TaskRunner implements Runnable {
 		if (ArrayUtils.contains(this.tasks, Task.CHANGESETS)) {
 			Logger.info("Spawning ChangeSetMiner.");
 			final ChangeSetMiner changeSetMiner = new ChangeSetMiner(this.cloneDir, this.depot, this.graph,
-			                                                         this.identityDumper, this.changeSetDumper,
-			                                                         this.revisionDumper, this.handleDumper);
+			                                                         this.identityCache, this.identityDumper,
+			                                                         this.changeSetDumper, this.revisionDumper,
+			                                                         this.handleDumper, this.renamingDumper);
 			changeSetMiner.run();
 			changeSets = changeSetMiner.getChangeSets();
 			this.graph.setChangeSets(changeSets);

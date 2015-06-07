@@ -16,7 +16,7 @@ import java.time.Instant;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import org.mozkito.core.libs.users.model.Identity;
+import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.libraries.logging.Logger;
 
 /**

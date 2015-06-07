@@ -21,8 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.users.model.User;
+import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
@@ -92,16 +92,14 @@ public class UserAdapter extends AbstractSequelAdapter<User> {
 					this.tmpUser = new User();
 					this.tmpUser.id(id);
 					
-					this.identity = new Identity(this.results.getString(3), this.results.getString(4),
-					                             this.results.getString(5));
+					this.identity = new Identity(this.results.getString(3), this.results.getString(4));
 					this.identity.id(this.results.getInt(2));
 					this.tmpUser.addIdentity(this.identity);
 					if (doReturn) {
 						return;
 					}
 				} else {
-					this.identity = new Identity(this.results.getString(3), this.results.getString(4),
-					                             this.results.getString(5));
+					this.identity = new Identity(this.results.getString(3), this.results.getString(4));
 					this.identity.id(this.results.getInt(2));
 					this.tmpUser.addIdentity(this.identity);
 				}
@@ -178,11 +176,11 @@ public class UserAdapter extends AbstractSequelAdapter<User> {
 					user = new User();
 					user.id(id);
 					
-					identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
+					identity = new Identity(results.getString(3), results.getString(4));
 					identity.id(results.getInt(2));
 					user.addIdentity(identity);
 				} else {
-					identity = new Identity(results.getString(3), results.getString(4), results.getString(5));
+					identity = new Identity(results.getString(3), results.getString(4));
 					identity.id(results.getInt(2));
 					user.addIdentity(identity);
 				}

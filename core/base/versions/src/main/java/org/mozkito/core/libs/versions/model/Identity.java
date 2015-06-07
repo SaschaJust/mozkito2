@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.users.model;
+package org.mozkito.core.libs.versions.model;
 
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
@@ -25,9 +25,6 @@ public class Identity implements ISequelEntity {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -8580622659060890966L;
 	
-	/** The username. */
-	private String            userName;
-	
 	/** The fullname. */
 	private String            fullName;
 	
@@ -40,15 +37,12 @@ public class Identity implements ISequelEntity {
 	/**
 	 * Instantiates a new user.
 	 *
-	 * @param userName
-	 *            the user name
 	 * @param email
 	 *            the email
 	 * @param fullName
 	 *            the full name
 	 */
-	public Identity(final String userName, final String email, final String fullName) {
-		this.userName = userName;
+	public Identity(final String email, final String fullName) {
 		this.email = email;
 		this.fullName = fullName;
 	}
@@ -84,13 +78,6 @@ public class Identity implements ISequelEntity {
 		} else if (!this.fullName.equals(other.fullName)) {
 			return false;
 		}
-		if (this.userName == null) {
-			if (other.userName != null) {
-				return false;
-			}
-		} else if (!this.userName.equals(other.userName)) {
-			return false;
-		}
 		return true;
 	}
 	
@@ -113,15 +100,6 @@ public class Identity implements ISequelEntity {
 	}
 	
 	/**
-	 * Gets the username.
-	 *
-	 * @return the username
-	 */
-	public String getUserName() {
-		return this.userName;
-	}
-	
-	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see java.lang.Object#hashCode()
@@ -136,9 +114,6 @@ public class Identity implements ISequelEntity {
 		result = prime * result + (this.fullName == null
 		                                                ? 0
 		                                                : this.fullName.hashCode());
-		result = prime * result + (this.userName == null
-		                                                ? 0
-		                                                : this.userName.hashCode());
 		return result;
 	}
 	
@@ -183,16 +158,6 @@ public class Identity implements ISequelEntity {
 	}
 	
 	/**
-	 * Sets the username.
-	 *
-	 * @param username
-	 *            the username to set
-	 */
-	public void setUserName(final String username) {
-		this.userName = username;
-	}
-	
-	/**
 	 * {@inheritDoc}
 	 *
 	 * @see java.lang.Object#toString()
@@ -200,9 +165,7 @@ public class Identity implements ISequelEntity {
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("Identity [userName=");
-		builder.append(this.userName);
-		builder.append(", fullName=");
+		builder.append("Identity [fullName=");
 		builder.append(this.fullName);
 		builder.append(", email=");
 		builder.append(this.email);

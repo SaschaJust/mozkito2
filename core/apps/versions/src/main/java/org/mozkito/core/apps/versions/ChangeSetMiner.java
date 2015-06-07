@@ -15,21 +15,25 @@ package org.mozkito.core.apps.versions;
 
 import java.io.File;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.commons.collections4.map.MultiValueMap;
 import org.apache.commons.collections4.map.UnmodifiableMap;
 
-import org.mozkito.core.libs.users.IdentityCache;
-import org.mozkito.core.libs.users.model.Identity;
 import org.mozkito.core.libs.versions.ChangeType;
 import org.mozkito.core.libs.versions.Graph;
+import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.builders.ChangeSetBuilder;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
+import org.mozkito.core.libs.versions.model.Identity;
+import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Asserts;
@@ -45,59 +49,65 @@ import org.mozkito.skeleton.sequel.DatabaseDumper;
 public class ChangeSetMiner implements Runnable {
 	
 	/** The Constant END_TAG. */
-	private static final String             END_TAG               = "<<<#$@#$@<<<";
+	private static final String                 END_TAG               = "<<<#$@#$@<<<";
 	
 	/** The Constant START_TAG. */
-	private static final String             START_TAG             = ">>>#$@#$@>>>";
+	private static final String                 START_TAG             = ">>>#$@#$@>>>";
 	
 	/** The Constant BIN_CHANGE_INDICATOR. */
-	private static final char               BIN_CHANGE_INDICATOR  = '-';
+	private static final char                   BIN_CHANGE_INDICATOR  = '-';
 	
 	/** The raw old mode offset. */
-	private static int                      RAW_OLD_MODE_OFFSET   = 1;
+	private static int                          RAW_OLD_MODE_OFFSET   = 1;
 	
 	/** The raw new mode offset. */
-	private static int                      RAW_NEW_MODE_OFFSET   = 8;
+	private static int                          RAW_NEW_MODE_OFFSET   = 8;
 	
 	/** The raw old hash offset. */
-	private static int                      RAW_OLD_HASH_OFFSET   = 15;
+	private static int                          RAW_OLD_HASH_OFFSET   = 15;
 	
 	/** The raw new hash offset. */
-	private static int                      RAW_NEW_HASH_OFFSET   = 56;
+	private static int                          RAW_NEW_HASH_OFFSET   = 56;
 	
 	/** The raw changetype offset. */
-	private static int                      RAW_CHANGETYPE_OFFSET = 97;
+	private static int                          RAW_CHANGETYPE_OFFSET = 97;
 	
 	/** The clone dir. */
-	private final File                      cloneDir;
+	private final File                          cloneDir;
 	
 	/** The depot. */
-	private final Depot                     depot;
+	private final Depot                         depot;
 	/** The graph. */
-	private final Graph                     graph;
+	private final Graph                         graph;
 	
 	/** The change sets. */
-	private final Map<String, ChangeSet>    changeSets            = new HashMap<String, ChangeSet>();
+	private final Map<String, ChangeSet>        changeSets            = new HashMap<String, ChangeSet>();
 	
 	/** The file cache. */
-	private final Map<String, Handle>       fileCache             = new HashMap<>();
+	private final Map<String, Handle>           fileCache             = new HashMap<>();
 	
 	/** The change set dumper. */
-	private final DatabaseDumper<ChangeSet> changeSetDumper;
+	private final DatabaseDumper<ChangeSet>     changeSetDumper;
 	
 	/** The revision dumper. */
-	private final DatabaseDumper<Revision>  revisionDumper;
+	private final DatabaseDumper<Revision>      revisionDumper;
 	
 	/** The handle dumper. */
-	private final DatabaseDumper<Handle>    handleDumper;
+	private final DatabaseDumper<Handle>        handleDumper;
 	
 	/** The identity dumper. */
-	private final DatabaseDumper<Identity>  identityDumper;
+	private final DatabaseDumper<Identity>      identityDumper;
 	
 	/** The counter. */
-	private long                            counter               = 0;
+	private long                                counter               = 0;
 	
-	private String                          line;
+	private String                              line;
+	
+	private final MultiValueMap<String, Handle> renameTracker         = new MultiValueMap<>();
+	
+	private final DatabaseDumper<Renaming>      renamingDumper;
+	
+	private final IdentityCache                 identityCache;
 	
 	/**
 	 * Instantiates a new change set miner.
@@ -108,6 +118,8 @@ public class ChangeSetMiner implements Runnable {
 	 *            the depot
 	 * @param graph
 	 *            the graph
+	 * @param identityCache
+	 *            the identity cache
 	 * @param identityDumper
 	 *            the identity dumper
 	 * @param changeSetDumper
@@ -116,20 +128,24 @@ public class ChangeSetMiner implements Runnable {
 	 *            the revision dumper
 	 * @param handleDumper
 	 *            the handle dumper
+	 * @param renamingDumper
+	 *            the renaming dumper
 	 */
-	public ChangeSetMiner(final File cloneDir, final Depot depot, final Graph graph,
+	public ChangeSetMiner(final File cloneDir, final Depot depot, final Graph graph, final IdentityCache identityCache,
 	        final DatabaseDumper<Identity> identityDumper, final DatabaseDumper<ChangeSet> changeSetDumper,
-	        final DatabaseDumper<Revision> revisionDumper, final DatabaseDumper<Handle> handleDumper) {
+	        final DatabaseDumper<Revision> revisionDumper, final DatabaseDumper<Handle> handleDumper,
+	        final DatabaseDumper<Renaming> renamingDumper) {
 		
 		this.cloneDir = cloneDir;
 		this.depot = depot;
 		this.graph = graph;
+		this.identityCache = identityCache;
 		
 		this.identityDumper = identityDumper;
 		this.changeSetDumper = changeSetDumper;
 		this.revisionDumper = revisionDumper;
 		this.handleDumper = handleDumper;
-		
+		this.renamingDumper = renamingDumper;
 	}
 	
 	/**
@@ -259,6 +275,16 @@ public class ChangeSetMiner implements Runnable {
 			this.fileCache.put(target, handle);
 		}
 		
+		if (ChangeType.RENAMED.equals(changeType)) {
+			// track renamings
+			if (this.renameTracker.containsKey(source)) {
+				final Collection<Handle> knownHandles = this.renameTracker.getCollection(source);
+				this.renameTracker.remove(source);
+				this.renameTracker.putAll(target, knownHandles);
+			}
+			this.renameTracker.put(target, this.fileCache.get(target));
+		}
+		
 		final Revision revision = new Revision(this.depot, changeSet, changeType, this.fileCache.get(source),
 		                                       this.fileCache.get(target), confidence, oldMode, newMode, oldHash,
 		                                       newHash);
@@ -282,10 +308,9 @@ public class ChangeSetMiner implements Runnable {
 	 * 
 	 * @see java.lang.Runnable#run()
 	 */
+	@SuppressWarnings ("unchecked")
 	public void run() {
 		Asserts.positive(this.depot.id());
-		
-		final IdentityCache identityCache = new IdentityCache();
 		
 		/*
 		 * hash tree author name author email author timestamp committer name committer email committer timestamp
@@ -330,11 +355,11 @@ public class ChangeSetMiner implements Runnable {
 			this.line = command.nextOutput();
 			Asserts.notNull(this.line, "Awaiting author email.");
 			idEmail = this.line;
-			identity = identityCache.request(null, idName.isEmpty()
+			identity = this.identityCache.request(idEmail.isEmpty()
 			                                                       ? null
-			                                                       : idName, idEmail.isEmpty()
+			                                                       : idEmail, idName.isEmpty()
 			                                                                                  ? null
-			                                                                                  : idEmail);
+			                                                                                  : idName);
 			
 			if (identity.id() <= 0) {
 				this.identityDumper.saveLater(identity);
@@ -354,7 +379,7 @@ public class ChangeSetMiner implements Runnable {
 			this.line = command.nextOutput();
 			Asserts.notNull(this.line, "Awaiting committer email.");
 			idEmail = this.line;
-			identity = identityCache.request(null, idName, idEmail);
+			identity = this.identityCache.request(idEmail, idName);
 			if (identity.id() <= 0) {
 				this.identityDumper.saveLater(identity);
 			}
@@ -422,6 +447,12 @@ public class ChangeSetMiner implements Runnable {
 		}
 		
 		command.waitFor();
+		
+		Renaming renaming = null;
+		for (final Entry<String, Object> entry : this.renameTracker.entrySet()) {
+			renaming = new Renaming((Collection<Handle>) entry.getValue());
+			this.renamingDumper.saveLater(renaming);
+		}
 		
 		if (Logger.logInfo()) {
 			Logger.info("Processed '%s' changesets.", this.counter);
