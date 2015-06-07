@@ -1,0 +1,4 @@
+INSERT INTO renamings (
+		id,
+		handle_id) 
+VALUES (?, ?)
