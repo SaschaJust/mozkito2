@@ -15,17 +15,15 @@ package org.mozkito.core.apps.versions;
 
 import java.io.File;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.commons.collections4.map.MultiValueMap;
 import org.apache.commons.collections4.map.UnmodifiableMap;
 
 import org.mozkito.core.libs.versions.ChangeType;
+import org.mozkito.core.libs.versions.FileCache;
 import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.builders.ChangeSetBuilder;
@@ -49,65 +47,59 @@ import org.mozkito.skeleton.sequel.DatabaseDumper;
 public class ChangeSetMiner implements Runnable {
 	
 	/** The Constant END_TAG. */
-	private static final String                 END_TAG               = "<<<#$@#$@<<<";
+	private static final String             END_TAG               = "<<<#$@#$@<<<";
 	
 	/** The Constant START_TAG. */
-	private static final String                 START_TAG             = ">>>#$@#$@>>>";
+	private static final String             START_TAG             = ">>>#$@#$@>>>";
 	
 	/** The Constant BIN_CHANGE_INDICATOR. */
-	private static final char                   BIN_CHANGE_INDICATOR  = '-';
+	private static final char               BIN_CHANGE_INDICATOR  = '-';
 	
 	/** The raw old mode offset. */
-	private static int                          RAW_OLD_MODE_OFFSET   = 1;
+	private static int                      RAW_OLD_MODE_OFFSET   = 1;
 	
 	/** The raw new mode offset. */
-	private static int                          RAW_NEW_MODE_OFFSET   = 8;
+	private static int                      RAW_NEW_MODE_OFFSET   = 8;
 	
 	/** The raw old hash offset. */
-	private static int                          RAW_OLD_HASH_OFFSET   = 15;
+	private static int                      RAW_OLD_HASH_OFFSET   = 15;
 	
 	/** The raw new hash offset. */
-	private static int                          RAW_NEW_HASH_OFFSET   = 56;
+	private static int                      RAW_NEW_HASH_OFFSET   = 56;
 	
 	/** The raw changetype offset. */
-	private static int                          RAW_CHANGETYPE_OFFSET = 97;
+	private static int                      RAW_CHANGETYPE_OFFSET = 97;
 	
 	/** The clone dir. */
-	private final File                          cloneDir;
+	private final File                      cloneDir;
 	
 	/** The depot. */
-	private final Depot                         depot;
+	private final Depot                     depot;
 	/** The graph. */
-	private final Graph                         graph;
+	private final Graph                     graph;
 	
 	/** The change sets. */
-	private final Map<String, ChangeSet>        changeSets            = new HashMap<String, ChangeSet>();
-	
-	/** The file cache. */
-	private final Map<String, Handle>           fileCache             = new HashMap<>();
+	private final Map<String, ChangeSet>    changeSets            = new HashMap<String, ChangeSet>();
 	
 	/** The change set dumper. */
-	private final DatabaseDumper<ChangeSet>     changeSetDumper;
+	private final DatabaseDumper<ChangeSet> changeSetDumper;
 	
 	/** The revision dumper. */
-	private final DatabaseDumper<Revision>      revisionDumper;
-	
-	/** The handle dumper. */
-	private final DatabaseDumper<Handle>        handleDumper;
+	private final DatabaseDumper<Revision>  revisionDumper;
 	
 	/** The identity dumper. */
-	private final DatabaseDumper<Identity>      identityDumper;
+	private final DatabaseDumper<Identity>  identityDumper;
 	
 	/** The counter. */
-	private long                                counter               = 0;
+	private long                            counter               = 0;
 	
-	private String                              line;
+	private String                          line;
 	
-	private final MultiValueMap<String, Handle> renameTracker         = new MultiValueMap<>();
+	private final DatabaseDumper<Renaming>  renamingDumper;
 	
-	private final DatabaseDumper<Renaming>      renamingDumper;
+	private final IdentityCache             identityCache;
 	
-	private final IdentityCache                 identityCache;
+	private final FileCache                 fileCache;
 	
 	/**
 	 * Instantiates a new change set miner.
@@ -120,6 +112,8 @@ public class ChangeSetMiner implements Runnable {
 	 *            the graph
 	 * @param identityCache
 	 *            the identity cache
+	 * @param fileCache
+	 *            the file cache
 	 * @param identityDumper
 	 *            the identity dumper
 	 * @param changeSetDumper
@@ -132,19 +126,19 @@ public class ChangeSetMiner implements Runnable {
 	 *            the renaming dumper
 	 */
 	public ChangeSetMiner(final File cloneDir, final Depot depot, final Graph graph, final IdentityCache identityCache,
-	        final DatabaseDumper<Identity> identityDumper, final DatabaseDumper<ChangeSet> changeSetDumper,
-	        final DatabaseDumper<Revision> revisionDumper, final DatabaseDumper<Handle> handleDumper,
-	        final DatabaseDumper<Renaming> renamingDumper) {
+	        final FileCache fileCache, final DatabaseDumper<Identity> identityDumper,
+	        final DatabaseDumper<ChangeSet> changeSetDumper, final DatabaseDumper<Revision> revisionDumper,
+	        final DatabaseDumper<Handle> handleDumper, final DatabaseDumper<Renaming> renamingDumper) {
 		
 		this.cloneDir = cloneDir;
 		this.depot = depot;
 		this.graph = graph;
+		this.fileCache = fileCache;
 		this.identityCache = identityCache;
 		
 		this.identityDumper = identityDumper;
 		this.changeSetDumper = changeSetDumper;
 		this.revisionDumper = revisionDumper;
-		this.handleDumper = handleDumper;
 		this.renamingDumper = renamingDumper;
 	}
 	
@@ -261,42 +255,47 @@ public class ChangeSetMiner implements Runnable {
 		final String oldHash = line.substring(RAW_OLD_HASH_OFFSET, RAW_NEW_HASH_OFFSET - 1);
 		final String newHash = line.substring(RAW_NEW_HASH_OFFSET, RAW_CHANGETYPE_OFFSET - 1);
 		
-		if (!this.fileCache.containsKey(source)) {
-			final Handle handle = new Handle(this.depot, source);
-			this.handleDumper.saveLater(handle);
-			Asserts.positive(handle.id());
-			this.fileCache.put(source, handle);
+		Handle from = this.fileCache.get(source);
+		Handle to = this.fileCache.get(target);
+		
+		switch (changeType) {
+			case ADDED:
+				from = this.fileCache.add(source);
+				to = from;
+				break;
+			case DELETED:
+				from = this.fileCache.delete(source);
+				to = from;
+				break;
+			case MODIFIED:
+				from = this.fileCache.modify(source);
+				to = from;
+				break;
+			case RENAMED:
+				from = this.fileCache.get(source);
+				if (from == null) {
+					// sanitize broken repository
+					from = this.fileCache.add(source);
+				}
+				to = this.fileCache.rename(confidence, source, target, changeSet);
+				break;
+			case COPIED:
+				from = this.fileCache.get(source);
+				if (from == null) {
+					// sanitize broken repository
+					from = this.fileCache.add(source);
+				}
+				to = this.fileCache.copy(confidence, source, target, changeSet);
+				break;
+			default:
+				break;
 		}
 		
-		if (!this.fileCache.containsKey(target)) {
-			final Handle handle = new Handle(this.depot, target);
-			this.handleDumper.saveLater(handle);
-			Asserts.positive(handle.id());
-			this.fileCache.put(target, handle);
-		}
-		
-		if (ChangeType.RENAMED.equals(changeType)) {
-			// track renamings
-			if (this.renameTracker.containsKey(source)) {
-				final Collection<Handle> knownHandles = this.renameTracker.getCollection(source);
-				this.renameTracker.remove(source);
-				this.renameTracker.putAll(target, knownHandles);
-			}
-			this.renameTracker.put(target, this.fileCache.get(target));
-		}
-		
-		final Revision revision = new Revision(this.depot, changeSet, changeType, this.fileCache.get(source),
-		                                       this.fileCache.get(target), confidence, oldMode, newMode, oldHash,
-		                                       newHash);
+		final Revision revision = new Revision(this.depot, changeSet, changeType, from, to, confidence, oldMode,
+		                                       newMode, oldHash, newHash);
 		
 		Asserts.positive(revision.getSourceId());
 		Asserts.positive(revision.getTargetId());
-		Asserts.equalTo(revision.getSourceId(), this.fileCache.get(source).id(),
-		                "Current value '%s' vs stored in revision '%s'", revision.getSourceId(),
-		                this.fileCache.get(source).id());
-		Asserts.equalTo(revision.getTargetId(), this.fileCache.get(target).id(),
-		                "Current value '%s' vs stored in revision '%s'", revision.getSourceId(),
-		                this.fileCache.get(source).id());
 		
 		revisions.add(revision);
 		
@@ -308,7 +307,6 @@ public class ChangeSetMiner implements Runnable {
 	 * 
 	 * @see java.lang.Runnable#run()
 	 */
-	@SuppressWarnings ("unchecked")
 	public void run() {
 		Asserts.positive(this.depot.id());
 		
@@ -320,7 +318,7 @@ public class ChangeSetMiner implements Runnable {
 		Command.execute("git", new String[] { "config", "diff.renameLimit", "999999" }, this.cloneDir).waitFor();
 		
 		final Command command = Command.execute("git", new String[] { "log", "--branches", "--remotes", "--topo-order",
-		        "--find-copies", "--raw", "--numstat", "--no-abbrev",
+		        "--find-copies", "--raw", "--numstat", "--no-abbrev", "--reverse",
 		        "--format=" + START_TAG + "%n%H%n%T%n%an%n%ae%n%at%n%cn%n%ce%n%ct%n%s%n%b%n" + END_TAG }, this.cloneDir);
 		
 		ChangeSetBuilder changeSetBuilder = null;
@@ -415,6 +413,8 @@ public class ChangeSetMiner implements Runnable {
 			
 			this.changeSetDumper.saveLater(changeSet);
 			
+			this.fileCache.beginTransaction();
+			
 			// raw format (which gives us file mode before after and hash before/after) and numstat (which give us lines
 			// in/lines out) are separate blocsk
 			REVISIONS: while ((this.line = command.nextOutput()) != null) {
@@ -433,6 +433,8 @@ public class ChangeSetMiner implements Runnable {
 				}
 			}
 			
+			this.fileCache.commit();
+			
 			for (final Revision revision : revisions) {
 				this.revisionDumper.saveLater(revision);
 			}
@@ -448,9 +450,7 @@ public class ChangeSetMiner implements Runnable {
 		
 		command.waitFor();
 		
-		Renaming renaming = null;
-		for (final Entry<String, Object> entry : this.renameTracker.entrySet()) {
-			renaming = new Renaming((Collection<Handle>) entry.getValue());
+		for (final Renaming renaming : this.fileCache.getRenamings()) {
 			this.renamingDumper.saveLater(renaming);
 		}
 		

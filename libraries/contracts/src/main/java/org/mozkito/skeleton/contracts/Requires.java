@@ -19,7 +19,6 @@ import java.util.Map;
 import org.mozkito.skeleton.contracts.internal.RequirementNotMetExeption;
 import org.mozkito.skeleton.i18n.Messages;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Requires.
  */
@@ -243,6 +242,134 @@ public class Requires {
 		if (lhs >= rhs) {
 			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.less",
 			                                                 Contract.getCallerString(), message));
+		}
+	}
+	
+	/**
+	 * Less or equal.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
+	 */
+	public static void lessOrEqual(final int lhs,
+	                               final int rhs) {
+		if (lhs > rhs) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.lessOrEqual",
+			                                                 Contract.getCallerString(), ""));
+		}
+	}
+	
+	/**
+	 * Less or equal.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
+	 * @param message
+	 *            the message
+	 */
+	public static void lessOrEqual(final int lhs,
+	                               final int rhs,
+	                               final String message) {
+		if (lhs > rhs) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.lessOrEqual",
+			                                                 Contract.getCallerString(), message));
+		}
+	}
+	
+	/**
+	 * Less or equal.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
+	 * @param formatString
+	 *            the format string
+	 * @param args
+	 *            the args
+	 */
+	public static void lessOrEqual(final int lhs,
+	                               final int rhs,
+	                               final String formatString,
+	                               final Object... args) {
+		if (lhs > rhs) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.lessOrEqual",
+			                                                 Contract.getCallerString(),
+			                                                 String.format(formatString, args)));
+		}
+	}
+	
+	/**
+	 * Not contains key.
+	 *
+	 * @param <X>
+	 *            the generic type
+	 * @param <Y>
+	 *            the generic type
+	 * @param map
+	 *            the map
+	 * @param key
+	 *            the key
+	 */
+	public static <X, Y> void notContainsKey(final Map<X, Y> map,
+	                                         final X key) {
+		if (map != null && map.containsKey(key)) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notContainsKey",
+			                                                 Contract.getCallerString(), ""));
+		}
+	}
+	
+	/**
+	 * Not contains key.
+	 *
+	 * @param <X>
+	 *            the generic type
+	 * @param <Y>
+	 *            the generic type
+	 * @param map
+	 *            the map
+	 * @param key
+	 *            the key
+	 * @param message
+	 *            the message
+	 */
+	public static <X, Y> void notContainsKey(final Map<X, Y> map,
+	                                         final X key,
+	                                         final String message) {
+		if (map != null && map.containsKey(key)) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notContainsKey",
+			                                                 Contract.getCallerString(), message));
+		}
+	}
+	
+	/**
+	 * Not contains key.
+	 *
+	 * @param <X>
+	 *            the generic type
+	 * @param <Y>
+	 *            the generic type
+	 * @param map
+	 *            the map
+	 * @param key
+	 *            the key
+	 * @param formatString
+	 *            the format string
+	 * @param arguments
+	 *            the arguments
+	 */
+	public static <X, Y> void notContainsKey(final Map<X, Y> map,
+	                                         final X key,
+	                                         final String formatString,
+	                                         final Object... arguments) {
+		if (map != null && map.containsKey(key)) {
+			throw new RequirementNotMetExeption(Messages.get("skeleton.contracts.requires.notContainsKey",
+			                                                 Contract.getCallerString(),
+			                                                 String.format(formatString, arguments)));
 		}
 	}
 	

@@ -1,4 +1,7 @@
 INSERT INTO renamings (
 		id,
-		handle_id) 
-VALUES (?, ?)
+		similarity,
+		source_id,
+		target_id,
+		changeset_id) 
+VALUES (?, ?, ?, ?, ?)

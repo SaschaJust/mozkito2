@@ -37,7 +37,7 @@ public class Renaming implements ISequelEntity {
 	private long              id;
 	
 	/** The handles. */
-	private final Set<Handle> handles          = new HashSet<>();
+	private final Set<Entry>  entries          = new HashSet<>();
 	
 	/**
 	 * Instantiates a new renaming.
@@ -48,37 +48,78 @@ public class Renaming implements ISequelEntity {
 	/**
 	 * Instantiates a new renaming.
 	 *
-	 * @param handles
-	 *            the handles
+	 * @param entries
+	 *            the entries
 	 */
-	public Renaming(final Collection<Handle> handles) {
-		addAll(handles);
+	public Renaming(final Collection<Entry> entries) {
+		addAll(entries);
 	}
 	
 	/**
 	 * Adds the.
 	 *
-	 * @param handle
-	 *            the handle
+	 * @param similarity
+	 *            the similarity
+	 * @param sourceHandle
+	 *            the source handle
+	 * @param targetHandle
+	 *            the target handle
+	 * @param where
+	 *            the where
 	 * @return true, if successful
 	 */
-	public boolean add(final Handle handle) {
-		Requires.notNull(handle);
-		Asserts.notNull(this.handles);
-		return this.handles.add(handle);
+	public boolean add(final short similarity,
+	                   final Handle sourceHandle,
+	                   final Handle targetHandle,
+	                   final ChangeSet where) {
+		Requires.notNull(sourceHandle);
+		Requires.notNull(targetHandle);
+		Requires.notNull(where);
+		Requires.notNegative(similarity);
+		Requires.lessOrEqual(similarity, 100);
+		Requires.positive(sourceHandle.id());
+		Requires.positive(targetHandle.id());
+		
+		Asserts.notNull(this.entries);
+		return this.entries.add(new Entry(similarity, sourceHandle.id(), targetHandle.id(), where.id()));
+	}
+	
+	/**
+	 * Adds the entry.
+	 *
+	 * @param similarity
+	 *            the similarity
+	 * @param from
+	 *            the from
+	 * @param to
+	 *            the to
+	 * @param where
+	 *            the where
+	 * @return true, if successful
+	 */
+	public boolean add(final short similarity,
+	                   final long from,
+	                   final long to,
+	                   final long where) {
+		Requires.notNegative(similarity);
+		Requires.lessOrEqual(similarity, 100);
+		Requires.positive(from);
+		Requires.positive(to);
+		Requires.positive(where);
+		return this.entries.add(new Entry(similarity, from, to, where));
 	}
 	
 	/**
 	 * Adds the all.
 	 *
-	 * @param handles
-	 *            the handles
+	 * @param entries
+	 *            the entries
 	 * @return true, if successful
 	 */
-	public boolean addAll(final Collection<Handle> handles) {
-		Requires.notNull(this.handles);
-		Asserts.notNull(this.handles);
-		return this.handles.addAll(handles);
+	public boolean addAll(final Collection<Entry> entries) {
+		Requires.notNull(entries);
+		Asserts.notNull(this.entries);
+		return this.entries.addAll(entries);
 	}
 	
 	/**
@@ -86,8 +127,8 @@ public class Renaming implements ISequelEntity {
 	 *
 	 * @return the handles
 	 */
-	public Collection<Handle> getHandles() {
-		return UnmodifiableCollection.unmodifiableCollection(this.handles);
+	public Collection<Entry> getEntries() {
+		return UnmodifiableCollection.unmodifiableCollection(this.entries);
 	}
 	
 	/**

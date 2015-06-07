@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import org.mozkito.core.libs.versions.FileCache;
 import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.model.Branch;
@@ -117,6 +118,8 @@ public class TaskRunner implements Runnable {
 	
 	private final IdentityCache             identityCache;
 	
+	private final FileCache                 fileCache;
+	
 	/**
 	 * Instantiates a new task runner.
 	 *
@@ -179,6 +182,7 @@ public class TaskRunner implements Runnable {
 		this.depot = new Depot(this.cloneName, depotURI, Instant.now());
 		this.depotDumper.saveLater(this.depot);
 		this.graph = new Graph(this.depot);
+		this.fileCache = new FileCache(this.depot, handleDumper);
 	}
 	
 	/**
@@ -223,9 +227,10 @@ public class TaskRunner implements Runnable {
 		if (ArrayUtils.contains(this.tasks, Task.CHANGESETS)) {
 			Logger.info("Spawning ChangeSetMiner.");
 			final ChangeSetMiner changeSetMiner = new ChangeSetMiner(this.cloneDir, this.depot, this.graph,
-			                                                         this.identityCache, this.identityDumper,
-			                                                         this.changeSetDumper, this.revisionDumper,
-			                                                         this.handleDumper, this.renamingDumper);
+			                                                         this.identityCache, this.fileCache,
+			                                                         this.identityDumper, this.changeSetDumper,
+			                                                         this.revisionDumper, this.handleDumper,
+			                                                         this.renamingDumper);
 			changeSetMiner.run();
 			changeSets = changeSetMiner.getChangeSets();
 			this.graph.setChangeSets(changeSets);

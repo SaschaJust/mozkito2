@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.Handle;
+import org.mozkito.core.libs.versions.model.Entry;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
@@ -115,10 +115,13 @@ public class RenamingAdapter extends AbstractSequelAdapter<Renaming> {
 		
 		try {
 			int index;
-			for (final Handle handle : renaming.getHandles()) {
+			for (final Entry entry : renaming.getEntries()) {
 				index = 0;
 				saveStatement.setLong(++index, id);
-				saveStatement.setLong(++index, handle.id());
+				saveStatement.setShort(++index, entry.getSimilarity());
+				saveStatement.setLong(++index, entry.getFrom());
+				saveStatement.setLong(++index, entry.getTo());
+				saveStatement.setLong(++index, entry.getWhere());
 				saveStatement.executeUpdate();
 			}
 			
