@@ -113,8 +113,9 @@ public class RootsAdapter extends AbstractSequelAdapter<Roots> {
 		Requires.notNull(roots);
 		
 		try {
-			int index = 0;
+			int index;
 			for (final long changeSetId : roots.getChangeSetIds()) {
+				index = 0;
 				statement.setInt(++index, (int) id);
 				statement.setLong(++index, roots.getBranchId());
 				statement.setLong(++index, changeSetId);
