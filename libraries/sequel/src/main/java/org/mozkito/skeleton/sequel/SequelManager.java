@@ -82,8 +82,16 @@ public class SequelManager {
 		
 		Asserts.notNull(database.getType());
 		
-		final String path = name + "." + database.getType().name().toLowerCase();
-		final InputStream stream = ClassLoader.getSystemResourceAsStream(path);
+		String path = name + "." + database.getType().name().toLowerCase();
+		InputStream stream = ClassLoader.getSystemResourceAsStream(path);
+		
+		if (stream == null) {
+			path = name + ".sql";
+			stream = ClassLoader.getSystemResourceAsStream(path);
+			if (stream == null) {
+				throw new IllegalArgumentException("Could not find statement file: " + path);
+			}
+		}
 		
 		executeSQL(database, stream);
 	}
@@ -104,13 +112,17 @@ public class SequelManager {
 		
 		Asserts.notNull(database.getType());
 		
-		final String path = name + "." + database.getType().name().toLowerCase();
-		final InputStream stream = ClassLoader.getSystemResourceAsStream(path);
+		String path = name + "." + database.getType().name().toLowerCase();
+		InputStream stream = ClassLoader.getSystemResourceAsStream(path);
 		
 		final StringBuilder statementBuilder = new StringBuilder();
 		
 		if (stream == null) {
-			throw new IllegalArgumentException("Could not locate SQL query for resource path: " + path);
+			path = name + ".sql";
+			stream = ClassLoader.getSystemResourceAsStream(path);
+			if (stream == null) {
+				throw new IllegalArgumentException("Could not locate SQL query for resource path: " + path);
+			}
 		}
 		
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {

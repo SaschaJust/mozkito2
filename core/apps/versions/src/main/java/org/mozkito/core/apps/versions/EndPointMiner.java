@@ -20,8 +20,6 @@ import java.util.Map.Entry;
 import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
-import org.mozkito.core.libs.versions.model.Depot;
-import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
 
@@ -41,9 +39,6 @@ public class EndPointMiner implements Runnable {
 	/** The change sets. */
 	private final Map<String, ChangeSet> changeSets;
 	
-	/** The depot. */
-	private final Depot                  depot;
-	
 	private final Graph                  graph;
 	
 	/**
@@ -51,8 +46,6 @@ public class EndPointMiner implements Runnable {
 	 *
 	 * @param cloneDir
 	 *            the clone dir
-	 * @param depot
-	 *            the depot
 	 * @param heads
 	 *            the heads
 	 * @param changeSets
@@ -60,12 +53,11 @@ public class EndPointMiner implements Runnable {
 	 * @param graph
 	 *            the graph
 	 */
-	public EndPointMiner(final File cloneDir, final Depot depot, final Map<String, Branch> heads,
-	        final Map<String, ChangeSet> changeSets, final Graph graph) {
+	public EndPointMiner(final File cloneDir, final Map<String, Branch> heads, final Map<String, ChangeSet> changeSets,
+	        final Graph graph) {
 		this.cloneDir = cloneDir;
 		this.branchHeads = heads;
 		this.changeSets = changeSets;
-		this.depot = depot;
 		this.graph = graph;
 	}
 	
@@ -76,15 +68,17 @@ public class EndPointMiner implements Runnable {
 	 */
 	public void run() {
 		for (final Entry<String, Branch> entry : this.branchHeads.entrySet()) {
-			final Command command = Command.execute("git", new String[] { "log", "--reverse", "--format=%H", "-1",
+			final Command command = Command.execute("git", new String[] { "log", "--max-parents=0", "--format=%H",
 			        GraphMiner.ORIGIN + entry.getValue().getName() }, this.cloneDir);
-			final String root = command.nextOutput();
+			String root;
 			
-			Asserts.containsKey(this.changeSets, root);
+			Asserts.containsKey(this.changeSets, entry.getKey());
+			this.graph.addHead(entry.getValue(), this.changeSets.get(entry.getKey()));
 			
-			this.graph.addEndPoint(entry.getValue(),
-			                       new Endpoint(this.depot, entry.getValue(), this.changeSets.get(entry.getKey()),
-			                                    this.changeSets.get(root)));
+			while ((root = command.nextOutput()) != null) {
+				Asserts.containsKey(this.changeSets, root);
+				this.graph.addRoot(entry.getValue(), this.changeSets.get(root));
+			}
 		}
 	}
 	
