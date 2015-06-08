@@ -23,9 +23,10 @@ import java.util.List;
 import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.Graph.Edge;
 import org.mozkito.core.libs.versions.model.BranchEdge;
-import org.mozkito.core.libs.versions.model.Endpoint;
 import org.mozkito.core.libs.versions.model.GraphEdge;
+import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.IntegrationEdge;
+import org.mozkito.core.libs.versions.model.Roots;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.ISequelAdapter;
@@ -48,7 +49,9 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	private final ISequelAdapter<IntegrationEdge> integrationAdapter;
 	
 	/** The end point adapter. */
-	private final ISequelAdapter<Endpoint>        endPointAdapter;
+	private final ISequelAdapter<Head>            headAdapter;
+	
+	private final ISequelAdapter<Roots>           rootsAdapter;
 	
 	/**
 	 * Instantiates a new graph adapter.
@@ -68,8 +71,12 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 		database.register(IntegrationEdge.class, new IntegrationEdgeAdapter(database));
 		this.integrationAdapter = database.getAdapter(IntegrationEdge.class);
 		
-		database.register(Endpoint.class, new EndPointAdapter(database));
-		this.endPointAdapter = database.getAdapter(Endpoint.class);
+		database.register(Head.class, new HeadAdapter(database));
+		this.headAdapter = database.getAdapter(Head.class);
+		
+		database.register(Roots.class, new RootsAdapter(database));
+		this.rootsAdapter = database.getAdapter(Roots.class);
+		
 	}
 	
 	/**
@@ -153,8 +160,10 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 			final PreparedStatement branchNextIdStmt = this.branchAdapter.prepareNextIdStatement();
 			final PreparedStatement integrationStmt = this.integrationAdapter.prepareSaveStatement();
 			final PreparedStatement integrationNextIdStmt = this.integrationAdapter.prepareNextIdStatement();
-			final PreparedStatement endPointStmt = this.endPointAdapter.prepareSaveStatement();
-			final PreparedStatement endPointNextIdStmt = this.endPointAdapter.prepareNextIdStatement();
+			final PreparedStatement headStmt = this.headAdapter.prepareSaveStatement();
+			final PreparedStatement headNextIdStmt = this.headAdapter.prepareNextIdStatement();
+			final PreparedStatement rootsStmt = this.rootsAdapter.prepareSaveStatement();
+			final PreparedStatement rootsNextIdStmt = this.rootsAdapter.prepareNextIdStatement();
 			
 			saveStatement.setLong(++index, id);
 			saveStatement.setLong(++index, entity.getDepot().id());
@@ -202,8 +211,12 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 				}
 			}
 			
-			for (final Endpoint endPoint : entity.getEndPoints()) {
-				this.endPointAdapter.save(endPointStmt, endPointNextIdStmt, endPoint);
+			for (final Head head : entity.getHeads()) {
+				this.headAdapter.save(headStmt, headNextIdStmt, head);
+			}
+			
+			for (final Roots roots : entity.getRoots()) {
+				this.rootsAdapter.save(rootsStmt, rootsNextIdStmt, roots);
 			}
 			
 		} catch (final SQLException e) {

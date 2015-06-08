@@ -13,51 +13,42 @@
 
 package org.mozkito.core.libs.versions.model;
 
+import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
- * BranchHead is used to model the current head of each branch in the database.
+ * The Class Head.
  *
  * @author Sascha Just
  */
-public class Endpoint implements ISequelEntity {
+public class Head implements ISequelEntity {
 	
 	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = -1010755719141984103L;
+	private static final long serialVersionUID = -2058273091681846846L;
 	
 	/** The id. */
 	private long              id;
 	
-	/** The depot id. */
-	private final long        depotId;
-	
-	/** The head id. */
-	private final long        headId;
-	
-	/** The root id. */
-	private final long        rootId;
-	
 	/** The branch id. */
 	private final long        branchId;
 	
+	/** The change set id. */
+	private final long        changeSetId;
+	
 	/**
-	 * Instantiates a new branch head.
+	 * Instantiates a new head.
 	 *
-	 * @param depot
-	 *            the depot
-	 * @param branch
-	 *            the branch
-	 * @param head
-	 *            the head
-	 * @param root
-	 *            the root
+	 * @param branchId
+	 *            the branch id
+	 * @param changeSetId
+	 *            the change set id
 	 */
-	public Endpoint(final Depot depot, final Branch branch, final ChangeSet head, final ChangeSet root) {
-		super();
-		this.depotId = depot.id();
-		this.branchId = branch.id();
-		this.headId = head.id();
-		this.rootId = root.id();
+	public Head(final long branchId, final long changeSetId) {
+		Requires.positive(branchId);
+		Requires.positive(changeSetId);
+		
+		this.branchId = branchId;
+		this.changeSetId = changeSetId;
 	}
 	
 	/**
@@ -76,11 +67,11 @@ public class Endpoint implements ISequelEntity {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Endpoint other = (Endpoint) obj;
+		final Head other = (Head) obj;
 		if (this.branchId != other.branchId) {
 			return false;
 		}
-		if (this.depotId != other.depotId) {
+		if (this.changeSetId != other.changeSetId) {
 			return false;
 		}
 		return true;
@@ -96,26 +87,12 @@ public class Endpoint implements ISequelEntity {
 	}
 	
 	/**
-	 * Gets the depot id.
+	 * Gets the change set id.
 	 *
-	 * @return the depotId
+	 * @return the changeSetId
 	 */
-	public final long getDepotId() {
-		return this.depotId;
-	}
-	
-	/**
-	 * @return the headId
-	 */
-	public final long getHeadId() {
-		return this.headId;
-	}
-	
-	/**
-	 * @return the rootId
-	 */
-	public final long getRootId() {
-		return this.rootId;
+	public final long getChangeSetId() {
+		return this.changeSetId;
 	}
 	
 	/**
@@ -128,7 +105,7 @@ public class Endpoint implements ISequelEntity {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (this.branchId ^ this.branchId >>> 32);
-		result = prime * result + (int) (this.depotId ^ this.depotId >>> 32);
+		result = prime * result + (int) (this.changeSetId ^ this.changeSetId >>> 32);
 		return result;
 	}
 	
@@ -148,6 +125,24 @@ public class Endpoint implements ISequelEntity {
 	 */
 	public void id(final long id) {
 		this.id = id;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("Head [id=");
+		builder.append(this.id);
+		builder.append(", branchId=");
+		builder.append(this.branchId);
+		builder.append(", changeSetId=");
+		builder.append(this.changeSetId);
+		builder.append("]");
+		return builder.toString();
 	}
 	
 }

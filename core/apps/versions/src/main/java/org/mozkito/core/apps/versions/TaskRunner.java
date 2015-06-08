@@ -240,8 +240,7 @@ public class TaskRunner implements Runnable {
 		
 		if (ArrayUtils.contains(this.tasks, Task.ENDPOINTS)) {
 			Logger.info("Spawning EndPointMiner.");
-			final EndPointMiner endPointMiner = new EndPointMiner(this.cloneDir, this.depot, branchHeads, changeSets,
-			                                                      this.graph);
+			final EndPointMiner endPointMiner = new EndPointMiner(this.cloneDir, branchHeads, changeSets, this.graph);
 			endPointMiner.run();
 		}
 		
