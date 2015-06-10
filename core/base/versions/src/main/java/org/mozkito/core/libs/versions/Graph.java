@@ -562,7 +562,8 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 			}
 			
 			public void edgeTraversed(final EdgeTraversalEvent<ChangeSet, Edge> e) {
-				e.getEdge().integrationPath.add(branch);;
+				e.getEdge().integrationPath.add(branch);
+				// System.err.println(e.getEdge().child.getCommitHash() + " > " + e.getEdge().parent.getCommitHash());
 			}
 			
 			public void vertexFinished(final VertexTraversalEvent<ChangeSet> e) {
@@ -573,14 +574,37 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 				// noop
 			}
 		};
+		
+		DijkstraShortestPath<ChangeSet, Edge> dsp;
+		final Set<ChangeSet> tmpBlackList = new HashSet<>();
+		ChangeSet previous = null;
+		
 		for (final ChangeSet current : baseLine) {
+			// System.err.println("BL: " + current.getCommitHash());
 			revIterator = new DepthFirstIterator<ChangeSet, Edge>(branchGraph, current);
-			revIterator.addTraversalListener(listener);
-			while (revIterator.hasNext()) {
+			// revIterator.addTraversalListener(listener);
+			POINTERS: while (revIterator.hasNext()) {
 				pointer = revIterator.next();
-				blackList.add(pointer);
+				if (tmpBlackList.contains(pointer)) {
+					continue POINTERS;
+				}
+				
+				dsp = new DijkstraShortestPath<ChangeSet, Edge>(branchGraph, current, pointer);
+				for (final Edge edge : dsp.getPathEdgeList()) {
+					tmpBlackList.add(edge.child);
+					tmpBlackList.add(edge.parent);
+					edge.integrationPath.add(branch);
+				}
 			}
+			
+			if (previous != null) {
+				this.graph.getEdge(previous, current).integrationPath.add(branch);
+			}
+			
+			blackList.addAll(tmpBlackList);
 			blackList.add(current);
+			tmpBlackList.clear();
+			previous = current;
 		}
 	}
 	
