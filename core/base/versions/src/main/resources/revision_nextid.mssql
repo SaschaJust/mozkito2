@@ -1,1 +1,1 @@
-SELECT NEXTVAL('seq_revisions_id')
+SELECT NEXT VALUE FOR seq_revisions_id

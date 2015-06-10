@@ -23,6 +23,7 @@ import java.util.List;
 import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.Graph.Edge;
 import org.mozkito.core.libs.versions.model.BranchEdge;
+import org.mozkito.core.libs.versions.model.ConvergenceEdge;
 import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.IntegrationEdge;
@@ -53,6 +54,8 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	
 	private final ISequelAdapter<Roots>           rootsAdapter;
 	
+	private final ISequelAdapter<ConvergenceEdge> convergenceAdapter;
+	
 	/**
 	 * Instantiates a new graph adapter.
 	 *
@@ -70,6 +73,9 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 		
 		database.register(IntegrationEdge.class, new IntegrationEdgeAdapter(database));
 		this.integrationAdapter = database.getAdapter(IntegrationEdge.class);
+		
+		database.register(ConvergenceEdge.class, new ConvergenceEdgeAdapter(database));
+		this.convergenceAdapter = database.getAdapter(ConvergenceEdge.class);
 		
 		database.register(Head.class, new HeadAdapter(database));
 		this.headAdapter = database.getAdapter(Head.class);
@@ -164,6 +170,8 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 			final PreparedStatement headNextIdStmt = this.headAdapter.prepareNextIdStatement();
 			final PreparedStatement rootsStmt = this.rootsAdapter.prepareSaveStatement();
 			final PreparedStatement rootsNextIdStmt = this.rootsAdapter.prepareNextIdStatement();
+			final PreparedStatement convergenceStmt = this.convergenceAdapter.prepareSaveStatement();
+			final PreparedStatement convergenceNextIdStmt = this.convergenceAdapter.prepareNextIdStatement();
 			
 			saveStatement.setLong(++index, id);
 			saveStatement.setLong(++index, entity.getDepot().id());
@@ -209,6 +217,10 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 					this.database.commit();
 					batchCounter = 0;
 				}
+			}
+			
+			for (final ConvergenceEdge cEdge : entity.getConvergence()) {
+				this.convergenceAdapter.save(convergenceStmt, convergenceNextIdStmt, cEdge);
 			}
 			
 			for (final Head head : entity.getHeads()) {

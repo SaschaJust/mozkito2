@@ -1,1 +1,1 @@
-SELECT NEXTVAL('seq_graphs_id')
+SELECT NEXT VALUE FOR seq_graphs_id

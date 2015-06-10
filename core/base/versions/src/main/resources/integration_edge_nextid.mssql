@@ -1,1 +1,1 @@
-SELECT NEXTVAL('seq_integration_edges_id')
+SELECT NEXT VALUE FOR seq_integration_edges_id

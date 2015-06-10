@@ -30,12 +30,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.collection.UnmodifiableCollection;
 import org.apache.commons.collections4.iterators.UnmodifiableIterator;
+import org.apache.commons.collections4.list.UnmodifiableList;
 import org.apache.commons.collections4.set.UnmodifiableSet;
 import org.jgrapht.alg.DijkstraShortestPath;
-import org.jgrapht.event.ConnectedComponentTraversalEvent;
-import org.jgrapht.event.EdgeTraversalEvent;
-import org.jgrapht.event.TraversalListener;
-import org.jgrapht.event.VertexTraversalEvent;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DirectedMaskSubgraph;
 import org.jgrapht.graph.EdgeReversedGraph;
@@ -46,6 +43,7 @@ import org.jgrapht.traverse.GraphIterator;
 
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.core.libs.versions.model.ConvergenceEdge;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.Roots;
@@ -361,19 +359,21 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	private long                                             id;
 	
 	/** The endpoints. */
-	private final Map<Branch, Head>                          heads    = new HashMap<>();
+	private final Map<Branch, Head>                          heads       = new HashMap<>();
 	
 	/** The roots. */
-	private final Map<Branch, Roots>                         roots    = new HashMap<>();
+	private final Map<Branch, Roots>                         roots       = new HashMap<>();
 	
 	/** The edges. */
-	private final Collection<Edge>                           edges    = new LinkedList<>();
+	private final Collection<Edge>                           edges       = new LinkedList<>();
 	
 	/** The vertices. */
-	private Map<String, ChangeSet>                           vertices = new HashMap<>();
+	private Map<String, ChangeSet>                           vertices    = new HashMap<>();
 	
 	/** The branch heads. */
 	private Map<String, Branch>                              branchHeads;
+	
+	private final List<ConvergenceEdge>                      convergence = new LinkedList<ConvergenceEdge>();
 	
 	/**
 	 * Instantiates a new depot graph.
@@ -550,31 +550,6 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		DepthFirstIterator<ChangeSet, Edge> revIterator = null;
 		ChangeSet pointer = null;
 		
-		// add all reachable edges to integration graph
-		final TraversalListener<ChangeSet, Edge> listener = new TraversalListener<ChangeSet, Edge>() {
-			
-			public void connectedComponentFinished(final ConnectedComponentTraversalEvent e) {
-				// noop
-			}
-			
-			public void connectedComponentStarted(final ConnectedComponentTraversalEvent e) {
-				// noop
-			}
-			
-			public void edgeTraversed(final EdgeTraversalEvent<ChangeSet, Edge> e) {
-				e.getEdge().integrationPath.add(branch);
-				// System.err.println(e.getEdge().child.getCommitHash() + " > " + e.getEdge().parent.getCommitHash());
-			}
-			
-			public void vertexFinished(final VertexTraversalEvent<ChangeSet> e) {
-				// noop
-			}
-			
-			public void vertexTraversed(final VertexTraversalEvent<ChangeSet> e) {
-				// noop
-			}
-		};
-		
 		DijkstraShortestPath<ChangeSet, Edge> dsp;
 		final Set<ChangeSet> tmpBlackList = new HashSet<>();
 		ChangeSet previous = null;
@@ -721,7 +696,8 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 			revIterator = new DepthFirstIterator<ChangeSet, Edge>(branchGraph, current);
 			while (revIterator.hasNext()) {
 				pointer = revIterator.next();
-				// TODO store information pointer -> current here
+				this.convergence.add(new ConvergenceEdge(branch.id(), pointer.id(), current.id()));
+				
 				blackList.add(pointer);
 			}
 			blackList.add(current);
@@ -775,6 +751,15 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		                                                                                             head);
 		return UnmodifiableIterator.unmodifiableIterator(new ChangeSetIterator(iterator));
 		
+	}
+	
+	/**
+	 * Gets the convergence.
+	 *
+	 * @return the convergence
+	 */
+	public List<ConvergenceEdge> getConvergence() {
+		return UnmodifiableList.unmodifiableList(this.convergence);
 	}
 	
 	/**

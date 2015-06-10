@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.GraphEdge;
+import org.mozkito.core.libs.versions.model.ConvergenceEdge;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
@@ -28,13 +28,13 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
  * @author Sascha Just
  *
  */
-public class GraphEdgeAdapter extends AbstractSequelAdapter<GraphEdge> {
+public class ConvergenceEdgeAdapter extends AbstractSequelAdapter<ConvergenceEdge> {
 	
 	/**
 	 * @param database
 	 */
-	public GraphEdgeAdapter(final SequelDatabase database) {
-		super(database, "edge");
+	public ConvergenceEdgeAdapter(final SequelDatabase database) {
+		super(database, "convergence");
 	}
 	
 	/**
@@ -42,7 +42,7 @@ public class GraphEdgeAdapter extends AbstractSequelAdapter<GraphEdge> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
-	public GraphEdge create(final ResultSet result) {
+	public ConvergenceEdge create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -54,7 +54,7 @@ public class GraphEdgeAdapter extends AbstractSequelAdapter<GraphEdge> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
-	public void delete(final GraphEdge object) {
+	public void delete(final ConvergenceEdge object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -66,7 +66,7 @@ public class GraphEdgeAdapter extends AbstractSequelAdapter<GraphEdge> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
-	public Iterator<GraphEdge> load() {
+	public Iterator<ConvergenceEdge> load() {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -78,7 +78,7 @@ public class GraphEdgeAdapter extends AbstractSequelAdapter<GraphEdge> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
 	 */
-	public List<GraphEdge> load(final long... ids) {
+	public List<ConvergenceEdge> load(final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -90,7 +90,7 @@ public class GraphEdgeAdapter extends AbstractSequelAdapter<GraphEdge> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
 	 */
-	public GraphEdge load(final long id) {
+	public ConvergenceEdge load(final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -104,7 +104,7 @@ public class GraphEdgeAdapter extends AbstractSequelAdapter<GraphEdge> {
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
-	                 final GraphEdge edge) {
+	                 final ConvergenceEdge edge) {
 		Requires.notNull(saveStatement);
 		Requires.notNull(edge);
 		
@@ -113,10 +113,9 @@ public class GraphEdgeAdapter extends AbstractSequelAdapter<GraphEdge> {
 			int index = 0;
 			saveStatement.setLong(++index, id);
 			
-			saveStatement.setLong(++index, edge.depotId);
-			saveStatement.setLong(++index, edge.sourceId);
-			saveStatement.setLong(++index, edge.targetId);
-			saveStatement.setShort(++index, edge.type);
+			saveStatement.setLong(++index, edge.getBranchId());
+			saveStatement.setLong(++index, edge.getSourceId());
+			saveStatement.setLong(++index, edge.getConvergeId());
 			
 			saveStatement.executeUpdate();
 			
@@ -131,7 +130,7 @@ public class GraphEdgeAdapter extends AbstractSequelAdapter<GraphEdge> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
-	public void update(final GraphEdge... objects) {
+	public void update(final ConvergenceEdge... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
