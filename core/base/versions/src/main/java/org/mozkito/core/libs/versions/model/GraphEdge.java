@@ -36,9 +36,6 @@ public class GraphEdge implements ISequelEntity {
 	/** The target_id. */
 	public final long         targetId;
 	
-	/** The type. */
-	public final short        type;
-	
 	/**
 	 * Instantiates a new graph edge.
 	 *
@@ -48,15 +45,12 @@ public class GraphEdge implements ISequelEntity {
 	 *            the source_id
 	 * @param target_id
 	 *            the target_id
-	 * @param type
-	 *            the type
 	 */
-	public GraphEdge(final long depot_id, final long source_id, final long target_id, final short type) {
+	public GraphEdge(final long depot_id, final long source_id, final long target_id) {
 		super();
 		this.depotId = depot_id;
 		this.sourceId = source_id;
 		this.targetId = target_id;
-		this.type = type;
 	}
 	
 	/**

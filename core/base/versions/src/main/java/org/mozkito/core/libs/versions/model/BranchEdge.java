@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.versions.model;
 
+import org.mozkito.core.libs.versions.Graph.EdgeType;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
@@ -32,6 +33,8 @@ public class BranchEdge implements ISequelEntity {
 	/** The branch id. */
 	private final long        branchId;
 	
+	private final short       type;
+	
 	/**
 	 * Instantiates a new branch edge.
 	 *
@@ -40,10 +43,11 @@ public class BranchEdge implements ISequelEntity {
 	 * @param branchId
 	 *            the branch id
 	 */
-	public BranchEdge(final long edgeId, final long branchId) {
+	public BranchEdge(final long edgeId, final long branchId, final EdgeType type) {
 		super();
 		this.edgeId = edgeId;
 		this.branchId = branchId;
+		this.type = (short) type.ordinal();
 	}
 	
 	/**
@@ -69,6 +73,9 @@ public class BranchEdge implements ISequelEntity {
 		if (this.edgeId != other.edgeId) {
 			return false;
 		}
+		if (this.type != other.type) {
+			return false;
+		}
 		return true;
 	}
 	
@@ -87,6 +94,13 @@ public class BranchEdge implements ISequelEntity {
 	}
 	
 	/**
+	 * @return
+	 */
+	public short getType() {
+		return this.type;
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see java.lang.Object#hashCode()
@@ -97,6 +111,7 @@ public class BranchEdge implements ISequelEntity {
 		int result = 1;
 		result = prime * result + (int) (this.branchId ^ this.branchId >>> 32);
 		result = prime * result + (int) (this.edgeId ^ this.edgeId >>> 32);
+		result = prime * result + this.type;
 		return result;
 	}
 	

@@ -106,20 +106,14 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 */
 	public class Edge {
 		
-		/** The integration path. */
-		final Set<Branch> integrationPath = new HashSet<Branch>();
-		
-		/** The branches. */
-		final Set<Branch> branches        = new HashSet<Branch>();
-		
-		/** The type. */
-		final EdgeType    type;
+		/** The labels. */
+		Map<Long, Label> labels;
 		
 		/** The child. */
-		final ChangeSet   child;
+		final ChangeSet  child;
 		
 		/** The parent. */
-		final ChangeSet   parent;
+		final ChangeSet  parent;
 		
 		/**
 		 * Instantiates a new edge.
@@ -136,9 +130,8 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		public Edge(final ChangeSet parent, final ChangeSet child, final EdgeType type, final Branch branch) {
 			this.parent = parent;
 			this.child = child;
-			this.type = type;
-			this.branches.add(branch);
-			
+			this.labels = new HashMap<Long, Label>();
+			this.labels.put(branch.id(), new Label(branch, type));
 		}
 		
 		/**
@@ -146,10 +139,33 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		 *
 		 * @param branch
 		 *            the branch
+		 * @param type
+		 *            the type
 		 * @return true, if successful
 		 */
-		public boolean addBranch(final Branch branch) {
-			return this.branches.add(branch);
+		public boolean addBranch(final Branch branch,
+		                         final EdgeType type) {
+			if (!this.labels.containsKey(branch.id())) {
+				this.labels.put(branch.id(), new Label(branch, type));
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		/**
+		 * Adds the integration.
+		 *
+		 * @param branch
+		 *            the branch
+		 */
+		public void addIntegration(final Branch branch) {
+			Requires.notNull(branch);
+			if (!this.labels.containsKey(branch.id())) {
+				throw new IllegalArgumentException("This edge is not part of branch " + branch);
+			}
+			
+			this.labels.get(branch.id()).integration = true;
 		}
 		
 		/**
@@ -195,7 +211,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		 * @return the branch ids
 		 */
 		public Collection<Long> getBranchIds() {
-			return this.branches.stream().map(x -> x.id()).collect(Collectors.toList());
+			return UnmodifiableCollection.unmodifiableCollection(this.labels.keySet());
 		}
 		
 		/**
@@ -204,7 +220,8 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		 * @return the integration path ids
 		 */
 		public Collection<Long> getIntegrationPathIds() {
-			return this.integrationPath.stream().map(x -> x.id()).collect(Collectors.toList());
+			return this.labels.values().stream().filter(x -> x.integration).map(x -> x.branch.id())
+			                  .collect(Collectors.toList());
 		}
 		
 		/**
@@ -237,10 +254,31 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		/**
 		 * Gets the type.
 		 *
+		 * @param branch
+		 *            the branch
 		 * @return the type
 		 */
-		public short getType() {
-			return (short) this.type.ordinal();
+		public short getType(final Branch branch) {
+			if (this.labels.containsKey(branch.id())) {
+				return (short) this.labels.get(branch.id()).type.ordinal();
+			} else {
+				throw new IllegalArgumentException("This edge is not part of branch " + branch);
+			}
+		}
+		
+		/**
+		 * Gets the type.
+		 *
+		 * @param branchId
+		 *            the branch id
+		 * @return the type
+		 */
+		public EdgeType getType(final long branchId) {
+			if (this.labels.containsKey(branchId)) {
+				return this.labels.get(branchId).type;
+			} else {
+				throw new IllegalArgumentException("This edge is not part of branch with id " + branchId);
+			}
 		}
 		
 		/**
@@ -262,6 +300,45 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 			return result;
 		}
 		
+		/**
+		 * In branch.
+		 *
+		 * @param branch
+		 *            the branch
+		 * @return true, if successful
+		 */
+		public boolean inBranch(final Branch branch) {
+			return this.labels.containsKey(branch.id());
+		}
+		
+		/**
+		 * Integrates.
+		 *
+		 * @param branch
+		 *            the branch
+		 * @return true, if successful
+		 */
+		public boolean integrates(final Branch branch) {
+			Requires.notNull(branch);
+			if (!this.labels.containsKey(branch.id())) {
+				throw new IllegalArgumentException();
+			}
+			
+			return this.labels.get(branch.id()).integration;
+		}
+		
+		/**
+		 * Checks if is merge.
+		 *
+		 * @return true, if is merge
+		 */
+		public boolean isMerge() {
+			if (this.labels.isEmpty()) {
+				throw new IllegalStateException("Edge is not attached to a branch.");
+			}
+			return EdgeType.MERGE.equals(this.labels.values().iterator().next().type);
+		}
+		
 	}
 	
 	/**
@@ -275,6 +352,35 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		BRANCH,
 		/** The forward. */
 		FORWARD;
+	}
+	
+	/**
+	 * The Class Label.
+	 */
+	public static class Label {
+		
+		/** The branch. */
+		public Branch   branch;
+		
+		/** The integration. */
+		public boolean  integration = false;
+		
+		/** The type. */
+		public EdgeType type;
+		
+		/**
+		 * Instantiates a new label.
+		 *
+		 * @param branch
+		 *            the branch
+		 * @param type
+		 *            the type
+		 */
+		public Label(final Branch branch, final EdgeType type) {
+			this.branch = branch;
+			this.type = type;
+		}
+		
 	}
 	
 	/**
@@ -416,7 +522,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 			this.edges.add(edge);
 			return this.graph.addEdge(parent, child, edge);
 		} else {
-			return this.graph.getEdge(parent, child).addBranch(branch);
+			return this.graph.getEdge(parent, child).addBranch(branch, type);
 		}
 	}
 	
@@ -510,7 +616,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		                                                                                                                                        new MaskFunctor<ChangeSet, Edge>() {
 			                                                                                                                                        
 			                                                                                                                                        public boolean isEdgeMasked(final Edge edge) {
-				                                                                                                                                        return !edge.branches.contains(branch);
+				                                                                                                                                        return !edge.inBranch(branch);
 			                                                                                                                                        }
 			                                                                                                                                        
 			                                                                                                                                        public boolean isVertexMasked(final ChangeSet vertex) {
@@ -526,8 +632,8 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		                                                                                                                                          new MaskFunctor<ChangeSet, Edge>() {
 			                                                                                                                                          
 			                                                                                                                                          public boolean isEdgeMasked(final Edge edge) {
-				                                                                                                                                          return EdgeType.MERGE.equals(edge.type)
-				                                                                                                                                                  || !edge.branches.contains(branch);
+				                                                                                                                                          return !EdgeType.FORWARD.equals(edge.getType(branch))
+				                                                                                                                                                  || !edge.inBranch(branch);
 			                                                                                                                                          }
 			                                                                                                                                          
 			                                                                                                                                          public boolean isVertexMasked(final ChangeSet vertex) {
@@ -610,7 +716,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 					pointers.pop();
 					pointer = pointers.peek();
 				} else {
-					this.graph.getEdge(p.head, pointer.head).integrationPath.add(branch);;
+					this.graph.getEdge(p.head, pointer.head).addIntegration(branch);;
 					pointer = p;
 					pointers.push(pointer);
 				}
@@ -622,7 +728,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 					pointers.pop();
 					pointer = pointers.peek();
 				} else {
-					this.graph.getEdge(pointer.head, previous.head).integrationPath.add(branch);
+					this.graph.getEdge(pointer.head, previous.head).addIntegration(branch);
 				}
 			} else {
 				// root
@@ -652,7 +758,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		                                                                                                                                        new MaskFunctor<ChangeSet, Edge>() {
 			                                                                                                                                        
 			                                                                                                                                        public boolean isEdgeMasked(final Edge edge) {
-				                                                                                                                                        return !edge.branches.contains(branch);
+				                                                                                                                                        return !edge.inBranch(branch);
 			                                                                                                                                        }
 			                                                                                                                                        
 			                                                                                                                                        public boolean isVertexMasked(final ChangeSet vertex) {
@@ -668,8 +774,8 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		                                                                                                                                          new MaskFunctor<ChangeSet, Edge>() {
 			                                                                                                                                          
 			                                                                                                                                          public boolean isEdgeMasked(final Edge edge) {
-				                                                                                                                                          return EdgeType.MERGE.equals(edge.type)
-				                                                                                                                                                  || !edge.branches.contains(branch);
+				                                                                                                                                          return !EdgeType.FORWARD.equals(edge.getType(branch))
+				                                                                                                                                                  || !edge.inBranch(branch);
 			                                                                                                                                          }
 			                                                                                                                                          
 			                                                                                                                                          public boolean isVertexMasked(final ChangeSet vertex) {
@@ -724,10 +830,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 */
 	public ChangeSet getBranchParent(final ChangeSet changeSet,
 	                                 final MaskSubgraph<ChangeSet, Edge> graph) {
-		final Optional<Edge> edge = graph.incomingEdgesOf(changeSet)
-		                                 .stream()
-		                                 .filter(x -> EdgeType.BRANCH.equals(x.type) || EdgeType.FORWARD.equals(x.type))
-		                                 .findFirst();
+		final Optional<Edge> edge = graph.incomingEdgesOf(changeSet).stream().filter(x -> !x.isMerge()).findFirst();
 		if (edge.isPresent()) {
 			return edge.get().parent;
 		} else {
@@ -878,7 +981,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 */
 	public List<ChangeSet> getMergeParents(final ChangeSet changeSet,
 	                                       final MaskSubgraph<ChangeSet, Edge> graph) {
-		return graph.incomingEdgesOf(changeSet).stream().filter(x -> EdgeType.MERGE.equals(x.type)).map(x -> x.parent)
+		return graph.incomingEdgesOf(changeSet).stream().filter(x -> !x.isMerge()).map(x -> x.parent)
 		            .collect(Collectors.toList());
 	}
 	
@@ -948,10 +1051,13 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 *
 	 * @param changeSet
 	 *            the change set
+	 * @param branch
+	 *            the branch
 	 * @return the spin offs
 	 */
-	public List<ChangeSet> getSpinOffs(final ChangeSet changeSet) {
-		return this.graph.outgoingEdgesOf(changeSet).stream().filter(x -> EdgeType.BRANCH.equals(x.type))
+	public List<ChangeSet> getSpinOffs(final ChangeSet changeSet,
+	                                   final Branch branch) {
+		return this.graph.outgoingEdgesOf(changeSet).stream().filter(x -> EdgeType.BRANCH.equals(x.getType(branch)))
 		                 .map(x -> x.parent).collect(Collectors.toList());
 	}
 	
@@ -1006,7 +1112,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		return new DirectedMaskSubgraph<ChangeSet, Edge>(this.graph, new MaskFunctor<ChangeSet, Edge>() {
 			
 			public boolean isEdgeMasked(final Edge arg0) {
-				return !arg0.integrationPath.contains(branch);
+				return !arg0.integrates(branch);
 			}
 			
 			public boolean isVertexMasked(final ChangeSet arg0) {
@@ -1063,7 +1169,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		return new DirectedMaskSubgraph<ChangeSet, Edge>(this.graph, new MaskFunctor<ChangeSet, Edge>() {
 			
 			public boolean isEdgeMasked(final Edge arg0) {
-				return !arg0.branches.contains(branch);
+				return !arg0.inBranch(branch);
 			}
 			
 			public boolean isVertexMasked(final ChangeSet arg0) {
