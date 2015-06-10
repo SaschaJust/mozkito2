@@ -116,9 +116,8 @@ public class IntegrationEdgeAdapter extends AbstractSequelAdapter<IntegrationEdg
 			int index = 0;
 			saveStatement.setLong(++index, id);
 			
-			saveStatement.setLong(++index, edge.depotId);
-			saveStatement.setLong(++index, edge.edgeId);
-			saveStatement.setLong(++index, edge.branchId);
+			saveStatement.setLong(++index, edge.getEdgeId());
+			saveStatement.setLong(++index, edge.getBranchId());
 			
 			saveStatement.executeUpdate();
 			

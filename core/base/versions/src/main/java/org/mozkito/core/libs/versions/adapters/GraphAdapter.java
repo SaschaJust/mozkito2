@@ -187,7 +187,7 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 				
 				for (final long branchId : edge.getBranchIds()) {
 					++batchCounter;
-					bEdge = new BranchEdge(entity.getDepot().id(), gEdge.id(), branchId);
+					bEdge = new BranchEdge(gEdge.id(), branchId);
 					this.branchAdapter.save(branchStmt, branchNextIdStmt, bEdge);
 					if (batchCounter >= batchSize) {
 						this.database.commit();
@@ -197,7 +197,7 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 				
 				for (final long branchId : edge.getIntegrationPathIds()) {
 					++batchCounter;
-					iEdge = new IntegrationEdge(entity.getDepot().id(), gEdge.id(), branchId);
+					iEdge = new IntegrationEdge(gEdge.id(), branchId);
 					this.integrationAdapter.save(integrationStmt, integrationNextIdStmt, iEdge);
 					if (batchCounter >= batchSize) {
 						this.database.commit();

@@ -1,6 +1,5 @@
 INSERT INTO integration_edges (
 	id,
-	depot_id,
 	edge_id,
 	branch_id
-) VALUES (?, ?, ?, ?)
+) VALUES (?, ?, ?)

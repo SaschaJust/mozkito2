@@ -20,38 +20,84 @@ import org.mozkito.skeleton.sequel.ISequelEntity;
  */
 public class BranchEdge implements ISequelEntity {
 	
-	/**
-     * 
-     */
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -6075643512649538152L;
 	
 	/** The id. */
-	public long               id;
-	
-	/** The depot id. */
-	public long               depotId;
+	private long              id;
 	
 	/** The edge id. */
-	public long               edgeId;
+	private final long        edgeId;
 	
 	/** The branch id. */
-	public long               branchId;
+	private final long        branchId;
 	
 	/**
 	 * Instantiates a new branch edge.
 	 *
-	 * @param depotId
-	 *            the depot id
 	 * @param edgeId
 	 *            the edge id
 	 * @param branchId
 	 *            the branch id
 	 */
-	public BranchEdge(final long depotId, final long edgeId, final long branchId) {
+	public BranchEdge(final long edgeId, final long branchId) {
 		super();
-		this.depotId = depotId;
 		this.edgeId = edgeId;
 		this.branchId = branchId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final BranchEdge other = (BranchEdge) obj;
+		if (this.branchId != other.branchId) {
+			return false;
+		}
+		if (this.edgeId != other.edgeId) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * @return the branchId
+	 */
+	public final long getBranchId() {
+		return this.branchId;
+	}
+	
+	/**
+	 * @return the edgeId
+	 */
+	public final long getEdgeId() {
+		return this.edgeId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (this.branchId ^ this.branchId >>> 32);
+		result = prime * result + (int) (this.edgeId ^ this.edgeId >>> 32);
+		return result;
 	}
 	
 	/**
