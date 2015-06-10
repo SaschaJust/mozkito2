@@ -288,6 +288,10 @@ public class ChangeSetMiner implements Runnable {
 				to = this.fileCache.copy(confidence, source, target, changeSet);
 				break;
 			default:
+				if (from == null) {
+					from = this.fileCache.add(source);
+					to = from;
+				}
 				break;
 		}
 		
