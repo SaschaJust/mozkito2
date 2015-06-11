@@ -42,6 +42,8 @@ public class BranchEdge implements ISequelEntity {
 	 *            the edge id
 	 * @param branchId
 	 *            the branch id
+	 * @param type
+	 *            the type
 	 */
 	public BranchEdge(final long edgeId, final long branchId, final EdgeType type) {
 		super();
@@ -94,7 +96,9 @@ public class BranchEdge implements ISequelEntity {
 	}
 	
 	/**
-	 * @return
+	 * Gets the type.
+	 *
+	 * @return the type
 	 */
 	public short getType() {
 		return this.type;

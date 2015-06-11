@@ -77,6 +77,26 @@ public class SequelManager {
 	 */
 	public static void executeSQL(final SequelDatabase database,
 	                              final String name) throws SQLException, IOException {
+		executeSQL(database, name, false);
+	}
+	
+	/**
+	 * Execute sql.
+	 *
+	 * @param database
+	 *            the database
+	 * @param name
+	 *            the name
+	 * @param optional
+	 *            the optional
+	 * @throws SQLException
+	 *             the SQL exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
+	public static void executeSQL(final SequelDatabase database,
+	                              final String name,
+	                              final boolean optional) throws SQLException, IOException {
 		Requires.notNull(database);
 		Requires.notNull(name);
 		
@@ -89,7 +109,11 @@ public class SequelManager {
 			path = name + ".sql";
 			stream = ClassLoader.getSystemResourceAsStream(path);
 			if (stream == null) {
-				throw new IllegalArgumentException("Could not find statement file: " + path);
+				if (!optional) {
+					throw new IllegalArgumentException("Could not find statement file: " + path);
+				} else {
+					return;
+				}
 			}
 		}
 		

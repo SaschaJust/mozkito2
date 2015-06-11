@@ -77,7 +77,7 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 	public void createConstraints() {
 		try {
 			synchronized (this.database) {
-				SequelManager.executeSQL(this.database, this.createConstraintsResource);
+				SequelManager.executeSQL(this.database, this.createConstraintsResource, true);
 			}
 		} catch (final SQLException | IOException e) {
 			throw new RuntimeException(e);
@@ -92,7 +92,7 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 	public void createIndexes() {
 		try {
 			synchronized (this.database) {
-				SequelManager.executeSQL(this.database, this.createIndexesResource);
+				SequelManager.executeSQL(this.database, this.createIndexesResource, true);
 			}
 		} catch (final SQLException | IOException e) {
 			throw new RuntimeException(e);
@@ -190,7 +190,7 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
 	 */
-	public void save(final T... entities) {
+	public void save(@SuppressWarnings ("unchecked") final T... entities) {
 		Requires.notNull(entities);
 		
 		try {

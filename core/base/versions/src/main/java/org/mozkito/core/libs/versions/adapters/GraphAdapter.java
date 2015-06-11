@@ -52,8 +52,10 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	/** The end point adapter. */
 	private final ISequelAdapter<Head>            headAdapter;
 	
+	/** The roots adapter. */
 	private final ISequelAdapter<Roots>           rootsAdapter;
 	
+	/** The convergence adapter. */
 	private final ISequelAdapter<ConvergenceEdge> convergenceAdapter;
 	
 	/**
@@ -175,6 +177,7 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 			
 			saveStatement.setLong(++index, id);
 			saveStatement.setLong(++index, entity.getDepot().id());
+			// TODO add #vertices #edges
 			
 			saveStatement.executeUpdate();
 			
