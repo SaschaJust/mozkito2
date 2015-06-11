@@ -15,6 +15,7 @@ package org.mozkito.core.libs.versions;
 
 import graphs.DirectedGraph;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -605,6 +606,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 *            the branch
 	 */
 	public void computeIntegrationGraph(final Branch branch) {
+		final Instant start = Instant.now();
 		final List<ChangeSet> baseLine = new LinkedList<>();
 		final Set<ChangeSet> blackList = new HashSet<>();
 		
@@ -674,12 +676,12 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 				for (final Edge edge : dsp.getPathEdgeList()) {
 					tmpBlackList.add(edge.child);
 					tmpBlackList.add(edge.parent);
-					edge.integrationPath.add(branch);
+					edge.addIntegration(branch);
 				}
 			}
 			
 			if (previous != null) {
-				this.graph.getEdge(previous, current).integrationPath.add(branch);
+				this.graph.getEdge(previous, current).addIntegration(branch);
 			}
 			
 			blackList.addAll(tmpBlackList);
@@ -687,6 +689,8 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 			tmpBlackList.clear();
 			previous = current;
 		}
+		Logger.info("Integration graph computation duration: "
+		        + (Instant.now().getEpochSecond() - start.getEpochSecond()) + "s.");
 	}
 	
 	/**
@@ -747,6 +751,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 *            the branch
 	 */
 	public void computeIntegrationPoints(final Branch branch) {
+		final Instant start = Instant.now();
 		final List<ChangeSet> baseLine = new LinkedList<>();
 		final Set<ChangeSet> blackList = new HashSet<>();
 		
@@ -808,6 +813,8 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 			}
 			blackList.add(current);
 		}
+		Logger.info("Integration graph computation duration: "
+		        + (Instant.now().getEpochSecond() - start.getEpochSecond()) + "s.");
 	}
 	
 	/**

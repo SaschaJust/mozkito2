@@ -354,9 +354,14 @@ public class Main {
 			depotDumper.join();
 			renamingDumper.join();
 			
+			System.out.println("Creating indexes.");
+			database.createIndexes();
+			System.out.println("Creating constraints.");
+			database.createConstraints();
+			System.out.println("Shutting down database.");
 			database.close();
 			
-			System.out.println("All tasks are finished! Timeout: " + !ret);
+			System.out.println("All tasks are finished. Timeout: " + !ret);
 		} catch (final URISyntaxException | SQLException | InterruptedException | IOException e) {
 			Logger.error(e);
 		} catch (final ParseException e) {

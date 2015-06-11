@@ -146,6 +146,24 @@ public class SequelDatabase implements DataSource, Closeable {
 	}
 	
 	/**
+	 * Creates the constraints.
+	 */
+	public void createConstraints() {
+		for (final ISequelAdapter<?> adapter : this.adapters.values()) {
+			adapter.createConstraints();
+		}
+	}
+	
+	/**
+	 * Creates the indexes.
+	 */
+	public void createIndexes() {
+		for (final ISequelAdapter<?> adapter : this.adapters.values()) {
+			adapter.createIndexes();
+		}
+	}
+	
+	/**
 	 * Creates the scheme.
 	 */
 	public void createScheme() {
