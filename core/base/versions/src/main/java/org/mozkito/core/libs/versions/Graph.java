@@ -707,7 +707,6 @@ public class Graph implements ISequelEntity {
 		ChangeSet pointer = null;
 		
 		for (final ChangeSet current : baseLine) {
-			Logger.info("Processing " + current.getCommitHash());
 			revIterator = new DepthFirstIterator<ChangeSet, Edge>(branchGraph, current);
 			
 			while (revIterator.hasNext()) {
