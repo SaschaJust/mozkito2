@@ -42,7 +42,7 @@ public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSet
 	 */
 	public ChangeSetIntegrationAdapter(final SequelDatabase database) {
 		super(database, "changeset_integrationtype");
-		this.typeStatement = SequelManager.loadStatement(database, "integration_types");
+		this.typeStatement = SequelManager.loadStatement(database, "integration_type_save");
 	}
 	
 	/**
@@ -67,12 +67,13 @@ public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSet
 		super.createScheme();
 		try {
 			final PreparedStatement statement = this.database.getConnection().prepareStatement(this.typeStatement);
-			int index = 0;
+			int index;
 			for (final IntegrationType type : IntegrationType.values()) {
+				index = 0;
 				statement.setShort(++index, type.getValue());
 				statement.setString(++index, type.name());
+				statement.executeUpdate();
 			}
-			statement.executeUpdate();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
