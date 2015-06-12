@@ -87,16 +87,16 @@ public class GraphMiner implements Runnable {
 					                    split[1]);
 					
 					this.graph.addEdge(this.changeSets.get(split[1]), this.changeSets.get(split[0]),
-					                   split.length == 2
-					                                    ? EdgeType.FORWARD
-					                                    : EdgeType.BRANCH, branch);
+					                   EdgeType.LANE_PARENT, branch);
 					
 					for (int i = 2; i < split.length; ++i) {
 						this.graph.addEdge(this.changeSets.get(split[i]), this.changeSets.get(split[0]),
-						                   EdgeType.MERGE, branch);
+						                   EdgeType.MERGE_PARENT, branch);
 					}
 				}
 			}
+			
+			this.graph.updateBranchEdges(branch);
 		}
 	}
 }

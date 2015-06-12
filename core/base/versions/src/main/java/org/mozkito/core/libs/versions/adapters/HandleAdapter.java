@@ -13,7 +13,6 @@
 
 package org.mozkito.core.libs.versions.adapters;
 
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,7 +23,6 @@ import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelManager;
 
 /**
  * @author Sascha Just
@@ -49,48 +47,6 @@ public class HandleAdapter extends AbstractSequelAdapter<Handle> {
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
 		
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createConstraints()
-	 */
-	@Override
-	public void createConstraints() {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'createConstraints' has not yet been implemented."); //$NON-NLS-1$
-		
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createIndexes()
-	 */
-	@Override
-	public void createIndexes() {
-		// TODO Auto-generated method stub
-		//
-		throw new RuntimeException("Method 'createIndexes' has not yet been implemented."); //$NON-NLS-1$
-		
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createScheme()
-	 */
-	@Override
-	public void createScheme() {
-		try {
-			synchronized (this.database) {
-				SequelManager.executeSQL(this.database, "handle_create_schema");
-			}
-		} catch (final SQLException | IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 	
 	/**

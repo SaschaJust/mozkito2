@@ -251,13 +251,19 @@ public class TaskRunner implements Runnable {
 		}
 		
 		if (ArrayUtils.contains(this.tasks, Task.INTEGRATION)) {
-			Logger.info("Spawning IntegrationBuilder.");
+			// Logger.info("Spawning IntegrationBuilder.");
+			//
+			// final IntegrationMiner integrationMiner = new IntegrationMiner(this.graph);
+			// integrationMiner.run();
+			// this.graphDumper.saveLater(this.graph);
 			
-			final IntegrationMiner integrationMiner = new IntegrationMiner(this.graph);
-			integrationMiner.run();
-			this.graphDumper.saveLater(this.graph);
+			Logger.info("Spawning ConvergenceMiner.");
 			
+			final ConvergenceMiner convergenceMiner = new ConvergenceMiner(this.graph);
+			convergenceMiner.run();
 		}
+		
+		this.graphDumper.saveLater(this.graph);
 		
 	}
 	

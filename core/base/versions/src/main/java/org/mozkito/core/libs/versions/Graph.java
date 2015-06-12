@@ -13,8 +13,6 @@
 
 package org.mozkito.core.libs.versions;
 
-import graphs.DirectedGraph;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +31,7 @@ import org.apache.commons.collections4.collection.UnmodifiableCollection;
 import org.apache.commons.collections4.iterators.UnmodifiableIterator;
 import org.apache.commons.collections4.list.UnmodifiableList;
 import org.apache.commons.collections4.set.UnmodifiableSet;
+import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DirectedMaskSubgraph;
@@ -54,13 +53,14 @@ import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class DepotGraph represents a multi-layer view on the Git repository. Once built, it does not require the
  * repository to be present The graph can be persisted to a {@link SequelDatabase}.
  *
  * @author Sascha Just
  */
-public class Graph extends DirectedGraph implements ISequelEntity {
+public class Graph implements ISequelEntity {
 	
 	/**
 	 * The Class ChangeSetIterator.
@@ -259,9 +259,9 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 		 *            the branch
 		 * @return the type
 		 */
-		public short getType(final Branch branch) {
+		public EdgeType getType(final Branch branch) {
 			if (this.labels.containsKey(branch.id())) {
-				return (short) this.labels.get(branch.id()).type.ordinal();
+				return this.labels.get(branch.id()).type;
 			} else {
 				throw new IllegalArgumentException("This edge is not part of branch " + branch);
 			}
@@ -337,7 +337,43 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 			if (this.labels.isEmpty()) {
 				throw new IllegalStateException("Edge is not attached to a branch.");
 			}
-			return EdgeType.MERGE.equals(this.labels.values().iterator().next().type);
+			return EdgeType.INWARD.equals(this.labels.values().iterator().next().type);
+		}
+		
+		/**
+		 * Sets the type.
+		 *
+		 * @param branch
+		 *            the branch
+		 * @param type
+		 *            the type
+		 */
+		public void setType(final Branch branch,
+		                    final EdgeType type) {
+			if (this.labels.containsKey(branch.id())) {
+				this.labels.get(branch.id()).type = type;
+			} else {
+				throw new IllegalArgumentException("This edge is not part of branch with id " + branch.id());
+			}
+		}
+		
+		/**
+		 * To string.
+		 *
+		 * @param branch
+		 *            the branch
+		 * @return the string
+		 */
+		public String toString(final Branch branch) {
+			
+			final StringBuilder builder = new StringBuilder();
+			builder.append("Edge [");
+			builder.append(this.labels.get(branch.id()).type.name()).append(" ");
+			builder.append(this.child.getCommitHash());
+			builder.append(" -> ");
+			builder.append(this.parent.getCommitHash());
+			builder.append("]");
+			return builder.toString();
 		}
 		
 	}
@@ -348,11 +384,17 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	public static enum EdgeType {
 		
 		/** The merge. */
-		MERGE,
+		INWARD,
 		/** The branch. */
-		BRANCH,
+		OUTWARD,
 		/** The forward. */
-		FORWARD;
+		FORWARD,
+		
+		/** The merge parent. */
+		MERGE_PARENT,
+		
+		/** The branch parent. */
+		LANE_PARENT;
 	}
 	
 	/**
@@ -480,6 +522,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	/** The branch heads. */
 	private Map<String, Branch>                              branchHeads;
 	
+	/** The convergence. */
 	private final List<ConvergenceEdge>                      convergence = new LinkedList<ConvergenceEdge>();
 	
 	/**
@@ -600,12 +643,241 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	}
 	
 	/**
+	 * Compute integration points.
+	 *
+	 * @param branch
+	 *            the branch
+	 */
+	public void computeConvergence(final Branch branch) {
+		final Instant start = Instant.now();
+		final List<ChangeSet> baseLine = new LinkedList<>();
+		final Set<ChangeSet> blackList = new HashSet<>();
+		
+		// fetch the tier1 graph for that branch (a projection of all vertices and edges in the particular branch
+		// space).
+		final EdgeReversedGraph<ChangeSet, Edge> branchGraph = new EdgeReversedGraph<ChangeSet, Edge>(
+		                                                                                              new DirectedMaskSubgraph<ChangeSet, Edge>(
+		                                                                                                                                        this.graph,
+		                                                                                                                                        new MaskFunctor<ChangeSet, Edge>() {
+			                                                                                                                                        
+			                                                                                                                                        public boolean isEdgeMasked(final Edge edge) {
+				                                                                                                                                        return !edge.inBranch(branch)
+				                                                                                                                                                || blackList.contains(edge.parent);
+			                                                                                                                                        }
+			                                                                                                                                        
+			                                                                                                                                        public boolean isVertexMasked(final ChangeSet vertex) {
+				                                                                                                                                        return !vertex.getBranchIds()
+				                                                                                                                                                      .contains(branch.id())
+				                                                                                                                                                || blackList.contains(vertex);
+			                                                                                                                                        }
+		                                                                                                                                        }));
+		
+		final DirectedGraph<ChangeSet, Edge> baseLineGraph = new EdgeReversedGraph<ChangeSet, Edge>(
+		                                                                                            new DirectedMaskSubgraph<ChangeSet, Edge>(
+		                                                                                                                                      this.graph,
+		                                                                                                                                      new MaskFunctor<ChangeSet, Edge>() {
+			                                                                                                                                      
+			                                                                                                                                      public boolean isEdgeMasked(final Edge edge) {
+				                                                                                                                                      if (EdgeType.MERGE_PARENT.equals(edge.getType(branch))
+				                                                                                                                                              || !edge.inBranch(branch)) {
+					                                                                                                                                      return true;
+				                                                                                                                                      }
+				                                                                                                                                      return false;
+			                                                                                                                                      }
+			                                                                                                                                      
+			                                                                                                                                      public boolean isVertexMasked(final ChangeSet vertex) {
+				                                                                                                                                      return !vertex.getBranchIds()
+				                                                                                                                                                    .contains(branch.id());
+			                                                                                                                                      }
+			                                                                                                                                      
+		                                                                                                                                      }));
+		
+		final ChangeSet head = getHead(branch);
+		
+		final DepthFirstIterator<ChangeSet, Edge> baseLineIterator = new DepthFirstIterator<ChangeSet, Edge>(
+		                                                                                                     baseLineGraph,
+		                                                                                                     head);
+		
+		while (baseLineIterator.hasNext()) {
+			final ChangeSet tmp = baseLineIterator.next();
+			baseLine.add(0, tmp);
+		}
+		
+		DepthFirstIterator<ChangeSet, Edge> revIterator = null;
+		ChangeSet pointer = null;
+		
+		for (final ChangeSet current : baseLine) {
+			Logger.info("Processing " + current.getCommitHash());
+			revIterator = new DepthFirstIterator<ChangeSet, Edge>(branchGraph, current);
+			
+			while (revIterator.hasNext()) {
+				pointer = revIterator.next();
+				this.convergence.add(new ConvergenceEdge(branch.id(), pointer.id(), current.id()));
+				blackList.add(pointer);
+			}
+			
+			blackList.add(current);
+			
+		}
+		Logger.info("Convergence computation duration: " + (Instant.now().getEpochSecond() - start.getEpochSecond())
+		        + "s.");
+	}
+	
+	/**
 	 * Compute integration graph.
 	 *
 	 * @param branch
 	 *            the branch
 	 */
 	public void computeIntegrationGraph(final Branch branch) {
+		final Set<ChangeSet> blackList = new HashSet<ChangeSet>();
+		computeIntegrationGraph(branch,
+		                        null,
+		                        new EdgeReversedGraph<ChangeSet, Edge>(
+		                                                               new DirectedMaskSubgraph<ChangeSet, Edge>(
+		                                                                                                         this.graph,
+		                                                                                                         new MaskFunctor<ChangeSet, Edge>() {
+			                                                                                                         
+			                                                                                                         public boolean isEdgeMasked(final Edge edge) {
+				                                                                                                         return !edge.inBranch(branch);
+			                                                                                                         }
+			                                                                                                         
+			                                                                                                         public boolean isVertexMasked(final ChangeSet vertex) {
+				                                                                                                         return !vertex.getBranchIds()
+				                                                                                                                       .contains(branch.id())
+				                                                                                                                 || blackList.contains(vertex);
+			                                                                                                         }
+		                                                                                                         })),
+		                        blackList, getHead(branch));
+	}
+	
+	/**
+	 * Compute integration graph.
+	 *
+	 * @param branch
+	 *            the branch
+	 * @param convergence
+	 *            the convergence
+	 * @param branchGraph
+	 *            the branch graph
+	 * @param blackList
+	 *            the black list
+	 * @param head
+	 *            the head
+	 */
+	private void computeIntegrationGraph(final Branch branch,
+	                                     final ChangeSet convergence,
+	                                     final EdgeReversedGraph<ChangeSet, Edge> branchGraph,
+	                                     final Set<ChangeSet> blackList,
+	                                     final ChangeSet head) {
+		final List<ChangeSet> baseLine = new LinkedList<>();
+		final EdgeReversedGraph<ChangeSet, Edge> baseLineGraph = new EdgeReversedGraph<ChangeSet, Edge>(
+		                                                                                                new DirectedMaskSubgraph<ChangeSet, Edge>(
+		                                                                                                                                          this.graph,
+		                                                                                                                                          new MaskFunctor<ChangeSet, Edge>() {
+			                                                                                                                                          
+			                                                                                                                                          public boolean isEdgeMasked(final Edge edge) {
+				                                                                                                                                          return !EdgeType.FORWARD.equals(edge.getType(branch))
+				                                                                                                                                                  || !edge.inBranch(branch);
+			                                                                                                                                          }
+			                                                                                                                                          
+			                                                                                                                                          public boolean isVertexMasked(final ChangeSet vertex) {
+				                                                                                                                                          return !vertex.getBranchIds()
+				                                                                                                                                                        .contains(branch.id());
+			                                                                                                                                          }
+			                                                                                                                                          
+		                                                                                                                                          }));
+		
+		final DepthFirstIterator<ChangeSet, Edge> baseLineIterator = new DepthFirstIterator<ChangeSet, Edge>(
+		                                                                                                     baseLineGraph,
+		                                                                                                     head);
+		
+		while (baseLineIterator.hasNext()) {
+			baseLine.add(0, baseLineIterator.next());
+		}
+		
+		ChangeSet previous = convergence;
+		final Set<ChangeSet> tmpBlackList = new HashSet<>();
+		tmpBlackList.addAll(blackList);
+		tmpBlackList.addAll(baseLine);
+		
+		for (final ChangeSet current : baseLine) {
+			if (previous != null) {
+				this.graph.getEdge(previous, current).addIntegration(branch);
+			}
+			
+			tmpBlackList.remove(current);
+			
+			for (final Edge edge : branchGraph.incomingEdgesOf(current).stream()
+			                                  .filter(e -> EdgeType.INWARD.equals(e.getType(branch)))
+			                                  .collect(Collectors.toList())) {
+				computeIntegrationGraph(branch, current, branchGraph, blackList, edge.parent);
+			}
+			
+			tmpBlackList.add(current);
+			blackList.addAll(tmpBlackList);
+			previous = current;
+		}
+	}
+	
+	/**
+	 * Compute integration graph.
+	 *
+	 * @param branch
+	 *            the branch
+	 */
+	public void computeIntegrationGraph2(final Branch branch) {
+		// fetch the tier1 graph for that branch (a projection of all vertices and edges in the particular branch
+		// space).
+		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = tier1Graph(branch);
+		// fetch all roots of this branch to check if we find them all
+		final List<Long> roots = new ArrayList<>(getRoots(branch).getChangeSetIds());
+		// used to store the pointers
+		final Stack<Pointer> pointers = new Stack<>();
+		
+		// create first pointer
+		Pointer pointer = new Pointer(getHead(branch), branchGraph, this);
+		pointers.push(pointer);
+		
+		// process until we run out of pointers
+		WHILE: while (!pointers.isEmpty()) {
+			if (!pointer.merges.isEmpty()) {
+				final Pointer p = new Pointer(pointer.merges.pop(), branchGraph, this);
+				if (checkPath(pointers, pointer, p.head)) {
+					pointers.pop();
+					pointer = pointers.peek();
+				} else {
+					this.graph.getEdge(p.head, pointer.head).addIntegration(branch);;
+					pointer = p;
+					pointers.push(pointer);
+				}
+			} else if (pointer.parent != null) {
+				final Pointer previous = pointers.pop();
+				pointer = new Pointer(pointer.parent, branchGraph, this);
+				pointers.push(pointer);
+				if (checkPath(pointers, pointer, pointer.head)) {
+					pointers.pop();
+					pointer = pointers.peek();
+				} else {
+					this.graph.getEdge(pointer.head, previous.head).addIntegration(branch);
+				}
+			} else {
+				// root
+				roots.remove(pointer.head);
+				pointers.pop();
+			}
+		}
+		
+		// Ensures.empty(roots);
+	}
+	
+	/**
+	 * Compute integration graph.
+	 *
+	 * @param branch
+	 *            the branch
+	 */
+	public void computeIntegrationGraph3(final Branch branch) {
 		final Instant start = Instant.now();
 		final List<ChangeSet> baseLine = new LinkedList<>();
 		final Set<ChangeSet> blackList = new HashSet<>();
@@ -688,130 +960,6 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 			blackList.add(current);
 			tmpBlackList.clear();
 			previous = current;
-		}
-		Logger.info("Integration graph computation duration: "
-		        + (Instant.now().getEpochSecond() - start.getEpochSecond()) + "s.");
-	}
-	
-	/**
-	 * Compute integration graph.
-	 *
-	 * @param branch
-	 *            the branch
-	 */
-	public void computeIntegrationGraph2(final Branch branch) {
-		// fetch the tier1 graph for that branch (a projection of all vertices and edges in the particular branch
-		// space).
-		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = tier1Graph(branch);
-		// fetch all roots of this branch to check if we find them all
-		final List<Long> roots = new ArrayList<>(getRoots(branch).getChangeSetIds());
-		// used to store the pointers
-		final Stack<Pointer> pointers = new Stack<>();
-		
-		// create first pointer
-		Pointer pointer = new Pointer(getHead(branch), branchGraph, this);
-		pointers.push(pointer);
-		
-		// process until we run out of pointers
-		WHILE: while (!pointers.isEmpty()) {
-			if (!pointer.merges.isEmpty()) {
-				final Pointer p = new Pointer(pointer.merges.pop(), branchGraph, this);
-				if (checkPath(pointers, pointer, p.head)) {
-					pointers.pop();
-					pointer = pointers.peek();
-				} else {
-					this.graph.getEdge(p.head, pointer.head).addIntegration(branch);;
-					pointer = p;
-					pointers.push(pointer);
-				}
-			} else if (pointer.parent != null) {
-				final Pointer previous = pointers.pop();
-				pointer = new Pointer(pointer.parent, branchGraph, this);
-				pointers.push(pointer);
-				if (checkPath(pointers, pointer, pointer.head)) {
-					pointers.pop();
-					pointer = pointers.peek();
-				} else {
-					this.graph.getEdge(pointer.head, previous.head).addIntegration(branch);
-				}
-			} else {
-				// root
-				roots.remove(pointer.head);
-				pointers.pop();
-			}
-		}
-		
-		// Ensures.empty(roots);
-	}
-	
-	/**
-	 * Compute integration points.
-	 *
-	 * @param branch
-	 *            the branch
-	 */
-	public void computeIntegrationPoints(final Branch branch) {
-		final Instant start = Instant.now();
-		final List<ChangeSet> baseLine = new LinkedList<>();
-		final Set<ChangeSet> blackList = new HashSet<>();
-		
-		// fetch the tier1 graph for that branch (a projection of all vertices and edges in the particular branch
-		// space).
-		final EdgeReversedGraph<ChangeSet, Edge> branchGraph = new EdgeReversedGraph<ChangeSet, Edge>(
-		                                                                                              new DirectedMaskSubgraph<ChangeSet, Edge>(
-		                                                                                                                                        this.graph,
-		                                                                                                                                        new MaskFunctor<ChangeSet, Edge>() {
-			                                                                                                                                        
-			                                                                                                                                        public boolean isEdgeMasked(final Edge edge) {
-				                                                                                                                                        return !edge.inBranch(branch);
-			                                                                                                                                        }
-			                                                                                                                                        
-			                                                                                                                                        public boolean isVertexMasked(final ChangeSet vertex) {
-				                                                                                                                                        return !vertex.getBranchIds()
-				                                                                                                                                                      .contains(branch.id())
-				                                                                                                                                                || blackList.contains(vertex);
-			                                                                                                                                        }
-		                                                                                                                                        }));
-		
-		final EdgeReversedGraph<ChangeSet, Edge> baseLineGraph = new EdgeReversedGraph<ChangeSet, Edge>(
-		                                                                                                new DirectedMaskSubgraph<ChangeSet, Edge>(
-		                                                                                                                                          this.graph,
-		                                                                                                                                          new MaskFunctor<ChangeSet, Edge>() {
-			                                                                                                                                          
-			                                                                                                                                          public boolean isEdgeMasked(final Edge edge) {
-				                                                                                                                                          return !EdgeType.FORWARD.equals(edge.getType(branch))
-				                                                                                                                                                  || !edge.inBranch(branch);
-			                                                                                                                                          }
-			                                                                                                                                          
-			                                                                                                                                          public boolean isVertexMasked(final ChangeSet vertex) {
-				                                                                                                                                          return !vertex.getBranchIds()
-				                                                                                                                                                        .contains(branch.id());
-			                                                                                                                                          }
-			                                                                                                                                          
-		                                                                                                                                          }));
-		
-		final ChangeSet head = getHead(branch);
-		
-		final DepthFirstIterator<ChangeSet, Edge> baseLineIterator = new DepthFirstIterator<ChangeSet, Edge>(
-		                                                                                                     baseLineGraph,
-		                                                                                                     head);
-		
-		while (baseLineIterator.hasNext()) {
-			baseLine.add(0, baseLineIterator.next());
-		}
-		
-		DepthFirstIterator<ChangeSet, Edge> revIterator = null;
-		ChangeSet pointer = null;
-		
-		for (final ChangeSet current : baseLine) {
-			revIterator = new DepthFirstIterator<ChangeSet, Edge>(branchGraph, current);
-			while (revIterator.hasNext()) {
-				pointer = revIterator.next();
-				this.convergence.add(new ConvergenceEdge(branch.id(), pointer.id(), current.id()));
-				
-				blackList.add(pointer);
-			}
-			blackList.add(current);
 		}
 		Logger.info("Integration graph computation duration: "
 		        + (Instant.now().getEpochSecond() - start.getEpochSecond()) + "s.");
@@ -1064,7 +1212,7 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 	 */
 	public List<ChangeSet> getSpinOffs(final ChangeSet changeSet,
 	                                   final Branch branch) {
-		return this.graph.outgoingEdgesOf(changeSet).stream().filter(x -> EdgeType.BRANCH.equals(x.getType(branch)))
+		return this.graph.outgoingEdgesOf(changeSet).stream().filter(x -> EdgeType.OUTWARD.equals(x.getType(branch)))
 		                 .map(x -> x.parent).collect(Collectors.toList());
 	}
 	
@@ -1183,6 +1331,35 @@ public class Graph extends DirectedGraph implements ISequelEntity {
 				return !arg0.getBranchIds().contains(branch.id());
 			}
 		});
+	}
+	
+	/**
+	 * Update branch edges.
+	 *
+	 * @param branch
+	 *            the branch
+	 */
+	public void updateBranchEdges(final Branch branch) {
+		// final EdgeReversedGraph<ChangeSet, Edge> branchGraph = new EdgeReversedGraph<ChangeSet, Edge>(
+		// new DirectedMaskSubgraph<ChangeSet, Edge>(
+		// this.graph,
+		// new MaskFunctor<ChangeSet, Edge>() {
+		//
+		// public boolean isEdgeMasked(final Edge edge) {
+		// return !edge.inBranch(branch);
+		// }
+		//
+		// public boolean isVertexMasked(final ChangeSet vertex) {
+		// return !vertex.getBranchIds()
+		// .contains(branch.id());
+		// }
+		// }));
+		// final ChangeSet head = getHead(branch);
+		
+		// traverse backwards along LANE parents till root and paint FORWARD.
+		// slice the trace
+		// start at root
+		
 	}
 	
 }

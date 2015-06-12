@@ -44,7 +44,6 @@ public class IntegrationMiner implements Runnable {
 		for (final Branch branch : this.graph.getBranches()) {
 			Logger.info("Processing branch '%s'.", branch.getName());
 			this.graph.computeIntegrationGraph(branch);
-			this.graph.computeIntegrationPoints(branch);
 		}
 	}
 	
