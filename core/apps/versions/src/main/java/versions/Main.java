@@ -43,6 +43,7 @@ import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.adapters.BranchAdapter;
 import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
+import org.mozkito.core.libs.versions.adapters.ChangeSetIntegrationAdapter;
 import org.mozkito.core.libs.versions.adapters.DepotAdapter;
 import org.mozkito.core.libs.versions.adapters.GraphAdapter;
 import org.mozkito.core.libs.versions.adapters.HandleAdapter;
@@ -51,6 +52,7 @@ import org.mozkito.core.libs.versions.adapters.RenamingAdapter;
 import org.mozkito.core.libs.versions.adapters.RevisionAdapter;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Identity;
@@ -294,6 +296,7 @@ public class Main {
 			database.register(Branch.class, new BranchAdapter(database));
 			database.register(Handle.class, new HandleAdapter(database));
 			database.register(Renaming.class, new RenamingAdapter(database));
+			database.register(ChangeSetIntegration.class, new ChangeSetIntegrationAdapter(database));
 			database.createScheme();
 			
 			final DatabaseDumper<Identity> identityDumper = new DatabaseDumper<>(database.getAdapter(Identity.class));
@@ -304,6 +307,8 @@ public class Main {
 			final DatabaseDumper<Graph> graphDumper = new DatabaseDumper<>(database.getAdapter(Graph.class));
 			final DatabaseDumper<Depot> depotDumper = new DatabaseDumper<>(database.getAdapter(Depot.class));
 			final DatabaseDumper<Renaming> renamingDumper = new DatabaseDumper<>(database.getAdapter(Renaming.class));
+			final DatabaseDumper<ChangeSetIntegration> integrationDumper = new DatabaseDumper<>(
+			                                                                                    database.getAdapter(ChangeSetIntegration.class));
 			
 			identityDumper.start();
 			changeSetDumper.start();
@@ -313,6 +318,7 @@ public class Main {
 			graphDumper.start();
 			depotDumper.start();
 			renamingDumper.start();
+			integrationDumper.start();
 			
 			final IdentityCache identityCache = new IdentityCache();
 			
@@ -326,7 +332,7 @@ public class Main {
 				final TaskRunner runner = new TaskRunner(baseDir, workDir, depotURI, tasks.toArray(new Task[0]),
 				                                         identityCache, identityDumper, changeSetDumper,
 				                                         revisionDumper, branchDumper, handleDumper, graphDumper,
-				                                         depotDumper, renamingDumper);
+				                                         depotDumper, renamingDumper, integrationDumper);
 				es.execute(runner);
 			}
 			
@@ -344,6 +350,7 @@ public class Main {
 			graphDumper.terminate();
 			depotDumper.terminate();
 			renamingDumper.terminate();
+			integrationDumper.terminate();
 			
 			identityDumper.join();
 			changeSetDumper.join();
@@ -353,6 +360,7 @@ public class Main {
 			graphDumper.join();
 			depotDumper.join();
 			renamingDumper.join();
+			integrationDumper.join();
 			
 			System.out.println("Creating indexes.");
 			database.createIndexes();

@@ -26,6 +26,7 @@ import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Identity;
@@ -73,52 +74,54 @@ public class TaskRunner implements Runnable {
 	}
 	
 	/** The work dir. */
-	private final File                      workDir;
+	private final File                                 workDir;
 	
 	/** The clone dir. */
-	private final File                      cloneDir;
+	private final File                                 cloneDir;
 	
 	/** The graph. */
-	private final Graph                     graph;
+	private final Graph                                graph;
 	
 	/** The uri. */
-	private final URI                       uri;
+	private final URI                                  uri;
 	
 	/** The tasks. */
-	private final Task[]                    tasks;
+	private final Task[]                               tasks;
 	
 	/** The depot. */
-	private final Depot                     depot;
+	private final Depot                                depot;
 	
 	/** The clone name. */
-	private final String                    cloneName;
+	private final String                               cloneName;
 	
 	/** The change set dumper. */
-	private final DatabaseDumper<ChangeSet> changeSetDumper;
+	private final DatabaseDumper<ChangeSet>            changeSetDumper;
 	
 	/** The identity dumper. */
-	private final DatabaseDumper<Identity>  identityDumper;
+	private final DatabaseDumper<Identity>             identityDumper;
 	
 	/** The revision dumper. */
-	private final DatabaseDumper<Revision>  revisionDumper;
+	private final DatabaseDumper<Revision>             revisionDumper;
 	
 	/** The branch dumper. */
-	private final DatabaseDumper<Branch>    branchDumper;
+	private final DatabaseDumper<Branch>               branchDumper;
 	
 	/** The handle dumper. */
-	private final DatabaseDumper<Handle>    handleDumper;
+	private final DatabaseDumper<Handle>               handleDumper;
 	
 	/** The graph dumper. */
-	private final DatabaseDumper<Graph>     graphDumper;
+	private final DatabaseDumper<Graph>                graphDumper;
 	
 	/** The depot dumper. */
-	private final DatabaseDumper<Depot>     depotDumper;
+	private final DatabaseDumper<Depot>                depotDumper;
 	
-	private final DatabaseDumper<Renaming>  renamingDumper;
+	private final DatabaseDumper<Renaming>             renamingDumper;
 	
-	private final IdentityCache             identityCache;
+	private final IdentityCache                        identityCache;
 	
-	private final FileCache                 fileCache;
+	private final FileCache                            fileCache;
+	
+	private final DatabaseDumper<ChangeSetIntegration> integrationDumper;
 	
 	/**
 	 * Instantiates a new task runner.
@@ -149,13 +152,15 @@ public class TaskRunner implements Runnable {
 	 *            the depot dumper
 	 * @param renamingDumper
 	 *            the renaming dumper
+	 * @param integrationDumper
+	 *            the integration dumper
 	 */
 	public TaskRunner(final File baseDir, final File workDir, final URI depotURI, final Task[] tasks,
 	        final IdentityCache identityCache, final DatabaseDumper<Identity> identityDumper,
 	        final DatabaseDumper<ChangeSet> changeSetDumper, final DatabaseDumper<Revision> revisionDumper,
 	        final DatabaseDumper<Branch> branchDumper, final DatabaseDumper<Handle> handleDumper,
 	        final DatabaseDumper<Graph> graphDumper, final DatabaseDumper<Depot> depotDumper,
-	        final DatabaseDumper<Renaming> renamingDumper) {
+	        final DatabaseDumper<Renaming> renamingDumper, final DatabaseDumper<ChangeSetIntegration> integrationDumper) {
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
 		this.identityDumper = identityDumper;
@@ -166,6 +171,8 @@ public class TaskRunner implements Runnable {
 		this.graphDumper = graphDumper;
 		this.depotDumper = depotDumper;
 		this.renamingDumper = renamingDumper;
+		this.integrationDumper = integrationDumper;
+		
 		this.identityCache = identityCache;
 		
 		this.workDir = workDir;
@@ -251,11 +258,10 @@ public class TaskRunner implements Runnable {
 		}
 		
 		if (ArrayUtils.contains(this.tasks, Task.INTEGRATION)) {
-			// Logger.info("Spawning IntegrationBuilder.");
-			//
-			// final IntegrationMiner integrationMiner = new IntegrationMiner(this.graph);
-			// integrationMiner.run();
-			// this.graphDumper.saveLater(this.graph);
+			Logger.info("Spawning IntegrationMiner.");
+			final IntegrationMiner integrationMiner = new IntegrationMiner(this.cloneDir, changeSets,
+			                                                               this.integrationDumper);
+			integrationMiner.run();
 			
 			Logger.info("Spawning ConvergenceMiner.");
 			

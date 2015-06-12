@@ -13,26 +13,47 @@
 
 package org.mozkito.core.apps.versions;
 
-import org.mozkito.core.libs.versions.Graph;
-import org.mozkito.core.libs.versions.model.Branch;
-import org.mozkito.libraries.logging.Logger;
+import java.io.File;
+import java.util.Map;
+
+import org.mozkito.core.libs.versions.IntegrationType;
+import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
+import org.mozkito.skeleton.contracts.Asserts;
+import org.mozkito.skeleton.exec.Command;
+import org.mozkito.skeleton.sequel.DatabaseDumper;
 
 /**
- * @author Sascha Just
+ * The Class IntegrationMiner.
  *
+ * @author Sascha Just
  */
 public class IntegrationMiner implements Runnable {
 	
-	private final Graph graph;
+	/** The clone dir. */
+	private final File                                 cloneDir;
+	
+	/** The change sets. */
+	private final Map<String, ChangeSet>               changeSets;
+	
+	/** The integration type dumper. */
+	private final DatabaseDumper<ChangeSetIntegration> integrationTypeDumper;
 	
 	/**
 	 * Instantiates a new integration miner.
 	 *
-	 * @param graph
-	 *            the graph
+	 * @param cloneDir
+	 *            the clone dir
+	 * @param changeSets
+	 *            the change sets
+	 * @param integrationTypeDumper
+	 *            the integration type dumper
 	 */
-	public IntegrationMiner(final Graph graph) {
-		this.graph = graph;
+	public IntegrationMiner(final File cloneDir, final Map<String, ChangeSet> changeSets,
+	        final DatabaseDumper<ChangeSetIntegration> integrationTypeDumper) {
+		this.cloneDir = cloneDir;
+		this.changeSets = changeSets;
+		this.integrationTypeDumper = integrationTypeDumper;
 	}
 	
 	/**
@@ -41,9 +62,30 @@ public class IntegrationMiner implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		for (final Branch branch : this.graph.getBranches()) {
-			Logger.info("Processing branch '%s'.", branch.getName());
-			this.graph.computeIntegrationGraph(branch);
+		final Command command = Command.execute("git", new String[] { "log", "--no-abbrev", "--format=%H %P",
+		        "--branches", "--remotes" }, this.cloneDir);
+		
+		ChangeSet current;
+		ChangeSetIntegration csi;
+		
+		String line;
+		while ((line = command.nextOutput()) != null) {
+			final String[] split = line.trim().split("\\s+");
+			current = this.changeSets.get(split[0]);
+			if (split.length == 1) {
+				// found root
+				csi = new ChangeSetIntegration(current, IntegrationType.EDIT);
+				this.integrationTypeDumper.saveLater(csi);
+			} else {
+				Asserts.greater(split.length, 1, "There has to be a parent at this point.");
+				
+				if (split.length > 2) {
+					csi = new ChangeSetIntegration(current, IntegrationType.MERGE);
+				} else {
+					csi = new ChangeSetIntegration(current, IntegrationType.EDIT);
+				}
+				this.integrationTypeDumper.saveLater(csi);
+			}
 		}
 	}
 	
