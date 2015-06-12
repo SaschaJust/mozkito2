@@ -1,4 +1,7 @@
-CREATE INDEX idx_branch_edges_depot_id ON branches USING btree (depot_id);
-CREATE INDEX idx_branch_edges_name ON branches USING btree (name);
-CREATE INDEX idx_branch_edges_type ON branches USING btree (type);
-CREATE INDEX idx_branch_edges_depot_id_type ON branches USING btree (depot_id, type);
+CREATE INDEX idx_branch_edges_edge_id ON branch_edges (edge_id);
+CREATE INDEX idx_branch_edges_branch_id ON branch_edges (branch_id);
+CREATE INDEX idx_branch_edges_type ON branch_edges (type);
+CREATE INDEX idx_branch_edges_edge_id_type ON branch_edges (edge_id, type);
+CREATE INDEX idx_branch_edges_branch_id_type ON branch_edges (branch_id, type);
+CREATE INDEX idx_branch_edges_branch_id_edge_id ON branch_edges (branch_id, edge_id);
+CREATE INDEX idx_branch_edges_branch_id_edge_id_type ON branch_edges (branch_id, edge_id, type);

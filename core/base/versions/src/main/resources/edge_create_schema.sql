@@ -4,6 +4,5 @@ CREATE TABLE edges (
 	id BIGINT PRIMARY KEY,
 	depot_id BIGINT,
 	source_id BIGINT,
-	target_id BIGINT,
-	type SMALLINT
+	target_id BIGINT
 );

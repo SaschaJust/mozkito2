@@ -2,6 +2,5 @@ INSERT INTO edges (
 	id,
 	depot_id,
 	source_id,
-	target_id,
-	type
-) VALUES (?, ?, ?, ?, ?)
+	target_id
+) VALUES (?, ?, ?, ?)

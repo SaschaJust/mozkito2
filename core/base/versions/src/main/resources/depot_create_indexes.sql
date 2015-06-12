@@ -1,2 +1,2 @@
-CREATE INDEX idx_depots_name ON depots USING btree (name);
-CREATE INDEX idx_depots_origin ON depots USING btree (origin);
+CREATE INDEX idx_depots_name ON depots (name);
+CREATE INDEX idx_depots_origin ON depots (origin);
