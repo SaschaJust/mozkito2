@@ -53,7 +53,6 @@ public class Edge {
 	 * @param branch
 	 *            the branch
 	 * @param graph
-	 *            TODO
 	 */
 	public Edge(final Graph graph, final ChangeSet parent, final ChangeSet child, final BranchMarker type,
 	        final Branch branch) {
@@ -63,7 +62,7 @@ public class Edge {
 		this.labels = new HashMap<Long, Label>();
 		final Label label = new Label(branch, type);
 		label.branchMarker = type;
-		label.nagivationMarker = null;
+		label.navigationMarker = null;
 		label.integrationMarker = IntegrationMarker.DIVERGE;
 		this.labels.put(branch.id(), label);
 	}
@@ -83,7 +82,7 @@ public class Edge {
 		if (!this.labels.containsKey(branch.id())) {
 			final Label label = new Label(branch, marker);
 			label.branchMarker = marker;
-			label.nagivationMarker = null;
+			label.navigationMarker = null;
 			label.integrationMarker = IntegrationMarker.DIVERGE;
 			this.labels.put(branch.id(), label);
 			return true;
@@ -125,7 +124,7 @@ public class Edge {
 			throw new IllegalArgumentException("This edge is not part of branch " + branch);
 		}
 		
-		this.labels.get(branch.id()).nagivationMarker = marker;
+		this.labels.get(branch.id()).navigationMarker = marker;
 	}
 	
 	/**
@@ -213,7 +212,7 @@ public class Edge {
 	 */
 	public NavigationMarker getNavigationMarker(final Branch branch) {
 		if (this.labels.containsKey(branch.id())) {
-			return this.labels.get(branch.id()).nagivationMarker;
+			return this.labels.get(branch.id()).navigationMarker;
 		} else {
 			throw new IllegalArgumentException("This edge is not part of branch with id " + branch.id());
 		}
@@ -228,7 +227,7 @@ public class Edge {
 	 */
 	public NavigationMarker getNavigationMarker(final long branchId) {
 		if (this.labels.containsKey(branchId)) {
-			return this.labels.get(branchId).nagivationMarker;
+			return this.labels.get(branchId).navigationMarker;
 		} else {
 			throw new IllegalArgumentException("This edge is not part of branch with id " + branchId);
 		}
@@ -348,7 +347,7 @@ public class Edge {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("Edge [");
 		builder.append(this.labels.get(branch.id()).branchMarker.name()).append(" ");
-		builder.append(this.labels.get(branch.id()).nagivationMarker.name()).append(" ");
+		builder.append(this.labels.get(branch.id()).navigationMarker.name()).append(" ");
 		builder.append(this.labels.get(branch.id()).integrationMarker.name()).append(" ");
 		builder.append(this.child.getCommitHash());
 		builder.append(" -> ");

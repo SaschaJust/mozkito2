@@ -191,7 +191,7 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 				for (final Entry<Long, Label> entry : edge.getLabels().entrySet()) {
 					label = entry.getValue();
 					++batchCounter;
-					bEdge = new BranchEdge(gEdge.id(), entry.getKey(), label.branchMarker, label.nagivationMarker,
+					bEdge = new BranchEdge(gEdge.id(), entry.getKey(), label.branchMarker, label.navigationMarker,
 					                       label.integrationMarker);
 					this.branchAdapter.save(branchStmt, branchNextIdStmt, bEdge);
 					if (batchCounter >= batchSize) {

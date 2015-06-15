@@ -25,7 +25,11 @@ public class Label {
 	
 	/** The type. */
 	public BranchMarker      branchMarker;
-	public NavigationMarker  nagivationMarker;
+	
+	/** The nagivation marker. */
+	public NavigationMarker  navigationMarker;
+	
+	/** The integration marker. */
 	public IntegrationMarker integrationMarker;
 	
 	/**
@@ -39,6 +43,8 @@ public class Label {
 	public Label(final Branch branch, final BranchMarker branchMarker) {
 		this.branch = branch;
 		this.branchMarker = branchMarker;
+		this.navigationMarker = null;
+		this.integrationMarker = IntegrationMarker.DIVERGE;
 	}
 	
 }
