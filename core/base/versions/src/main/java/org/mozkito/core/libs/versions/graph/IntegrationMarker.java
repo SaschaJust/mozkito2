@@ -11,39 +11,17 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.apps.versions;
-
-import org.mozkito.core.libs.versions.graph.Graph;
-import org.mozkito.core.libs.versions.model.Branch;
-import org.mozkito.libraries.logging.Logger;
+package org.mozkito.core.libs.versions.graph;
 
 /**
- * @author Sascha Just
- *
+ * The Enum EdgeType.
  */
-public class ConvergenceMiner implements Runnable {
+public enum IntegrationMarker {
 	
-	private final Graph graph;
+	/** The integrate. */
+	INTEGRATE,
 	
-	/**
-	 * Instantiates a new integration miner.
-	 *
-	 * @param graph
-	 *            the graph
-	 */
-	public ConvergenceMiner(final Graph graph) {
-		this.graph = graph;
-	}
+	/** The diverge. */
+	DIVERGE;
 	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see java.lang.Runnable#run()
-	 */
-	public void run() {
-		for (final Branch branch : this.graph.getBranches()) {
-			Logger.info("Processing branch '%s'.", branch.getName());
-			this.graph.computeConvergence(branch);
-		}
-	}
 }

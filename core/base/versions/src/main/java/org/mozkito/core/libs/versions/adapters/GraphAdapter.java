@@ -19,14 +19,15 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
-import org.mozkito.core.libs.versions.Graph;
-import org.mozkito.core.libs.versions.Graph.Edge;
+import org.mozkito.core.libs.versions.graph.Edge;
+import org.mozkito.core.libs.versions.graph.Graph;
+import org.mozkito.core.libs.versions.graph.Label;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.ConvergenceEdge;
 import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.core.libs.versions.model.Head;
-import org.mozkito.core.libs.versions.model.IntegrationEdge;
 import org.mozkito.core.libs.versions.model.Roots;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
@@ -45,9 +46,6 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	
 	/** The branch adapter. */
 	private final ISequelAdapter<BranchEdge>      branchAdapter;
-	
-	/** The integration adapter. */
-	private final ISequelAdapter<IntegrationEdge> integrationAdapter;
 	
 	/** The end point adapter. */
 	private final ISequelAdapter<Head>            headAdapter;
@@ -72,9 +70,6 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 		
 		database.register(BranchEdge.class, new BranchEdgeAdapter(database));
 		this.branchAdapter = database.getAdapter(BranchEdge.class);
-		
-		database.register(IntegrationEdge.class, new IntegrationEdgeAdapter(database));
-		this.integrationAdapter = database.getAdapter(IntegrationEdge.class);
 		
 		database.register(ConvergenceEdge.class, new ConvergenceEdgeAdapter(database));
 		this.convergenceAdapter = database.getAdapter(ConvergenceEdge.class);
@@ -166,8 +161,6 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 			final PreparedStatement edgeNextIdStmt = this.edgeAdapter.prepareNextIdStatement();
 			final PreparedStatement branchStmt = this.branchAdapter.prepareSaveStatement();
 			final PreparedStatement branchNextIdStmt = this.branchAdapter.prepareNextIdStatement();
-			final PreparedStatement integrationStmt = this.integrationAdapter.prepareSaveStatement();
-			final PreparedStatement integrationNextIdStmt = this.integrationAdapter.prepareNextIdStatement();
 			final PreparedStatement headStmt = this.headAdapter.prepareSaveStatement();
 			final PreparedStatement headNextIdStmt = this.headAdapter.prepareNextIdStatement();
 			final PreparedStatement rootsStmt = this.rootsAdapter.prepareSaveStatement();
@@ -185,31 +178,22 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 			
 			GraphEdge gEdge;
 			BranchEdge bEdge;
-			IntegrationEdge iEdge;
 			
 			final Collection<Edge> edges = entity.getEdges();
 			int batchCounter = 0;
 			final int batchSize = 10000;
-			
+			Label label;
 			for (final Edge edge : edges) {
 				++batchCounter;
 				gEdge = new GraphEdge(entity.getDepot().id(), edge.getSourceId(), edge.getTargetId());
 				this.edgeAdapter.save(edgeStmt, edgeNextIdStmt, gEdge);
 				
-				for (final long branchId : edge.getBranchIds()) {
+				for (final Entry<Long, Label> entry : edge.getLabels().entrySet()) {
+					label = entry.getValue();
 					++batchCounter;
-					bEdge = new BranchEdge(gEdge.id(), branchId, edge.getType(branchId));
+					bEdge = new BranchEdge(gEdge.id(), entry.getKey(), label.branchMarker, label.nagivationMarker,
+					                       label.integrationMarker);
 					this.branchAdapter.save(branchStmt, branchNextIdStmt, bEdge);
-					if (batchCounter >= batchSize) {
-						this.database.commit();
-						batchCounter = 0;
-					}
-				}
-				
-				for (final long branchId : edge.getIntegrationPathIds()) {
-					++batchCounter;
-					iEdge = new IntegrationEdge(gEdge.id(), branchId);
-					this.integrationAdapter.save(integrationStmt, integrationNextIdStmt, iEdge);
 					if (batchCounter >= batchSize) {
 						this.database.commit();
 						batchCounter = 0;

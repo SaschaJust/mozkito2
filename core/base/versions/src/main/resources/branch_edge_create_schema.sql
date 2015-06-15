@@ -4,5 +4,7 @@ CREATE TABLE branch_edges (
 	id BIGINT PRIMARY KEY,
 	edge_id BIGINT,
 	branch_id BIGINT,
-	type SMALLINT
+	branch_type SMALLINT,
+	navigation_type SMALLINT,
+	integration_type SMALLINT
 );

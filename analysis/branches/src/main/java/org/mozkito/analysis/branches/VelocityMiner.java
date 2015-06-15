@@ -16,9 +16,9 @@ package org.mozkito.analysis.branches;
 import java.sql.SQLException;
 import java.util.Iterator;
 
-import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.adapters.BranchAdapter;
 import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
+import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.skeleton.sequel.SequelDatabase;

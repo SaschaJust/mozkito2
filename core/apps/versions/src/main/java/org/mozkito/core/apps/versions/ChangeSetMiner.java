@@ -24,9 +24,9 @@ import org.apache.commons.collections4.map.UnmodifiableMap;
 
 import org.mozkito.core.libs.versions.ChangeType;
 import org.mozkito.core.libs.versions.FileCache;
-import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.builders.ChangeSetBuilder;
+import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
@@ -321,8 +321,8 @@ public class ChangeSetMiner implements Runnable {
 		
 		Command.execute("git", new String[] { "config", "diff.renameLimit", "999999" }, this.cloneDir).waitFor();
 		
-		final Command command = Command.execute("git", new String[] { "log", "--branches", "--remotes", "--topo-order",
-		        "--find-copies", "--raw", "--numstat", "--no-abbrev", "--reverse",
+		final Command command = Command.execute("git", new String[] { "log", "--branches", "--remotes", "--tags",
+		        "--topo-order", "--find-copies", "--raw", "--numstat", "--no-abbrev", "--reverse",
 		        "--format=" + START_TAG + "%n%H%n%T%n%an%n%ae%n%at%n%cn%n%ce%n%ct%n%s%n%b%n" + END_TAG }, this.cloneDir);
 		
 		ChangeSetBuilder changeSetBuilder = null;

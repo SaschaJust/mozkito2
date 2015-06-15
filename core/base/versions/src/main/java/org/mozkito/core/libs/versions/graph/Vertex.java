@@ -11,39 +11,30 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.apps.versions;
+package org.mozkito.core.libs.versions.graph;
 
-import org.mozkito.core.libs.versions.graph.Graph;
-import org.mozkito.core.libs.versions.model.Branch;
-import org.mozkito.libraries.logging.Logger;
+import org.mozkito.core.libs.versions.IntegrationType;
+import org.mozkito.core.libs.versions.model.ChangeSet;
 
 /**
  * @author Sascha Just
  *
  */
-public class ConvergenceMiner implements Runnable {
+public class Vertex {
 	
-	private final Graph graph;
+	long            id;
+	String          hash;
+	IntegrationType type;
 	
 	/**
-	 * Instantiates a new integration miner.
+	 * Instantiates a new vertex.
 	 *
-	 * @param graph
-	 *            the graph
+	 * @param changeSet
+	 *            the change set
 	 */
-	public ConvergenceMiner(final Graph graph) {
-		this.graph = graph;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see java.lang.Runnable#run()
-	 */
-	public void run() {
-		for (final Branch branch : this.graph.getBranches()) {
-			Logger.info("Processing branch '%s'.", branch.getName());
-			this.graph.computeConvergence(branch);
-		}
+	public Vertex(final ChangeSet changeSet) {
+		this.id = changeSet.id();
+		this.hash = changeSet.getCommitHash();
+		
 	}
 }

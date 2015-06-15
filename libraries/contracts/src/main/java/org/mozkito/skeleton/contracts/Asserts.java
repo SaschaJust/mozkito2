@@ -217,6 +217,21 @@ public class Asserts {
 	}
 	
 	/**
+	 * Not equal to.
+	 *
+	 * @param lhs
+	 *            the lhs
+	 * @param rhs
+	 *            the rhs
+	 */
+	public static void notEqualTo(final Object lhs,
+	                              final Object rhs) {
+		assert lhs == null || !lhs.equals(rhs) : Messages.get("skeleton.contracts.asserts.notEqualTo",
+		                                                      Contract.getCallerString(), "");
+		
+	}
+	
+	/**
 	 * Not negative.
 	 *
 	 * @param arg

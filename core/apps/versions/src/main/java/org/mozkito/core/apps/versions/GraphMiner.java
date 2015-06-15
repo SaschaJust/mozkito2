@@ -16,8 +16,8 @@ package org.mozkito.core.apps.versions;
 import java.io.File;
 import java.util.Map;
 
-import org.mozkito.core.libs.versions.Graph;
-import org.mozkito.core.libs.versions.Graph.EdgeType;
+import org.mozkito.core.libs.versions.graph.BranchMarker;
+import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.skeleton.contracts.Asserts;
@@ -87,16 +87,18 @@ public class GraphMiner implements Runnable {
 					                    split[1]);
 					
 					this.graph.addEdge(this.changeSets.get(split[1]), this.changeSets.get(split[0]),
-					                   EdgeType.LANE_PARENT, branch);
+					                   BranchMarker.BRANCH_PARENT, branch);
 					
 					for (int i = 2; i < split.length; ++i) {
 						this.graph.addEdge(this.changeSets.get(split[i]), this.changeSets.get(split[0]),
-						                   EdgeType.MERGE_PARENT, branch);
+						                   BranchMarker.MERGE_PARENT, branch);
 					}
 				}
 			}
 			
-			this.graph.updateBranchEdges(branch);
+			this.graph.computeNavigationGraph(branch);
+			this.graph.computeIntegrationGraph(branch);
 		}
+		
 	}
 }

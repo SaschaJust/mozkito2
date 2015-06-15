@@ -15,6 +15,7 @@ package org.mozkito.core.libs.versions.model;
 
 import java.time.Instant;
 
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
@@ -25,25 +26,80 @@ import org.mozkito.skeleton.sequel.ISequelEntity;
 public class Tag implements ISequelEntity {
 	
 	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 4737963776452999836L;
 	
 	/** The id. */
-	private int               id;
+	private long              id;
 	
 	/** The commit hash. */
-	private long              commitId;
+	private final long        changesetId;
 	
 	/** The name. */
-	private String            name;
+	private final String      name;
 	
-	/** The tagger id. */
-	private int               taggerId;
+	/** The hash. */
+	private final String      hash;
 	
-	/** The tag time. */
-	private Instant           tagTime;
+	/** The identity id. */
+	private final Long        identityId;
+	
+	/** The timestamp. */
+	private final Instant     timestamp;
 	
 	/** The message. */
-	private String            description;
+	private final String      message;
+	
+	private final long        depotId;
+	
+	/**
+	 * Instantiates a new tag.
+	 * 
+	 * @param depot
+	 *
+	 * @param changeSet
+	 *            the change set
+	 * @param name
+	 *            the name
+	 */
+	public Tag(final Depot depot, final ChangeSet changeSet, final String name) {
+		this(depot, changeSet, name, null, null, null, null);
+	}
+	
+	/**
+	 * Instantiates a new tag.
+	 * 
+	 * @param depot
+	 *
+	 * @param changeSet
+	 *            the change set
+	 * @param name
+	 *            the name
+	 * @param hash
+	 *            the hash
+	 * @param message
+	 *            the message
+	 * @param identity
+	 *            the identity
+	 * @param timestamp
+	 *            the timestamp
+	 */
+	public Tag(final Depot depot, final ChangeSet changeSet, final String name, final String hash,
+	        final String message, final Identity identity, final Instant timestamp) {
+		super();
+		this.depotId = depot.id();
+		if (changeSet == null) {
+			Logger.error("name: " + name);
+			Logger.error("name: " + hash);
+		}
+		this.changesetId = changeSet.id();
+		this.name = name;
+		this.hash = hash;
+		this.message = message;
+		this.identityId = identity != null
+		                                  ? identity.id()
+		                                  : null;
+		this.timestamp = timestamp;
+	}
 	
 	/**
 	 * {@inheritDoc}
@@ -62,14 +118,7 @@ public class Tag implements ISequelEntity {
 			return false;
 		}
 		final Tag other = (Tag) obj;
-		if (this.commitId != other.commitId) {
-			return false;
-		}
-		if (this.description == null) {
-			if (other.description != null) {
-				return false;
-			}
-		} else if (!this.description.equals(other.description)) {
+		if (this.depotId != other.depotId) {
 			return false;
 		}
 		if (this.name == null) {
@@ -79,27 +128,55 @@ public class Tag implements ISequelEntity {
 		} else if (!this.name.equals(other.name)) {
 			return false;
 		}
-		if (this.tagTime == null) {
-			if (other.tagTime != null) {
-				return false;
-			}
-		} else if (!this.tagTime.equals(other.tagTime)) {
-			return false;
-		}
-		if (this.taggerId != other.taggerId) {
-			return false;
-		}
 		return true;
 	}
 	
 	/**
-	 * @return the description
+	 * Gets the changeset id.
+	 *
+	 * @return the changesetId
 	 */
-	public final String getDescription() {
-		return this.description;
+	public final long getChangesetId() {
+		return this.changesetId;
 	}
 	
 	/**
+	 * Gets the depot id.
+	 *
+	 * @return the depotId
+	 */
+	public final long getDepotId() {
+		return this.depotId;
+	}
+	
+	/**
+	 * Gets the hash.
+	 *
+	 * @return the hash
+	 */
+	public final String getHash() {
+		return this.hash;
+	}
+	
+	/**
+	 * Gets the identity id.
+	 *
+	 * @return the identityId
+	 */
+	public final long getIdentityId() {
+		return this.identityId;
+	}
+	
+	/**
+	 * @return the message
+	 */
+	public final String getMessage() {
+		return this.message;
+	}
+	
+	/**
+	 * Gets the name.
+	 *
 	 * @return the name
 	 */
 	public final String getName() {
@@ -107,21 +184,12 @@ public class Tag implements ISequelEntity {
 	}
 	
 	/**
-	 * Gets the tagger id.
+	 * Gets the timestamp.
 	 *
-	 * @return the taggerId
+	 * @return the timestamp
 	 */
-	public final int getTaggerId() {
-		return this.taggerId;
-	}
-	
-	/**
-	 * Gets the tag time.
-	 *
-	 * @return the tagTime
-	 */
-	public final Instant getTagTime() {
-		return this.tagTime;
+	public final Instant getTimestamp() {
+		return this.timestamp;
 	}
 	
 	/**
@@ -133,17 +201,10 @@ public class Tag implements ISequelEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (this.commitId ^ this.commitId >>> 32);
-		result = prime * result + (this.description == null
-		                                                   ? 0
-		                                                   : this.description.hashCode());
+		result = prime * result + (int) (this.depotId ^ this.depotId >>> 32);
 		result = prime * result + (this.name == null
 		                                            ? 0
 		                                            : this.name.hashCode());
-		result = prime * result + (this.tagTime == null
-		                                               ? 0
-		                                               : this.tagTime.hashCode());
-		result = prime * result + this.taggerId;
 		return result;
 	}
 	
@@ -152,7 +213,6 @@ public class Tag implements ISequelEntity {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
 	 */
-	@Override
 	public long id() {
 		return this.id;
 	}
@@ -162,45 +222,8 @@ public class Tag implements ISequelEntity {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
 	 */
-	@Override
 	public void id(final long id) {
-		this.id = (int) id;
-	}
-	
-	/**
-	 * @param description
-	 *            the description to set
-	 */
-	public final void setDescription(final String description) {
-		this.description = description;
-	}
-	
-	/**
-	 * @param name
-	 *            the name to set
-	 */
-	public final void setName(final String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * Sets the tagger id.
-	 *
-	 * @param taggerId
-	 *            the taggerId to set
-	 */
-	public final void setTaggerId(final int taggerId) {
-		this.taggerId = taggerId;
-	}
-	
-	/**
-	 * Sets the tag time.
-	 *
-	 * @param tagTime
-	 *            the tagTime to set
-	 */
-	public final void setTagTime(final Instant tagTime) {
-		this.tagTime = tagTime;
+		this.id = id;
 	}
 	
 	/**
@@ -211,27 +234,25 @@ public class Tag implements ISequelEntity {
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("Tag [id=");
-		builder.append(this.id);
+		builder.append("Tag [changesetId=");
+		builder.append(this.changesetId);
 		builder.append(", ");
-		if (this.name != null) {
-			builder.append("name=");
-			builder.append(this.name);
+		builder.append("name=");
+		builder.append(this.name);
+		builder.append(", ");
+		if (this.hash != null) {
+			builder.append("hash=");
+			builder.append(this.hash);
 			builder.append(", ");
 		}
-		builder.append("commitId=");
-		builder.append(this.commitId);
-		builder.append(", taggerId=");
-		builder.append(this.taggerId);
-		builder.append(", ");
-		if (this.tagTime != null) {
-			builder.append("tagTime=");
-			builder.append(this.tagTime);
+		if (this.identityId != null) {
+			builder.append("identityId=");
+			builder.append(this.identityId);
 			builder.append(", ");
 		}
-		if (this.description != null) {
-			builder.append("description=");
-			builder.append(this.description);
+		if (this.timestamp != null) {
+			builder.append("timestamp=");
+			builder.append(this.timestamp);
 		}
 		builder.append("]");
 		return builder.toString();

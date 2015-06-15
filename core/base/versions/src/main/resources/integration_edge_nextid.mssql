@@ -1,1 +1,0 @@
-SELECT NEXT VALUE FOR seq_integration_edges_id

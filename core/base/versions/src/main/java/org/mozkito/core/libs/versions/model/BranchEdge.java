@@ -13,7 +13,9 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.core.libs.versions.Graph.EdgeType;
+import org.mozkito.core.libs.versions.graph.BranchMarker;
+import org.mozkito.core.libs.versions.graph.IntegrationMarker;
+import org.mozkito.core.libs.versions.graph.NavigationMarker;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
@@ -33,7 +35,14 @@ public class BranchEdge implements ISequelEntity {
 	/** The branch id. */
 	private final long        branchId;
 	
-	private final short       type;
+	/** The branch type. */
+	private final short       branchType;
+	
+	/** The navigation type. */
+	private final short       navigationType;
+	
+	/** The integration type. */
+	private final short       integrationType;
 	
 	/**
 	 * Instantiates a new branch edge.
@@ -42,14 +51,21 @@ public class BranchEdge implements ISequelEntity {
 	 *            the edge id
 	 * @param branchId
 	 *            the branch id
-	 * @param type
+	 * @param branchMarker
 	 *            the type
+	 * @param navigationMarker
+	 *            the navigation marker
+	 * @param integrationMarker
+	 *            the integration marker
 	 */
-	public BranchEdge(final long edgeId, final long branchId, final EdgeType type) {
+	public BranchEdge(final long edgeId, final long branchId, final BranchMarker branchMarker,
+	        final NavigationMarker navigationMarker, final IntegrationMarker integrationMarker) {
 		super();
 		this.edgeId = edgeId;
 		this.branchId = branchId;
-		this.type = (short) type.ordinal();
+		this.branchType = (short) branchMarker.ordinal();
+		this.navigationType = (short) navigationMarker.ordinal();
+		this.integrationType = (short) integrationMarker.ordinal();
 	}
 	
 	/**
@@ -75,9 +91,6 @@ public class BranchEdge implements ISequelEntity {
 		if (this.edgeId != other.edgeId) {
 			return false;
 		}
-		if (this.type != other.type) {
-			return false;
-		}
 		return true;
 	}
 	
@@ -89,6 +102,13 @@ public class BranchEdge implements ISequelEntity {
 	}
 	
 	/**
+	 * @return the branchType
+	 */
+	public final short getBranchType() {
+		return this.branchType;
+	}
+	
+	/**
 	 * @return the edgeId
 	 */
 	public final long getEdgeId() {
@@ -96,12 +116,17 @@ public class BranchEdge implements ISequelEntity {
 	}
 	
 	/**
-	 * Gets the type.
-	 *
-	 * @return the type
+	 * @return the integrationType
 	 */
-	public short getType() {
-		return this.type;
+	public final short getIntegrationType() {
+		return this.integrationType;
+	}
+	
+	/**
+	 * @return the navigationType
+	 */
+	public final short getNavigationType() {
+		return this.navigationType;
 	}
 	
 	/**
@@ -115,7 +140,6 @@ public class BranchEdge implements ISequelEntity {
 		int result = 1;
 		result = prime * result + (int) (this.branchId ^ this.branchId >>> 32);
 		result = prime * result + (int) (this.edgeId ^ this.edgeId >>> 32);
-		result = prime * result + this.type;
 		return result;
 	}
 	

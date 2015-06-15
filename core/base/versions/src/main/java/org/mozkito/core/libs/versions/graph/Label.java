@@ -11,39 +11,34 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.apps.versions;
+package org.mozkito.core.libs.versions.graph;
 
-import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
-import org.mozkito.libraries.logging.Logger;
 
 /**
- * @author Sascha Just
- *
+ * The Class Label.
  */
-public class ConvergenceMiner implements Runnable {
+public class Label {
 	
-	private final Graph graph;
+	/** The branch. */
+	public Branch            branch;
+	
+	/** The type. */
+	public BranchMarker      branchMarker;
+	public NavigationMarker  nagivationMarker;
+	public IntegrationMarker integrationMarker;
 	
 	/**
-	 * Instantiates a new integration miner.
+	 * Instantiates a new label.
 	 *
-	 * @param graph
-	 *            the graph
+	 * @param branch
+	 *            the branch
+	 * @param branchMarker
+	 *            the type
 	 */
-	public ConvergenceMiner(final Graph graph) {
-		this.graph = graph;
+	public Label(final Branch branch, final BranchMarker branchMarker) {
+		this.branch = branch;
+		this.branchMarker = branchMarker;
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see java.lang.Runnable#run()
-	 */
-	public void run() {
-		for (final Branch branch : this.graph.getBranches()) {
-			Logger.info("Processing branch '%s'.", branch.getName());
-			this.graph.computeConvergence(branch);
-		}
-	}
 }

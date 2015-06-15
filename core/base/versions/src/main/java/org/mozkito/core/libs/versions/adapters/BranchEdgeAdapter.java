@@ -118,7 +118,9 @@ public class BranchEdgeAdapter extends AbstractSequelAdapter<BranchEdge> {
 			
 			saveStatement.setLong(++index, edge.getEdgeId());
 			saveStatement.setLong(++index, edge.getBranchId());
-			saveStatement.setShort(++index, edge.getType());
+			saveStatement.setShort(++index, edge.getBranchType());
+			saveStatement.setShort(++index, edge.getNavigationType());
+			saveStatement.setShort(++index, edge.getIntegrationType());
 			
 			saveStatement.executeUpdate();
 			

@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.mozkito.core.libs.versions.Graph;
+import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.skeleton.contracts.Asserts;

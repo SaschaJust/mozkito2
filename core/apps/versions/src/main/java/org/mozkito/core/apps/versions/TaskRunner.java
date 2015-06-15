@@ -22,8 +22,8 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 
 import org.mozkito.core.libs.versions.FileCache;
-import org.mozkito.core.libs.versions.Graph;
 import org.mozkito.core.libs.versions.IdentityCache;
+import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
@@ -32,6 +32,7 @@ import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
+import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.commons.URIUtils;
 import org.mozkito.skeleton.exec.Command;
@@ -123,6 +124,8 @@ public class TaskRunner implements Runnable {
 	
 	private final DatabaseDumper<ChangeSetIntegration> integrationDumper;
 	
+	private final DatabaseDumper<Tag>                  tagDumper;
+	
 	/**
 	 * Instantiates a new task runner.
 	 *
@@ -154,13 +157,16 @@ public class TaskRunner implements Runnable {
 	 *            the renaming dumper
 	 * @param integrationDumper
 	 *            the integration dumper
+	 * @param tagDumper
+	 *            the tag dumper
 	 */
 	public TaskRunner(final File baseDir, final File workDir, final URI depotURI, final Task[] tasks,
 	        final IdentityCache identityCache, final DatabaseDumper<Identity> identityDumper,
 	        final DatabaseDumper<ChangeSet> changeSetDumper, final DatabaseDumper<Revision> revisionDumper,
 	        final DatabaseDumper<Branch> branchDumper, final DatabaseDumper<Handle> handleDumper,
 	        final DatabaseDumper<Graph> graphDumper, final DatabaseDumper<Depot> depotDumper,
-	        final DatabaseDumper<Renaming> renamingDumper, final DatabaseDumper<ChangeSetIntegration> integrationDumper) {
+	        final DatabaseDumper<Renaming> renamingDumper,
+	        final DatabaseDumper<ChangeSetIntegration> integrationDumper, final DatabaseDumper<Tag> tagDumper) {
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
 		this.identityDumper = identityDumper;
@@ -172,6 +178,7 @@ public class TaskRunner implements Runnable {
 		this.depotDumper = depotDumper;
 		this.renamingDumper = renamingDumper;
 		this.integrationDumper = integrationDumper;
+		this.tagDumper = tagDumper;
 		
 		this.identityCache = identityCache;
 		
@@ -245,6 +252,12 @@ public class TaskRunner implements Runnable {
 			// TODO load changesets and add to graph and the hashmap
 		}
 		
+		Logger.info("Spawning TagMiner");
+		final TagMiner tagMiner = new TagMiner(this.cloneDir, this.depot, changeSets, this.identityCache,
+		                                       this.tagDumper);
+		final Thread tmThread = new Thread(tagMiner);
+		tmThread.start();
+		
 		if (ArrayUtils.contains(this.tasks, Task.ENDPOINTS)) {
 			Logger.info("Spawning EndPointMiner.");
 			final EndPointMiner endPointMiner = new EndPointMiner(this.cloneDir, branchHeads, changeSets, this.graph);
@@ -270,7 +283,11 @@ public class TaskRunner implements Runnable {
 		}
 		
 		this.graphDumper.saveLater(this.graph);
-		
+		try {
+			tmThread.join();
+		} catch (final InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 }
