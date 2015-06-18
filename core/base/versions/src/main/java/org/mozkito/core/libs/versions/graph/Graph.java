@@ -480,25 +480,41 @@ public class Graph implements ISequelEntity {
 			                                                                                                                                        }
 			                                                                                                                                        
 		                                                                                                                                        }));
-		
+		// used for graph traversal for every lane switch
 		final List<ChangeSet> pointers = new LinkedList<>();
+		
+		// used to store edges we already traversed
+		final Set<Edge> blackList = new HashSet<>();
+		
 		ChangeSet current;
+		// start at head
 		pointers.add(head);
 		Set<Edge> outgoingEdges;
-		final Set<Edge> blackList = new HashSet<>();
 		
 		while (!pointers.isEmpty()) {
 			current = pointers.remove(0);
 			do {
+				// filter outgoing edges against the blacklist. we could do this in the mask functor, but this will
+				// cause problems on when to update the blacklist.
 				outgoingEdges = branchGraph.outgoingEdgesOf(current).stream().filter(e -> !blackList.contains(e))
 				                           .collect(Collectors.toSet());
 				
 				for (final Edge outgoingEdge : outgoingEdges) {
 					blackList.add(outgoingEdge);
 					if (BranchMarker.BRANCH_PARENT.equals(outgoingEdge.getBranchMarker(branch))) {
-						outgoingEdge.addNavigation(branch, NavigationMarker.FORWARD);
-						current = outgoingEdge.parent;
+						// check whether the target vertex already has an incoming forward edge. then this must be a
+						// switch edge
+						if (branchGraph.incomingEdgesOf(outgoingEdge.parent).stream()
+						               .anyMatch(e -> NavigationMarker.FORWARD.equals(e.getNavigationMarker(branch)))) {
+							outgoingEdge.addNavigation(branch, NavigationMarker.SWITCH);
+						} else {
+							// there can only be one forward edge. if we found it, go deeper that lane
+							outgoingEdge.addNavigation(branch, NavigationMarker.FORWARD);
+							current = outgoingEdge.parent;
+						}
 					} else {
+						// this is a merge edge, thus it has to be a switch
+						Asserts.equalTo(BranchMarker.MERGE_PARENT, outgoingEdge.getBranchMarker(branch));
 						outgoingEdge.addNavigation(branch, NavigationMarker.SWITCH);
 						pointers.add(outgoingEdge.parent);
 					}

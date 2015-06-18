@@ -15,7 +15,6 @@ package org.mozkito.core.libs.versions.model;
 
 import java.time.Instant;
 
-import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
 /**
@@ -87,10 +86,6 @@ public class Tag implements ISequelEntity {
 	        final String message, final Identity identity, final Instant timestamp) {
 		super();
 		this.depotId = depot.id();
-		if (changeSet == null) {
-			Logger.error("name: " + name);
-			Logger.error("name: " + hash);
-		}
 		this.changesetId = changeSet.id();
 		this.name = name;
 		this.hash = hash;
