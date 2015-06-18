@@ -1,0 +1,1 @@
+CREATE INDEX idx_changeset_integrationtypes_integration_type ON changeset_integrationtypes (integration_type);

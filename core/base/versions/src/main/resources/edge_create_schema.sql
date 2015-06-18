@@ -1,7 +1,5 @@
-CREATE SEQUENCE seq_edges_id MINVALUE 1 START WITH 1 INCREMENT BY 1;
-
 CREATE TABLE edges (
-	id BIGINT PRIMARY KEY,
+	id BIGINT,
 	depot_id BIGINT,
 	source_id BIGINT,
 	target_id BIGINT

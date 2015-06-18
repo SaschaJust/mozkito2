@@ -4,3 +4,4 @@ CREATE INDEX idx_changesets_commit_time ON changesets (commit_time);
 CREATE INDEX idx_changesets_committer_id ON changesets (committer_id);
 CREATE INDEX idx_changesets_depot_id ON changesets (depot_id);
 CREATE INDEX idx_changesets_tree_hash ON changesets (tree_hash);
+CREATE INDEX idx_changesets_commit_hash ON changesets (commit_hash);

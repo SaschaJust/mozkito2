@@ -1,7 +1,5 @@
-CREATE SEQUENCE seq_changesets_id MINVALUE 1 START WITH 1 INCREMENT BY 1;
-
 CREATE TABLE changesets (
-	id BIGINT PRIMARY KEY,
+	id BIGINT,
 	depot_id BIGINT,
 	commit_hash CHAR(40),
 	tree_hash CHAR(40),
@@ -9,6 +7,6 @@ CREATE TABLE changesets (
 	author_id BIGINT,
 	commit_time DATETIME,
 	committer_id BIGINT,
-	subject TEXT,
-	body TEXT
+	subject VARCHAR(MAX),
+	body VARCHAR(MAX)
 );

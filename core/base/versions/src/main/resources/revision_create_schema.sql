@@ -1,7 +1,5 @@
-CREATE SEQUENCE seq_revisions_id MINVALUE 1 START WITH 1 INCREMENT BY 1;
-
 CREATE TABLE revisions (
-	id BIGINT PRIMARY KEY,
+	id BIGINT,
 	depot_id BIGINT,
 	changeset_id BIGINT,
 	change_type SMALLINT,

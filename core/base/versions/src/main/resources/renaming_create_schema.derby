@@ -1,10 +1,7 @@
-CREATE SEQUENCE seq_renamings_id MINVALUE 1 START WITH 1 INCREMENT BY 1;
-
 CREATE TABLE renamings (
 	id BIGINT,
 	similarity SMALLINT,
 	source_id BIGINT,
 	target_id BIGINT,
-	changeset_id BIGINT,
-	PRIMARY KEY (id, source_id)
+	changeset_id BIGINT
 );

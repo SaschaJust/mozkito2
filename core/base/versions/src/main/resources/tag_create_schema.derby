@@ -1,10 +1,8 @@
-CREATE SEQUENCE seq_tags_id MINVALUE 1 START WITH 1 INCREMENT BY 1;
-
 CREATE TABLE tags (
-	id BIGINT PRIMARY KEY,
+	id BIGINT,
 	depot_id BIGINT,
 	changeset_id BIGINT,
-	name LONG VARCHAR,
+	name VARCHAR(900),
 	hash CHAR(40),
 	message LONG VARCHAR,
 	tagger_id BIGINT,

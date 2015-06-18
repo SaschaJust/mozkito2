@@ -1,4 +1,4 @@
 CREATE TABLE integration_types (
-	id SMALLINT PRIMARY KEY,
+	id SMALLINT,
 	type VARCHAR(32)
 );

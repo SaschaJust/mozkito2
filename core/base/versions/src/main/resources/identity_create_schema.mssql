@@ -1,7 +1,5 @@
-CREATE SEQUENCE seq_identities_id MINVALUE 1 START WITH 1 INCREMENT BY 1;
-
 CREATE TABLE identities (
-	id BIGINT PRIMARY KEY,
-	email VARCHAR(MAX),
-	fullname VARCHAR(MAX)
+	id BIGINT,
+	email VARCHAR(900),
+	fullname VARCHAR(900)
 );

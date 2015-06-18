@@ -1,7 +1,5 @@
-CREATE SEQUENCE seq_branches_id MINVALUE 1 START WITH 1 INCREMENT BY 1;
-
 CREATE TABLE branches (
-	id BIGINT PRIMARY KEY,
+	id BIGINT,
 	depot_id BIGINT,
-	name VARCHAR(MAX)
+	name VARCHAR(900)
 );

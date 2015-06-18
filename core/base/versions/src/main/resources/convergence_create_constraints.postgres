@@ -1,4 +1,6 @@
+ALTER TABLE convergences ALTER COLUMN id SET NOT NULL;
 ALTER TABLE convergences ALTER COLUMN branch_id SET NOT NULL;
 ALTER TABLE convergences ALTER COLUMN source_id SET NOT NULL;
 ALTER TABLE convergences ALTER COLUMN converge_id SET NOT NULL;
+ALTER TABLE convergences ADD PRIMARY KEY (id);
 ALTER TABLE convergences ADD UNIQUE (branch_id, source_id);

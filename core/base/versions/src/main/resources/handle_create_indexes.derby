@@ -1,1 +1,0 @@
-CREATE INDEX idx_handles_depot_id ON handles (depot_id);

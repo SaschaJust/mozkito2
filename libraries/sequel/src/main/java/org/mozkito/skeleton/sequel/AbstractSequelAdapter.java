@@ -52,6 +52,8 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 	/** The current id. */
 	private long                   currentId = 0l;
 	
+	private final String           createSequencesResource;
+	
 	/**
 	 * Instantiates a new abstract sequel adapter.
 	 *
@@ -67,6 +69,7 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 		this.createSchemaResource = identifier + "_create_schema";
 		this.createIndexesResource = identifier + "_create_indexes";
 		this.createConstraintsResource = identifier + "_create_constraints";
+		this.createSequencesResource = identifier + "_create_sequences";
 	}
 	
 	/**
@@ -108,6 +111,13 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 		try {
 			synchronized (this.database) {
 				SequelManager.executeSQL(this.database, this.createSchemaResource);
+				switch (this.database.getIdMode()) {
+					case SEQUENCE:
+						SequelManager.executeSQL(this.database, this.createSequencesResource, true);
+						break;
+					default:
+						// nothing
+				}
 			}
 		} catch (final SQLException | IOException e) {
 			throw new RuntimeException(e);

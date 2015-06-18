@@ -1,0 +1,5 @@
+ALTER TABLE heads ALTER COLUMN id SET NOT NULL;
+ALTER TABLE heads ALTER COLUMN branch_id SET NOT NULL;
+ALTER TABLE heads ALTER COLUMN changeset_id SET NOT NULL;
+ALTER TABLE heads ADD PRIMARY KEY (id);
+ALTER TABLE heads ADD UNIQUE (branch_id, changeset_id);
