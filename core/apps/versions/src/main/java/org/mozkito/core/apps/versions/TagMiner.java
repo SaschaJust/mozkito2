@@ -21,30 +21,55 @@ import java.util.Map;
 import org.apache.commons.collections4.map.UnmodifiableMap;
 
 import org.mozkito.core.libs.versions.IdentityCache;
-import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
-import org.mozkito.core.libs.versions.model.Head;
-import org.mozkito.core.libs.versions.model.Identity;
-import org.mozkito.core.libs.versions.model.Roots;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.skeleton.contracts.Asserts;
-import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.sequel.DatabaseDumper;
-import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
- * The BranchMiner is used to collect all branches known to the underlying depot. The {@link Branch}es are stored in the
- * provided {@link SequelDatabase}, along with their {@link Head} and {@link Roots}.
+ * The TagMiner is used to collect all tags known to the underlying depot. There are two types of tags. Lightweight tags
+ * and tag objects.
+ *
+ * There format for lightwights will be:
+ * 
+ * <pre>
+ * >>>#$@#$@>>>
+ * commit
+ * 5dd2b0dafbd2c9c3284d93d981044e7cdc33a7c1
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * improved LogIterator to call log only when necessary
+ * 
+ * <<<#$@#$@<<<
+ * </pre>
+ * 
+ * There format for objects will be: >>>#$@#$@>>> tag 0367e364911aefd27cd71f0192bc222a66c21547
+ * 36aede6eaa0d051bd4a813dfbb954b7ac7ebac1e commit test Sascha Just <sascha.just@own-hero.net> 1434313830 +0100 testing
+ * stuff
+ * 
+ * <<<#$@#$@<<< </pre>
  *
  * @author Sascha Just
  */
 public class TagMiner implements Runnable {
 	
 	/** The Constant TAG. */
-	private static final String          TAG     = "refs/tags/";
-	private static final String          POINTER = "^{}";
+	private static final String          TAG       = "refs/tags/";
+	
+	/** The Constant END_TAG. */
+	private static final String          END_TAG   = "<<<#$@#$@<<<";
+	
+	/** The Constant START_TAG. */
+	private static final String          START_TAG = ">>>#$@#$@>>>";
+	
+	/** The Constant LS. */
+	private static final String          LS        = System.lineSeparator();
 	
 	/** The clone dir. */
 	private final File                   cloneDir;
@@ -53,11 +78,14 @@ public class TagMiner implements Runnable {
 	private final Depot                  depot;
 	
 	/** The branch head hashes. */
-	private final Map<String, Tag>       tags    = new HashMap<String, Tag>();
-	
+	private final Map<String, Tag>       tags      = new HashMap<String, Tag>();
 	/** The branch dumper. */
 	private final DatabaseDumper<Tag>    tagDumper;
+	
+	/** The identity cache. */
 	private final IdentityCache          identityCache;
+	
+	/** The change sets. */
 	private final Map<String, ChangeSet> changeSets;
 	
 	/**
@@ -98,78 +126,65 @@ public class TagMiner implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		final Command command = Command.execute("git", new String[] { "ls-remote", "--tags" }, this.cloneDir);
-		Command command2;
+		final Command command = Command.execute("git", new String[] {
+		        "for-each-ref",
+		        "--format=" + START_TAG + LS + "%(refname)" + LS + "%(objecttype)" + LS + "%(objectname)" + LS
+		                + "%(object)" + LS + "%(type)" + LS + "%(tag)" + LS + "%(taggername)" + LS + "%(taggeremail)"
+		                + LS + "%(taggerdate:raw)" + LS + "%(contents:subject)" + LS + "%(contents:body)" + LS
+		                + END_TAG, "refs/tags" }, this.cloneDir);
 		
-		String line, line2, substr;
+		String line;
 		Tag tag;
 		String targetHash;
-		String name, email, offset;
+		String tagName, tagType, tagHash;
+		String name, email;
 		StringBuilder messageBuilder;
-		Identity identity;
 		Instant timestamp;
 		
 		RESULTS: while ((line = command.nextOutput()) != null) {
-			if (line.startsWith("From ")) {
-				continue RESULTS;
-			}
+			Asserts.equalTo(START_TAG, line);
+			line = command.nextOutput();
+			tagName = line.substring(TAG.length());
+			line = command.nextOutput();
+			tagType = line;
+			line = command.nextOutput();
 			
-			final String headHash = line.substring(0, 40);
-			String tagName = line.substring(40).trim();
-			Contract.asserts(tagName.startsWith(TAG));
-			tagName = tagName.substring(TAG.length());
-			
-			if (tagName.endsWith(POINTER)) {
-				// previous entry was a tag object
-				tagName = tagName.substring(0, tagName.length() - POINTER.length());
-				Asserts.containsKey(this.tags, tagName);
-				// nothing to do
-			} else {
-				command2 = Command.execute("git", new String[] { "cat-file", "-p", headHash }, this.cloneDir);
-				line2 = command2.nextOutput();
-				substr = line2.substring(0, 6);
-				if ("object".equals(substr)) {
-					// tag object
-					targetHash = line2.substring(7);
-					
-					line2 = command2.nextOutput();
-					// skip: type commmit
-					line2 = command2.nextOutput();
-					// skip: tag NAME
-					line2 = command2.nextOutput();
-					
-					String[] split = line2.substring(7).split("[<>]");
-					name = split[0].trim();
-					email = split[1].trim();
-					identity = this.identityCache.request(email, name);
-					split = split[2].trim().split("\\s");
-					timestamp = Instant.ofEpochSecond(Long.parseLong(split[0]));
-					offset = split[1].trim();
-					if ("-".equals(offset.substring(0, 1))) {
-						timestamp.plusSeconds(3600 * Integer.parseInt(offset.substring(1, 3))
-						        + Integer.parseInt(offset.substring(3)));
-					} else {
-						timestamp.minusSeconds(3600 * Integer.parseInt(offset.substring(1, 3))
-						        + Integer.parseInt(offset.substring(3)));
+			switch (tagType) {
+				case "commit":
+					targetHash = line;
+					tag = new Tag(this.depot, this.changeSets.get(targetHash), tagName);
+					this.tagDumper.saveLater(tag);
+					this.tags.put(tagName, tag);
+					while ((line = command.nextOutput()) != null && !END_TAG.equals(line)) {
+						// keep going
 					}
-					
-					command2.nextOutput(); // skip empty line
+					continue RESULTS;
+				case "tag":
+					tagHash = line;
+					line = command.nextOutput();
+					targetHash = line;
+					line = command.nextOutput();
+					if (!"commit".equals(line)) {
+						// skip non commit tags
+						continue RESULTS;
+					}
+					line = command.nextOutput();
+					Asserts.equalTo(tagName, line);
+					line = command.nextOutput();
+					name = line;
+					line = command.nextOutput();
+					email = line.substring(1, line.length() - 1);
+					line = command.nextOutput();
+					timestamp = Instant.ofEpochSecond(Long.parseLong(line.substring(0, line.indexOf(' '))));
 					messageBuilder = new StringBuilder();
-					
-					while ((line2 = command2.nextOutput()) != null) {
-						messageBuilder.append(line2);
+					while ((line = command.nextOutput()) != null && !END_TAG.equals(line)) {
+						messageBuilder.append(line).append(LS);
 					}
-					tag = new Tag(this.depot, this.changeSets.get(targetHash), tagName, headHash,
-					              messageBuilder.toString(), identity, timestamp);
-				} else {
-					Asserts.equalTo("tree", substr.substring(0, 4));
-					// commit object
-					Asserts.containsKey(this.changeSets, headHash);
-					tag = new Tag(this.depot, this.changeSets.get(headHash), tagName);
-				}
-				this.tagDumper.saveLater(tag);
-				Asserts.notNull(this.tags);
-				this.tags.put(tagName, tag);
+					tag = new Tag(this.depot, this.changeSets.get(targetHash), name, tagHash,
+					              messageBuilder.toString(), this.identityCache.request(email, name), timestamp);
+					this.tagDumper.saveLater(tag);
+					this.tags.put(tagName, tag);
+					break;
 			}
 		}
 	}
