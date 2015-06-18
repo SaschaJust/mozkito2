@@ -181,7 +181,7 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 			
 			final Collection<Edge> edges = entity.getEdges();
 			int batchCounter = 0;
-			final int batchSize = 10000;
+			final int batchSize = 1000000;
 			Label label;
 			for (final Edge edge : edges) {
 				++batchCounter;
