@@ -166,6 +166,9 @@ public class TagMiner implements Runnable {
 					line = command.nextOutput();
 					if (!"commit".equals(line)) {
 						// skip non commit tags
+						while ((line = command.nextOutput()) != null && !END_TAG.equals(line)) {
+							// keep going
+						}
 						continue RESULTS;
 					}
 					line = command.nextOutput();
