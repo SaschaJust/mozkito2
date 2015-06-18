@@ -57,7 +57,7 @@ import org.mozkito.skeleton.sequel.DatabaseDumper;
  *
  * @author Sascha Just
  */
-public class TagMiner implements Runnable {
+public class TagMiner extends Task implements Runnable {
 	
 	/** The Constant TAG. */
 	private static final String          TAG       = "refs/tags/";
@@ -74,11 +74,9 @@ public class TagMiner implements Runnable {
 	/** The clone dir. */
 	private final File                   cloneDir;
 	
-	/** The depot. */
-	private final Depot                  depot;
-	
 	/** The branch head hashes. */
 	private final Map<String, Tag>       tags      = new HashMap<String, Tag>();
+	
 	/** The branch dumper. */
 	private final DatabaseDumper<Tag>    tagDumper;
 	
@@ -104,8 +102,8 @@ public class TagMiner implements Runnable {
 	 */
 	public TagMiner(final File cloneDir, final Depot depot, final Map<String, ChangeSet> changeSets,
 	        final IdentityCache identityCache, final DatabaseDumper<Tag> tagDumper) {
+		super(depot);
 		this.cloneDir = cloneDir;
-		this.depot = depot;
 		this.changeSets = changeSets;
 		this.identityCache = identityCache;
 		this.tagDumper = tagDumper;

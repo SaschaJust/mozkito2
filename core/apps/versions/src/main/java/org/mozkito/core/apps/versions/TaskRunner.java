@@ -200,12 +200,19 @@ public class TaskRunner implements Runnable {
 	}
 	
 	/**
+	 * Reset name.
+	 */
+	private void resetName() {
+		Thread.currentThread().setName(getClass().getSimpleName() + ":" + this.depot.getName());
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		Thread.currentThread().setName("Runner:" + this.depot.getName());
+		resetName();
 		
 		Logger.info("Cloning depot '%s'.", this.cloneName);
 		final Command command = Command.execute("git",
@@ -229,6 +236,7 @@ public class TaskRunner implements Runnable {
 			
 			final BranchMiner branchMiner = new BranchMiner(this.cloneDir, this.depot, this.branchDumper);
 			branchMiner.run();
+			resetName();
 			branchHeads = branchMiner.getBranchHeads();
 			this.graph.setBranchHeads(branchHeads);
 		} else {
@@ -246,6 +254,7 @@ public class TaskRunner implements Runnable {
 			                                                         this.revisionDumper, this.handleDumper,
 			                                                         this.renamingDumper);
 			changeSetMiner.run();
+			resetName();
 			changeSets = changeSetMiner.getChangeSets();
 			this.graph.setChangeSets(changeSets);
 		} else {
@@ -255,31 +264,36 @@ public class TaskRunner implements Runnable {
 		Logger.info("Spawning TagMiner");
 		final TagMiner tagMiner = new TagMiner(this.cloneDir, this.depot, changeSets, this.identityCache,
 		                                       this.tagDumper);
-		final Thread tmThread = new Thread(tagMiner);
+		resetName();
+		final Thread tmThread = new Thread(tagMiner, "TagMiner:" + this.depot.getName());
 		tmThread.start();
 		
 		if (ArrayUtils.contains(this.tasks, Task.ENDPOINTS)) {
 			Logger.info("Spawning EndPointMiner.");
 			final EndPointMiner endPointMiner = new EndPointMiner(this.cloneDir, branchHeads, changeSets, this.graph);
 			endPointMiner.run();
+			resetName();
 		}
 		
 		if (ArrayUtils.contains(this.tasks, Task.GRAPH)) {
 			Logger.info("Spawning GraphBuilder.");
 			final GraphMiner graphMiner = new GraphMiner(this.cloneDir, this.graph, changeSets);
 			graphMiner.run();
+			resetName();
 		}
 		
 		if (ArrayUtils.contains(this.tasks, Task.INTEGRATION)) {
 			Logger.info("Spawning IntegrationMiner.");
-			final IntegrationMiner integrationMiner = new IntegrationMiner(this.cloneDir, changeSets,
+			final IntegrationMiner integrationMiner = new IntegrationMiner(this.depot, this.cloneDir, changeSets,
 			                                                               this.integrationDumper);
 			integrationMiner.run();
+			resetName();
 			
 			Logger.info("Spawning ConvergenceMiner.");
 			
 			final ConvergenceMiner convergenceMiner = new ConvergenceMiner(this.graph);
 			convergenceMiner.run();
+			resetName();
 		}
 		
 		this.graphDumper.saveLater(this.graph);

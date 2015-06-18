@@ -19,6 +19,7 @@ import java.util.Map;
 import org.mozkito.core.libs.versions.IntegrationType;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
+import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.sequel.DatabaseDumper;
@@ -28,7 +29,7 @@ import org.mozkito.skeleton.sequel.DatabaseDumper;
  *
  * @author Sascha Just
  */
-public class IntegrationMiner implements Runnable {
+public class IntegrationMiner extends Task implements Runnable {
 	
 	/** The clone dir. */
 	private final File                                 cloneDir;
@@ -42,6 +43,8 @@ public class IntegrationMiner implements Runnable {
 	/**
 	 * Instantiates a new integration miner.
 	 *
+	 * @param depot
+	 *            the depot
 	 * @param cloneDir
 	 *            the clone dir
 	 * @param changeSets
@@ -49,8 +52,9 @@ public class IntegrationMiner implements Runnable {
 	 * @param integrationTypeDumper
 	 *            the integration type dumper
 	 */
-	public IntegrationMiner(final File cloneDir, final Map<String, ChangeSet> changeSets,
+	public IntegrationMiner(final Depot depot, final File cloneDir, final Map<String, ChangeSet> changeSets,
 	        final DatabaseDumper<ChangeSetIntegration> integrationTypeDumper) {
+		super(depot);
 		this.cloneDir = cloneDir;
 		this.changeSets = changeSets;
 		this.integrationTypeDumper = integrationTypeDumper;

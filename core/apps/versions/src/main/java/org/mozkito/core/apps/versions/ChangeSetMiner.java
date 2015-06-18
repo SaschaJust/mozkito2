@@ -44,7 +44,7 @@ import org.mozkito.skeleton.sequel.DatabaseDumper;
  *
  * @author Sascha Just
  */
-public class ChangeSetMiner implements Runnable {
+public class ChangeSetMiner extends Task implements Runnable {
 	
 	/** The Constant END_TAG. */
 	private static final String             END_TAG               = "<<<#$@#$@<<<";
@@ -73,8 +73,6 @@ public class ChangeSetMiner implements Runnable {
 	/** The clone dir. */
 	private final File                      cloneDir;
 	
-	/** The depot. */
-	private final Depot                     depot;
 	/** The graph. */
 	private final Graph                     graph;
 	
@@ -129,9 +127,8 @@ public class ChangeSetMiner implements Runnable {
 	        final FileCache fileCache, final DatabaseDumper<Identity> identityDumper,
 	        final DatabaseDumper<ChangeSet> changeSetDumper, final DatabaseDumper<Revision> revisionDumper,
 	        final DatabaseDumper<Handle> handleDumper, final DatabaseDumper<Renaming> renamingDumper) {
-		
+		super(depot);
 		this.cloneDir = cloneDir;
-		this.depot = depot;
 		this.graph = graph;
 		this.fileCache = fileCache;
 		this.identityCache = identityCache;

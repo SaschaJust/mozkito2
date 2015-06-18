@@ -13,38 +13,26 @@
 
 package org.mozkito.core.apps.versions;
 
-import org.mozkito.core.libs.versions.graph.Graph;
-import org.mozkito.core.libs.versions.model.Branch;
-import org.mozkito.libraries.logging.Logger;
+import org.mozkito.core.libs.versions.model.Depot;
 
 /**
- * @author Sascha Just
+ * The Class Task.
  *
+ * @author Sascha Just
  */
-public class ConvergenceMiner extends Task implements Runnable {
+public class Task {
 	
-	private final Graph graph;
+	/** The depot. */
+	protected final Depot depot;
 	
 	/**
-	 * Instantiates a new integration miner.
+	 * Instantiates a new task.
 	 *
-	 * @param graph
-	 *            the graph
+	 * @param depot
+	 *            the depot
 	 */
-	public ConvergenceMiner(final Graph graph) {
-		super(graph.getDepot());
-		this.graph = graph;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see java.lang.Runnable#run()
-	 */
-	public void run() {
-		for (final Branch branch : this.graph.getBranches()) {
-			Logger.info("Processing branch '%s'.", branch.getName());
-			this.graph.computeConvergence(branch);
-		}
+	public Task(final Depot depot) {
+		Thread.currentThread().setName(getClass().getSimpleName() + ":" + depot.getName());
+		this.depot = depot;
 	}
 }

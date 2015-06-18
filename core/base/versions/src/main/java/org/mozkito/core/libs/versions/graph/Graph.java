@@ -439,7 +439,7 @@ public class Graph implements ISequelEntity {
 				outgoingEdges = branchGraph.outgoingEdgesOf(pointer);
 				
 				for (final Edge edge : outgoingEdges) {
-					if (!blackList.contains(edge.parent)) {
+					if (!blackList.contains(edge.parent)) { // redundant?
 						edge.addIntegration(branch, IntegrationMarker.INTEGRATE);
 						pointers.add(edge.parent);
 					}

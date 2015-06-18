@@ -28,7 +28,7 @@ import org.mozkito.skeleton.exec.Command;
  *
  * @author Sascha Just
  */
-public class GraphMiner implements Runnable {
+public class GraphMiner extends Task implements Runnable {
 	
 	static final String                  ORIGIN = "origin/";
 	
@@ -52,6 +52,7 @@ public class GraphMiner implements Runnable {
 	 *            the change sets
 	 */
 	public GraphMiner(final File cloneDir, final Graph graph, final Map<String, ChangeSet> changeSets) {
+		super(graph.getDepot());
 		this.cloneDir = cloneDir;
 		this.graph = graph;
 		this.changeSets = changeSets;

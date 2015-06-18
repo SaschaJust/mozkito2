@@ -35,16 +35,13 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
  *
  * @author Sascha Just
  */
-public class BranchMiner implements Runnable {
+public class BranchMiner extends Task implements Runnable {
 	
 	/** The Constant TAG. */
 	private static final String          TAG              = "refs/heads/";
 	
 	/** The clone dir. */
 	private final File                   cloneDir;
-	
-	/** The depot. */
-	private final Depot                  depot;
 	
 	/** The branch head hashes. */
 	private final Map<String, Branch>    branchHeadHashes = new HashMap<String, Branch>();
@@ -63,8 +60,8 @@ public class BranchMiner implements Runnable {
 	 *            the branch dumper
 	 */
 	public BranchMiner(final File cloneDir, final Depot depot, final DatabaseDumper<Branch> branchDumper) {
+		super(depot);
 		this.cloneDir = cloneDir;
-		this.depot = depot;
 		this.branchDumper = branchDumper;
 	}
 	

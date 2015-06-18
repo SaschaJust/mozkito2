@@ -28,7 +28,7 @@ import org.mozkito.skeleton.exec.Command;
  *
  * @author Sascha Just
  */
-public class EndPointMiner implements Runnable {
+public class EndPointMiner extends Task implements Runnable {
 	
 	/** The clone dir. */
 	private final File                   cloneDir;
@@ -55,6 +55,7 @@ public class EndPointMiner implements Runnable {
 	 */
 	public EndPointMiner(final File cloneDir, final Map<String, Branch> heads, final Map<String, ChangeSet> changeSets,
 	        final Graph graph) {
+		super(graph.getDepot());
 		this.cloneDir = cloneDir;
 		this.branchHeads = heads;
 		this.changeSets = changeSets;

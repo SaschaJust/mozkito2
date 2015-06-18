@@ -84,7 +84,8 @@ public class Asserts {
 	public static void equalTo(final Object lhs,
 	                           final Object rhs) {
 		assert lhs == null || lhs.equals(rhs) : Messages.get("skeleton.contracts.asserts.equalTo",
-		                                                     Contract.getCallerString(), "");
+		                                                     Contract.getCallerString(), truncate(lhs), truncate(rhs),
+		                                                     "");
 	}
 	
 	/**
@@ -104,7 +105,7 @@ public class Asserts {
 	                           final String formatString,
 	                           final Object... args) {
 		assert lhs == null || lhs.equals(rhs) : Messages.get("skeleton.contracts.asserts.equalTo",
-		                                                     Contract.getCallerString(),
+		                                                     Contract.getCallerString(), truncate(lhs), truncate(rhs),
 		                                                     String.format(formatString, args));
 	}
 	
@@ -305,6 +306,26 @@ public class Asserts {
 	public static void positive(final Long id) {
 		assert id == null || id > 0 : Messages.get("skeleton.contracts.asserts.positive", Contract.getCallerString(),
 		                                           "");
+	}
+	
+	/**
+	 * Truncate.
+	 *
+	 * @param obj
+	 *            the obj
+	 * @return the string
+	 */
+	static final String truncate(final Object obj) {
+		if (obj == null) {
+			return "<NULL>";
+		} else {
+			final String string = obj.toString();
+			if (string.length() <= 16) {
+				return string;
+			} else {
+				return string.substring(0, 16);
+			}
+		}
 	}
 	
 	/**
