@@ -1,5 +1,3 @@
-ALTER TABLE identities ALTER COLUMN id SET NOT NULL;
 ALTER TABLE identities ALTER COLUMN email SET NOT NULL;
 ALTER TABLE identities ALTER COLUMN fullname SET NOT NULL;
-ALTER TABLE identities ADD PRIMARY KEY (id);
 ALTER TABLE identities ADD UNIQUE (email, fullname);

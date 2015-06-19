@@ -13,11 +13,6 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.commons.collections4.list.UnmodifiableList;
-
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.ISequelEntity;
 
@@ -26,7 +21,7 @@ import org.mozkito.skeleton.sequel.ISequelEntity;
  *
  * @author Sascha Just
  */
-public class Roots implements ISequelEntity {
+public class Root implements ISequelEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 3326771349421256531L;
@@ -38,28 +33,48 @@ public class Roots implements ISequelEntity {
 	private final long        branchId;
 	
 	/** The change set ids. */
-	private final List<Long>  changeSetIds     = new LinkedList<>();
+	private final long        changeSetId;
 	
 	/**
 	 * Instantiates a new roots.
 	 *
 	 * @param branchId
 	 *            the branch id
-	 */
-	public Roots(final long branchId) {
-		Requires.positive(branchId);
-		
-		this.branchId = branchId;
-	}
-	
-	/**
-	 * Adds the.
-	 *
 	 * @param changeSetId
 	 *            the change set id
 	 */
-	public void add(final long changeSetId) {
-		this.changeSetIds.add(changeSetId);
+	public Root(final long branchId, final long changeSetId) {
+		Requires.positive(branchId);
+		Requires.positive(changeSetId);
+		
+		this.branchId = branchId;
+		this.changeSetId = changeSetId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Root other = (Root) obj;
+		if (this.branchId != other.branchId) {
+			return false;
+		}
+		if (this.changeSetId != other.changeSetId) {
+			return false;
+		}
+		return true;
 	}
 	
 	/**
@@ -72,12 +87,24 @@ public class Roots implements ISequelEntity {
 	}
 	
 	/**
-	 * Gets the change set ids.
-	 *
-	 * @return the changeSetIds
+	 * @return the changeSetId
 	 */
-	public final List<Long> getChangeSetIds() {
-		return UnmodifiableList.unmodifiableList(this.changeSetIds);
+	public final long getChangeSetId() {
+		return this.changeSetId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (this.branchId ^ this.branchId >>> 32);
+		result = prime * result + (int) (this.changeSetId ^ this.changeSetId >>> 32);
+		return result;
 	}
 	
 	/**
@@ -96,6 +123,24 @@ public class Roots implements ISequelEntity {
 	 */
 	public void id(final long id) {
 		this.id = id;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("Root [id=");
+		builder.append(this.id);
+		builder.append(", branchId=");
+		builder.append(this.branchId);
+		builder.append(", changeSetId=");
+		builder.append(this.changeSetId);
+		builder.append("]");
+		return builder.toString();
 	}
 	
 }

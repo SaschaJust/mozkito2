@@ -46,7 +46,7 @@ import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.ConvergenceEdge;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Head;
-import org.mozkito.core.libs.versions.model.Roots;
+import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
@@ -187,7 +187,7 @@ public class Graph implements ISequelEntity {
 	private final Map<Branch, Head>                          heads       = new HashMap<>();
 	
 	/** The roots. */
-	private final Map<Branch, Roots>                         roots       = new HashMap<>();
+	private final Map<Branch, Set<Root>>                     roots       = new HashMap<>();
 	
 	/** The edges. */
 	private final Collection<Edge>                           edges       = new LinkedList<>();
@@ -270,9 +270,10 @@ public class Graph implements ISequelEntity {
 	public void addRoot(final Branch branch,
 	                    final ChangeSet changeSet) {
 		if (!this.roots.containsKey(branch)) {
-			this.roots.put(branch, new Roots(branch.id()));
+			this.roots.put(branch, new HashSet<Root>());
 		}
-		this.roots.get(branch).add(changeSet.id());
+		
+		this.roots.get(branch).add(new Root(branch.id(), changeSet.id()));
 	}
 	
 	/**
@@ -721,46 +722,19 @@ public class Graph implements ISequelEntity {
 	 *
 	 * @return the roots
 	 */
-	public Collection<Roots> getRoots() {
-		return UnmodifiableCollection.unmodifiableCollection(this.roots.values());
+	public Set<Root> getRoots() {
+		return this.roots.values().stream().flatMap(set -> set.stream()).collect(Collectors.toSet());
 	}
 	
 	/**
-	 * Gets the root commit.
+	 * Gets the roots.
 	 *
 	 * @param branch
 	 *            the branch
-	 * @return the root commit
+	 * @return the roots
 	 */
-	public Roots getRoots(final Branch branch) {
-		Requires.notNull(branch);
-		
-		if (this.roots.containsKey(branch)) {
-			return this.roots.get(branch);
-		}
-		
-		final DirectedMaskSubgraph<ChangeSet, Edge> branchGraph = tier1Graph(branch);
-		
-		final EdgeReversedGraph<ChangeSet, Edge> reversedGraph = new EdgeReversedGraph<ChangeSet, Edge>(branchGraph);
-		
-		final ChangeSet head = getHead(branch);
-		
-		Logger.info("Fetching reversed tier1 graph for branch '%s' starting at HEAD '%s'", branch.getName(),
-		            head.getCommitHash());
-		
-		final DepthFirstIterator<ChangeSet, Edge> iterator = new DepthFirstIterator<ChangeSet, Edge>(reversedGraph,
-		                                                                                             head);
-		ChangeSet current = null;
-		this.roots.put(branch, new Roots(branch.id()));
-		
-		while (iterator.hasNext()) {
-			current = iterator.next();
-			if (getParents(current, branchGraph).isEmpty()) {
-				this.roots.get(branch).add(current.id());
-			}
-		}
-		
-		return this.roots.get(branch);
+	public Set<Root> getRoots(final Branch branch) {
+		return UnmodifiableSet.unmodifiableSet(this.roots.get(branch));
 	}
 	
 	/**

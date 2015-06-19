@@ -1,0 +1,2 @@
+ALTER TABLE changesets ALTER COLUMN id NOT NULL;
+ALTER TABLE changesets ADD PRIMARY KEY (id);

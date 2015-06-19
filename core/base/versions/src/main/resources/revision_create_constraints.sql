@@ -1,4 +1,3 @@
-ALTER TABLE revisions ALTER COLUMN id NOT NULL;
 ALTER TABLE revisions ALTER COLUMN depot_id NOT NULL;
 ALTER TABLE revisions ALTER COLUMN changeset_id NOT NULL;
 ALTER TABLE revisions ALTER COLUMN change_type NOT NULL;
@@ -11,5 +10,4 @@ ALTER TABLE revisions ALTER COLUMN old_hash NOT NULL;
 ALTER TABLE revisions ALTER COLUMN new_hash NOT NULL;
 ALTER TABLE revisions ALTER COLUMN lines_in NOT NULL;
 ALTER TABLE revisions ALTER COLUMN lines_out NOT NULL;
-ALTER TABLE revisions ADD PRIMARY KEY (id);
 ALTER TABLE revisions ADD UNIQUE (changeset_id, target_id);

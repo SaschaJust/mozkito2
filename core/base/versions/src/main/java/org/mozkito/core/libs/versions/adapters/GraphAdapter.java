@@ -28,7 +28,7 @@ import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.ConvergenceEdge;
 import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.core.libs.versions.model.Head;
-import org.mozkito.core.libs.versions.model.Roots;
+import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.ISequelAdapter;
@@ -51,7 +51,7 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	private final ISequelAdapter<Head>            headAdapter;
 	
 	/** The roots adapter. */
-	private final ISequelAdapter<Roots>           rootsAdapter;
+	private final ISequelAdapter<Root>            rootsAdapter;
 	
 	/** The convergence adapter. */
 	private final ISequelAdapter<ConvergenceEdge> convergenceAdapter;
@@ -77,8 +77,8 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 		database.register(Head.class, new HeadAdapter(database));
 		this.headAdapter = database.getAdapter(Head.class);
 		
-		database.register(Roots.class, new RootsAdapter(database));
-		this.rootsAdapter = database.getAdapter(Roots.class);
+		database.register(Root.class, new RootAdapter(database));
+		this.rootsAdapter = database.getAdapter(Root.class);
 		
 	}
 	
@@ -214,7 +214,7 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 				this.headAdapter.save(headStmt, headNextIdStmt, head);
 			}
 			
-			for (final Roots roots : entity.getRoots()) {
+			for (final Root roots : entity.getRoots()) {
 				this.rootsAdapter.save(rootsStmt, rootsNextIdStmt, roots);
 			}
 			

@@ -47,6 +47,11 @@ public interface ISequelAdapter<T> {
 	void createIndexes();
 	
 	/**
+	 * Creates the primary keys.
+	 */
+	void createPrimaryKeys();
+	
+	/**
 	 * Creates the scheme.
 	 */
 	void createScheme();

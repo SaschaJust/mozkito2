@@ -368,6 +368,8 @@ public class Main {
 			integrationDumper.join();
 			tagDumper.join();
 			
+			System.out.println("Creating primary keys.");
+			database.createPrimaryKeys();
 			System.out.println("Creating indexes.");
 			database.createIndexes();
 			System.out.println("Creating constraints.");

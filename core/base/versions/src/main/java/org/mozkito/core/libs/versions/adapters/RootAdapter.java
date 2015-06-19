@@ -19,26 +19,26 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.Roots;
+import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
 import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
- * The Class RootsAdapter.
+ * The Class RootAdapter.
  *
  * @author Sascha Just
  */
-public class RootsAdapter extends AbstractSequelAdapter<Roots> {
+public class RootAdapter extends AbstractSequelAdapter<Root> {
 	
 	/**
-	 * Instantiates a new roots adapter.
+	 * Instantiates a new Root adapter.
 	 *
 	 * @param database
 	 *            the database
 	 */
-	public RootsAdapter(final SequelDatabase database) {
-		super(database, "roots");
+	public RootAdapter(final SequelDatabase database) {
+		super(database, "root");
 	}
 	
 	/**
@@ -46,7 +46,7 @@ public class RootsAdapter extends AbstractSequelAdapter<Roots> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
 	 */
-	public Roots create(final ResultSet result) {
+	public Root create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -58,7 +58,7 @@ public class RootsAdapter extends AbstractSequelAdapter<Roots> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
 	 */
-	public void delete(final Roots object) {
+	public void delete(final Root object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -70,7 +70,7 @@ public class RootsAdapter extends AbstractSequelAdapter<Roots> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
 	 */
-	public Iterator<Roots> load() {
+	public Iterator<Root> load() {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -82,7 +82,7 @@ public class RootsAdapter extends AbstractSequelAdapter<Roots> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
 	 */
-	public List<Roots> load(final long... ids) {
+	public List<Root> load(final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -94,7 +94,7 @@ public class RootsAdapter extends AbstractSequelAdapter<Roots> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
 	 */
-	public Roots load(final long id) {
+	public Root load(final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -108,21 +108,19 @@ public class RootsAdapter extends AbstractSequelAdapter<Roots> {
 	 */
 	public void save(final PreparedStatement statement,
 	                 final long id,
-	                 final Roots roots) {
+	                 final Root root) {
 		Requires.notNull(statement);
-		Requires.notNull(roots);
+		Requires.notNull(root);
 		
 		try {
 			int index;
-			for (final long changeSetId : roots.getChangeSetIds()) {
-				index = 0;
-				statement.setInt(++index, (int) id);
-				statement.setLong(++index, roots.getBranchId());
-				statement.setLong(++index, changeSetId);
-				statement.executeUpdate();
-			}
+			index = 0;
+			statement.setInt(++index, (int) id);
+			statement.setLong(++index, root.getBranchId());
+			statement.setLong(++index, root.getChangeSetId());
+			statement.executeUpdate();
 			
-			roots.id(id);
+			root.id(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -133,7 +131,7 @@ public class RootsAdapter extends AbstractSequelAdapter<Roots> {
 	 * 
 	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
 	 */
-	public void update(final Roots... objects) {
+	public void update(final Root... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

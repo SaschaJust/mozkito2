@@ -164,6 +164,15 @@ public class SequelDatabase implements DataSource, Closeable {
 	}
 	
 	/**
+	 * Creates the primary keys.
+	 */
+	public void createPrimaryKeys() {
+		for (final ISequelAdapter<?> adapter : this.adapters.values()) {
+			adapter.createPrimaryKeys();
+		}
+	}
+	
+	/**
 	 * Creates the scheme.
 	 */
 	public void createScheme() {

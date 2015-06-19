@@ -1,0 +1,2 @@
+ALTER TABLE revisions ALTER COLUMN id NOT NULL;
+ALTER TABLE revisions ADD PRIMARY KEY (id);

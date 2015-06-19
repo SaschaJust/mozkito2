@@ -1,4 +1,3 @@
-ALTER TABLE changesets ALTER COLUMN id NOT NULL;
 ALTER TABLE changesets ALTER COLUMN depot_id NOT NULL;
 ALTER TABLE changesets ALTER COLUMN author_id NOT NULL;
 ALTER TABLE changesets ALTER COLUMN committer_id NOT NULL;
@@ -8,7 +7,6 @@ ALTER TABLE changesets ALTER COLUMN authored_time NOT NULL;
 ALTER TABLE changesets ALTER COLUMN commit_time NOT NULL;
 ALTER TABLE changesets ALTER COLUMN subject NOT NULL;
 ALTER TABLE changesets ALTER COLUMN body NOT NULL;
-ALTER TABLE changesets ADD PRIMARY KEY (id);
 ALTER TABLE changesets ADD FOREIGN KEY (depot_id) REFERENCES depots (id);
 ALTER TABLE changesets ADD FOREIGN KEY (author_id) REFERENCES identities (id);
 ALTER TABLE changesets ADD FOREIGN KEY (committer_id) REFERENCES identities (id);

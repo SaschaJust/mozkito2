@@ -52,7 +52,11 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 	/** The current id. */
 	private long                   currentId = 0l;
 	
+	/** The create sequences resource. */
 	private final String           createSequencesResource;
+	
+	/** The create primary keys resource. */
+	private final String           createPrimaryKeysResource;
 	
 	/**
 	 * Instantiates a new abstract sequel adapter.
@@ -70,6 +74,7 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 		this.createIndexesResource = identifier + "_create_indexes";
 		this.createConstraintsResource = identifier + "_create_constraints";
 		this.createSequencesResource = identifier + "_create_sequences";
+		this.createPrimaryKeysResource = identifier + "_create_pkeys";
 	}
 	
 	/**
@@ -96,6 +101,21 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 		try {
 			synchronized (this.database) {
 				SequelManager.executeSQL(this.database, this.createIndexesResource, true);
+			}
+		} catch (final SQLException | IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#createPrimaryKeys()
+	 */
+	public void createPrimaryKeys() {
+		try {
+			synchronized (this.database) {
+				SequelManager.executeSQL(this.database, this.createPrimaryKeysResource);
 			}
 		} catch (final SQLException | IOException e) {
 			throw new RuntimeException(e);

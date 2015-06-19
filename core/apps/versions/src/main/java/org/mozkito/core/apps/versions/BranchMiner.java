@@ -22,7 +22,7 @@ import org.apache.commons.collections4.map.UnmodifiableMap;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Head;
-import org.mozkito.core.libs.versions.model.Roots;
+import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.exec.Command;
@@ -31,7 +31,7 @@ import org.mozkito.skeleton.sequel.SequelDatabase;
 
 /**
  * The BranchMiner is used to collect all branches known to the underlying depot. The {@link Branch}es are stored in the
- * provided {@link SequelDatabase}, along with their {@link Head} and {@link Roots}.
+ * provided {@link SequelDatabase}, along with their {@link Head} and {@link Root}s.
  *
  * @author Sascha Just
  */

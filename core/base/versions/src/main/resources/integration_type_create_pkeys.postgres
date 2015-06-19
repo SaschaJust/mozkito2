@@ -1,0 +1,2 @@
+ALTER TABLE integration_types ALTER COLUMN id SET NOT NULL;
+ALTER TABLE integration_types ADD PRIMARY KEY (id); 

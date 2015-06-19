@@ -1,0 +1,2 @@
+ALTER TABLE convergences ALTER COLUMN id NOT NULL;
+ALTER TABLE convergences ADD PRIMARY KEY (id);

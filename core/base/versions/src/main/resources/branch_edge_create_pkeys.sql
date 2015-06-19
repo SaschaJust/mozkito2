@@ -1,0 +1,2 @@
+ALTER TABLE branch_edges ALTER COLUMN id NOT NULL;
+ALTER TABLE branch_edges ADD PRIMARY KEY (id);
