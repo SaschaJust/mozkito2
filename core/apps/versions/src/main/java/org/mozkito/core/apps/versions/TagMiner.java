@@ -170,6 +170,25 @@ public class TagMiner extends Task implements Runnable {
 						continue RESULTS;
 					}
 					line = command.nextOutput();
+					
+					// this might not hold
+					// @formatter:off
+					
+					/* 
+					 * refs/tags/chromeos-3.18-experiment
+                     * tag
+                     * 5a4a5d52f29d08d923ce8d232b0b497da674dd2c
+                     * b2776bf7149bddd1f4161f14f79520f17fc1d71d
+                     * commit
+                     * v3.18
+                     * Linus Torvalds
+                     * <torvalds@linux-foundation.org>
+                     * 1417990873 -0800
+                     * Linux 3.18
+                     * 
+					 */
+					
+					// @formatter:on
 					Asserts.equalTo(tagName, line);
 					line = command.nextOutput();
 					name = line;
