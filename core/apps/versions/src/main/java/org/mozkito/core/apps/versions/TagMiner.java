@@ -189,7 +189,7 @@ public class TagMiner extends Task implements Runnable {
 					 */
 					
 					// @formatter:on
-					Asserts.equalTo(tagName, line);
+					// Asserts.equalTo(tagName, line);
 					line = command.nextOutput();
 					name = line;
 					line = command.nextOutput();
