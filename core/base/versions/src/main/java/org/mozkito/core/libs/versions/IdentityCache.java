@@ -27,7 +27,7 @@ import org.mozkito.skeleton.contracts.Asserts;
 public class IdentityCache {
 	
 	/** The Constant UNKNOWN_IDENTITY. */
-	private static final String           UNKNOWN_IDENTITY = "UNKNOWN";
+	private static final String           UNKNOWN_IDENTITY = "<UNKNOWN>";
 	
 	/** The identities. */
 	private final Map<Identity, Identity> identities       = new HashMap<>();
@@ -59,7 +59,11 @@ public class IdentityCache {
 	 */
 	public Identity request(final String email,
 	                        final String fullname) {
-		final Identity identity = new Identity(email, fullname);
+		if (email == null && fullname == null) {
+			return getUnknown();
+		}
+		
+		Identity identity = new Identity(email, fullname);
 		
 		Asserts.notNull(this.identities);
 		
@@ -71,7 +75,9 @@ public class IdentityCache {
 			}
 		}
 		
-		return this.identities.get(identity);
+		identity = this.identities.get(identity);
+		Asserts.notNull(identity);
+		return identity;
 	}
 	
 }
