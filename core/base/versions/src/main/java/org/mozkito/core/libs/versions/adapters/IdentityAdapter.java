@@ -174,7 +174,7 @@ public class IdentityAdapter extends AbstractSequelAdapter<Identity> {
 			statement.setString(++index, identity.getEmail());
 			statement.setString(++index, identity.getFullName());
 			
-			statement.addBatch();
+			statement.executeUpdate();
 			
 			identity.id(id);
 			Asserts.positive(identity.id());
@@ -221,7 +221,9 @@ public class IdentityAdapter extends AbstractSequelAdapter<Identity> {
 					statement.setLong(3, id);
 				}
 				
-				statement.addBatch();
+				final int updates = statement.executeUpdate();
+				
+				Asserts.equalTo(1, updates);
 			}
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);

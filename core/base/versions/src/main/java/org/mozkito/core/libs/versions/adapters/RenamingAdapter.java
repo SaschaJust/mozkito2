@@ -122,7 +122,7 @@ public class RenamingAdapter extends AbstractSequelAdapter<Renaming> {
 				saveStatement.setLong(++index, entry.getFrom());
 				saveStatement.setLong(++index, entry.getTo());
 				saveStatement.setLong(++index, entry.getWhere());
-				saveStatement.addBatch();
+				saveStatement.executeUpdate();
 			}
 			
 			renaming.id(id);

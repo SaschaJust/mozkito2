@@ -122,7 +122,7 @@ public class BranchEdgeAdapter extends AbstractSequelAdapter<BranchEdge> {
 			saveStatement.setShort(++index, edge.getNavigationType());
 			saveStatement.setShort(++index, edge.getIntegrationType());
 			
-			saveStatement.addBatch();
+			saveStatement.executeUpdate();
 			
 			edge.id(id);
 		} catch (final SQLException e) {

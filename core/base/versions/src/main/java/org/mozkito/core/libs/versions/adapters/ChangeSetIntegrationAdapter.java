@@ -72,9 +72,8 @@ public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSet
 				index = 0;
 				statement.setShort(++index, type.getValue());
 				statement.setString(++index, type.name());
-				statement.addBatch();
+				statement.executeUpdate();
 			}
-			statement.executeBatch();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -146,7 +145,7 @@ public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSet
 			
 			saveStatement.setShort(++index, integration.getIntegrationType());
 			
-			saveStatement.addBatch();
+			saveStatement.executeUpdate();
 			
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);

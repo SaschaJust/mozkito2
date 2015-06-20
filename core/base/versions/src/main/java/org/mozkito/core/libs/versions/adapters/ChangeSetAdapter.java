@@ -133,7 +133,7 @@ public class ChangeSetAdapter extends AbstractSequelAdapter<ChangeSet> {
 			saveStatement.setString(++index, changeSet.getSubject());
 			saveStatement.setString(++index, changeSet.getBody());
 			
-			saveStatement.addBatch();
+			saveStatement.executeUpdate();
 			
 			changeSet.id(id);
 		} catch (final SQLException e) {

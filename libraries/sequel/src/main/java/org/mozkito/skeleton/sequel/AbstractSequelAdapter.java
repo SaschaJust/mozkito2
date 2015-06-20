@@ -231,7 +231,7 @@ public abstract class AbstractSequelAdapter<T> implements ISequelAdapter<T> {
 				save(statement, idStatement, entity);
 			}
 			
-			statement.executeBatch();
+			statement.getConnection().commit();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

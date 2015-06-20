@@ -195,7 +195,6 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 					                       label.integrationMarker);
 					this.branchAdapter.save(branchStmt, branchNextIdStmt, bEdge);
 					if (batchCounter >= batchSize) {
-						branchStmt.executeBatch();
 						this.database.commit();
 						batchCounter = 0;
 					}
@@ -207,23 +206,17 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 				}
 			}
 			
-			branchStmt.executeBatch();
-			edgeStmt.executeBatch();
-			
 			for (final ConvergenceEdge cEdge : entity.getConvergence()) {
 				this.convergenceAdapter.save(convergenceStmt, convergenceNextIdStmt, cEdge);
 			}
-			convergenceStmt.executeBatch();
 			
 			for (final Head head : entity.getHeads()) {
 				this.headAdapter.save(headStmt, headNextIdStmt, head);
 			}
-			headStmt.executeBatch();
 			
 			for (final Root roots : entity.getRoots()) {
 				this.rootsAdapter.save(rootsStmt, rootsNextIdStmt, roots);
 			}
-			rootsStmt.executeBatch();
 			
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);

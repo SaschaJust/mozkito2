@@ -125,7 +125,7 @@ public class RevisionAdapter extends AbstractSequelAdapter<Revision> {
 			saveStatement.setInt(++index, revision.getLinesIn());
 			saveStatement.setInt(++index, revision.getLinesOut());
 			
-			saveStatement.addBatch();
+			saveStatement.executeUpdate();
 			
 			revision.id(id);
 		} catch (final SQLException e) {

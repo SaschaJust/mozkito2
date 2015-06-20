@@ -118,7 +118,7 @@ public class RootAdapter extends AbstractSequelAdapter<Root> {
 			statement.setInt(++index, (int) id);
 			statement.setLong(++index, root.getBranchId());
 			statement.setLong(++index, root.getChangeSetId());
-			statement.addBatch();
+			statement.executeUpdate();
 			
 			root.id(id);
 		} catch (final SQLException e) {
