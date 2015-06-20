@@ -113,7 +113,7 @@ public class HandleAdapter extends AbstractSequelAdapter<Handle> {
 			saveStatement.setLong(++index, id);
 			saveStatement.setLong(++index, handle.getDepotId());
 			saveStatement.setString(++index, handle.getPath());
-			saveStatement.executeUpdate();
+			saveStatement.addBatch();
 			
 			handle.id(id);
 		} catch (final SQLException e) {

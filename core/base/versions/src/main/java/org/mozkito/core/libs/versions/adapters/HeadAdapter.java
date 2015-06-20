@@ -117,7 +117,7 @@ public class HeadAdapter extends AbstractSequelAdapter<Head> {
 			statement.setInt(++index, (int) id);
 			statement.setLong(++index, head.getBranchId());
 			statement.setLong(++index, head.getChangeSetId());
-			statement.executeUpdate();
+			statement.addBatch();
 			
 			head.id(id);
 		} catch (final SQLException e) {

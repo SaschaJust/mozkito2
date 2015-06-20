@@ -117,7 +117,7 @@ public class GraphEdgeAdapter extends AbstractSequelAdapter<GraphEdge> {
 			saveStatement.setLong(++index, edge.sourceId);
 			saveStatement.setLong(++index, edge.targetId);
 			
-			saveStatement.executeUpdate();
+			saveStatement.addBatch();
 			
 			edge.id(id);
 		} catch (final SQLException e) {

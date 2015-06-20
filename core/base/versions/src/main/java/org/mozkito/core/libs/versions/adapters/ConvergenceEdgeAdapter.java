@@ -117,7 +117,7 @@ public class ConvergenceEdgeAdapter extends AbstractSequelAdapter<ConvergenceEdg
 			saveStatement.setLong(++index, edge.getSourceId());
 			saveStatement.setLong(++index, edge.getConvergeId());
 			
-			saveStatement.executeUpdate();
+			saveStatement.addBatch();
 			
 			edge.id(id);
 		} catch (final SQLException e) {

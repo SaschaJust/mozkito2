@@ -123,7 +123,7 @@ public class TagAdapter extends AbstractSequelAdapter<Tag> {
 			statement.setString(++index, entity.getMessage());
 			statement.setLong(++index, entity.getIdentityId());
 			statement.setTimestamp(++index, Timestamp.from(entity.getTimestamp()));
-			statement.executeUpdate();
+			statement.addBatch();
 			
 			entity.id(id);
 		} catch (final SQLException e) {

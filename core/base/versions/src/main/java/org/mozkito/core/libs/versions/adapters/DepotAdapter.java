@@ -134,7 +134,7 @@ public class DepotAdapter extends AbstractSequelAdapter<Depot> {
 			saveStatement.setString(++index, depot.getName());
 			saveStatement.setString(++index, depot.getOrigin().toURL().toString());
 			saveStatement.setTimestamp(++index, Timestamp.from(depot.getMined()));
-			saveStatement.executeUpdate();
+			saveStatement.addBatch();
 			depot.id(id);
 		} catch (SQLException | MalformedURLException e) {
 			throw new RuntimeException(e);
