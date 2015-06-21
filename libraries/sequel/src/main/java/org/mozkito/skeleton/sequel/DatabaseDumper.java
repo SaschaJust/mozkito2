@@ -33,7 +33,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 	private static int                     BATCH_SIZE = 100000;
 	
 	/** The adapter. */
-	private final IAdapter<T>        adapter;
+	private final IAdapter<T>              adapter;
 	
 	/** The save. */
 	private final PreparedStatement        save;
@@ -81,7 +81,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 					
 					// still nothing, go to sleep for 10s
 					try {
-						Thread.sleep(10000);
+						Thread.sleep(5000);
 					} catch (final InterruptedException e) {
 						this.terminate = true;
 					}
