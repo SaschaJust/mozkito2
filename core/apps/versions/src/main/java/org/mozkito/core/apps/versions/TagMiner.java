@@ -193,7 +193,9 @@ public class TagMiner extends Task implements Runnable {
 					line = command.nextOutput();
 					name = line;
 					line = command.nextOutput();
-					email = line.substring(1, line.length() - 1);
+					email = line.length() > 2
+					                         ? line.substring(1, line.length() - 1)
+					                         : "";
 					line = command.nextOutput();
 					timestamp = Instant.ofEpochSecond(Long.parseLong(line.substring(0, line.indexOf(' '))));
 					messageBuilder = new StringBuilder();
