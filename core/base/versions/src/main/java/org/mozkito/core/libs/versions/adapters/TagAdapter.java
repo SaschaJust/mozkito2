@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.versions.adapters;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,30 +23,32 @@ import java.util.List;
 
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.AbstractAdapter;
+import org.mozkito.skeleton.sequel.Database;
 
 /**
  * The Class TagAdapter.
  *
  * @author Sascha Just
  */
-public class TagAdapter extends AbstractSequelAdapter<Tag> {
+public class TagAdapter extends AbstractAdapter<Tag> {
+	
+	private static long currentId = 0l;
 	
 	/**
 	 * Instantiates a new tag adapter.
 	 *
-	 * @param database
+	 * @param type
 	 *            the database
 	 */
-	public TagAdapter(final SequelDatabase database) {
-		super(database, "tag");
+	public TagAdapter(final Database.Type type) {
+		super(type, "tag");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public Tag create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -57,9 +60,10 @@ public class TagAdapter extends AbstractSequelAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
-	public void delete(final Tag object) {
+	public void delete(final Connection connection,
+	                   final Tag object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -69,9 +73,9 @@ public class TagAdapter extends AbstractSequelAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<Tag> load() {
+	public Iterator<Tag> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -81,9 +85,10 @@ public class TagAdapter extends AbstractSequelAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<Tag> load(final long... ids) {
+	public List<Tag> load(final Connection connection,
+	                      final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -93,9 +98,10 @@ public class TagAdapter extends AbstractSequelAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public Tag load(final long id) {
+	public Tag load(final Connection connection,
+	                final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -105,7 +111,16 @@ public class TagAdapter extends AbstractSequelAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 */
+	public synchronized long nextId() {
+		return ++currentId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement statement,
 	                 final long id,
@@ -134,9 +149,10 @@ public class TagAdapter extends AbstractSequelAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
-	public void update(final Tag... objects) {
+	public void update(final Connection connection,
+	                   final Tag... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

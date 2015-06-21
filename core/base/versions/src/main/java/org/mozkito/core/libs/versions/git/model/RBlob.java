@@ -11,23 +11,16 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.sequel;
+package org.mozkito.core.libs.versions.git.model;
 
 /**
- * The Interface IBuilder.
- * 
- * This is used to create {@link IEntity} instances during parsing.
- *
  * @author Sascha Just
- * @param <T>
- *            the generic type
+ *
  */
-public interface IBuilder<T> {
+public class RBlob extends RObject {
 	
-	/**
-	 * Creates the.
-	 *
-	 * @return the t
-	 */
-	T create();
+	String name;
+	short  mode;
+	byte[] content;
+	
 }

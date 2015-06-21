@@ -41,32 +41,40 @@ import org.mozkito.core.apps.versions.TaskRunner;
 import org.mozkito.core.apps.versions.TaskRunner.Task;
 import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.adapters.BranchAdapter;
+import org.mozkito.core.libs.versions.adapters.BranchEdgeAdapter;
 import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
 import org.mozkito.core.libs.versions.adapters.ChangeSetIntegrationAdapter;
+import org.mozkito.core.libs.versions.adapters.ConvergenceEdgeAdapter;
 import org.mozkito.core.libs.versions.adapters.DepotAdapter;
 import org.mozkito.core.libs.versions.adapters.GraphAdapter;
+import org.mozkito.core.libs.versions.adapters.GraphEdgeAdapter;
 import org.mozkito.core.libs.versions.adapters.HandleAdapter;
+import org.mozkito.core.libs.versions.adapters.HeadAdapter;
 import org.mozkito.core.libs.versions.adapters.IdentityAdapter;
 import org.mozkito.core.libs.versions.adapters.RenamingAdapter;
 import org.mozkito.core.libs.versions.adapters.RevisionAdapter;
+import org.mozkito.core.libs.versions.adapters.RootAdapter;
 import org.mozkito.core.libs.versions.adapters.TagAdapter;
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
+import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
+import org.mozkito.core.libs.versions.model.ConvergenceEdge;
 import org.mozkito.core.libs.versions.model.Depot;
+import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.core.libs.versions.model.Handle;
+import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
+import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Level;
 import org.mozkito.libraries.logging.Logger;
-import org.mozkito.skeleton.sequel.DatabaseDumper;
-import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelDatabase.Type;
+import org.mozkito.skeleton.sequel.Database;
+import org.mozkito.skeleton.sequel.Database.Type;
 
-// TODO: Auto-generated Javadoc
 /**
  * The entry point of app: mozkito-versions.
  *
@@ -85,6 +93,9 @@ public class Main {
 	
 	/** The Constant EXIT_ERR_TASKS. */
 	private static final int EXIT_ERR_TASKS    = 4;
+	
+	/** The Constant POOL_SIZE. */
+	public static final int  POOL_SIZE         = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1);
 	
 	/**
 	 * Creates the options.
@@ -229,18 +240,18 @@ public class Main {
 			
 			Logger.info("Establishing database connection and creating pool.");
 			
-			final SequelDatabase database = new SequelDatabase(
-			                                                   databaseType,
-			                                                   databaseName,
-			                                                   line.hasOption("database-host")
-			                                                                                  ? line.getOptionValue("database-host")
-			                                                                                  : null,
-			                                                   line.hasOption("database-user")
-			                                                                                  ? line.getOptionValue("database-user")
-			                                                                                  : null,
-			                                                   line.hasOption("database-password")
-			                                                                                      ? line.getOptionValue("database-password")
-			                                                                                      : null, null);
+			final Database database = new Database(
+			                                       databaseType,
+			                                       databaseName,
+			                                       line.hasOption("database-host")
+			                                                                      ? line.getOptionValue("database-host")
+			                                                                      : null,
+			                                       line.hasOption("database-user")
+			                                                                      ? line.getOptionValue("database-user")
+			                                                                      : null,
+			                                       line.hasOption("database-password")
+			                                                                          ? line.getOptionValue("database-password")
+			                                                                          : null, null);
 			
 			final File baseDir = new File(uri);
 			final List<File> skips = new LinkedList<>();
@@ -290,53 +301,37 @@ public class Main {
 				});
 			}
 			
-			database.register(Depot.class, new DepotAdapter(database));
-			database.register(Identity.class, new IdentityAdapter(database));
-			database.register(ChangeSet.class, new ChangeSetAdapter(database));
-			database.register(Revision.class, new RevisionAdapter(database));
-			database.register(Graph.class, new GraphAdapter(database));
-			database.register(Branch.class, new BranchAdapter(database));
-			database.register(Handle.class, new HandleAdapter(database));
-			database.register(Renaming.class, new RenamingAdapter(database));
-			database.register(ChangeSetIntegration.class, new ChangeSetIntegrationAdapter(database));
-			database.register(Tag.class, new TagAdapter(database));
+			database.register(Depot.class, new DepotAdapter(database.getType()));
+			database.register(Identity.class, new IdentityAdapter(database.getType()));
+			database.register(ChangeSet.class, new ChangeSetAdapter(database.getType()));
+			database.register(Revision.class, new RevisionAdapter(database.getType()));
+			database.register(GraphEdge.class, new GraphEdgeAdapter(database.getType()));
+			database.register(BranchEdge.class, new BranchEdgeAdapter(database.getType()));
+			database.register(ConvergenceEdge.class, new ConvergenceEdgeAdapter(database.getType()));
+			database.register(Head.class, new HeadAdapter(database.getType()));
+			database.register(Root.class, new RootAdapter(database.getType()));
+			database.register(Graph.class,
+			                  new GraphAdapter(database.getType(), database.getAdapter(GraphEdge.class),
+			                                   database.getAdapter(BranchEdge.class), database.getAdapter(Head.class),
+			                                   database.getAdapter(Root.class),
+			                                   database.getAdapter(ConvergenceEdge.class)));
+			database.register(Branch.class, new BranchAdapter(database.getType()));
+			database.register(Handle.class, new HandleAdapter(database.getType()));
+			database.register(Renaming.class, new RenamingAdapter(database.getType()));
+			database.register(ChangeSetIntegration.class, new ChangeSetIntegrationAdapter(database.getType()));
+			database.register(Tag.class, new TagAdapter(database.getType()));
 			database.createScheme();
-			
-			final DatabaseDumper<Identity> identityDumper = new DatabaseDumper<>(database.getAdapter(Identity.class));
-			final DatabaseDumper<ChangeSet> changeSetDumper = new DatabaseDumper<>(database.getAdapter(ChangeSet.class));
-			final DatabaseDumper<Revision> revisionDumper = new DatabaseDumper<>(database.getAdapter(Revision.class));
-			final DatabaseDumper<Branch> branchDumper = new DatabaseDumper<>(database.getAdapter(Branch.class));
-			final DatabaseDumper<Handle> handleDumper = new DatabaseDumper<>(database.getAdapter(Handle.class));
-			final DatabaseDumper<Graph> graphDumper = new DatabaseDumper<>(database.getAdapter(Graph.class));
-			final DatabaseDumper<Depot> depotDumper = new DatabaseDumper<>(database.getAdapter(Depot.class));
-			final DatabaseDumper<Renaming> renamingDumper = new DatabaseDumper<>(database.getAdapter(Renaming.class));
-			final DatabaseDumper<ChangeSetIntegration> integrationDumper = new DatabaseDumper<>(
-			                                                                                    database.getAdapter(ChangeSetIntegration.class));
-			final DatabaseDumper<Tag> tagDumper = new DatabaseDumper<Tag>(database.getAdapter(Tag.class));
-			
-			identityDumper.start();
-			changeSetDumper.start();
-			revisionDumper.start();
-			branchDumper.start();
-			handleDumper.start();
-			graphDumper.start();
-			depotDumper.start();
-			renamingDumper.start();
-			integrationDumper.start();
 			
 			final IdentityCache identityCache = new IdentityCache();
 			
 			System.out.println("Database setup complete.");
 			
-			final ExecutorService es = Executors.newWorkStealingPool(Math.max(Runtime.getRuntime()
-			                                                                         .availableProcessors() - 2, 1));
+			final ExecutorService es = Executors.newWorkStealingPool(POOL_SIZE);
 			
 			for (final File cloneDir : depotDirs) {
 				final URI depotURI = cloneDir.toURI();
 				final TaskRunner runner = new TaskRunner(baseDir, workDir, depotURI, tasks.toArray(new Task[0]),
-				                                         identityCache, identityDumper, changeSetDumper,
-				                                         revisionDumper, branchDumper, handleDumper, graphDumper,
-				                                         depotDumper, renamingDumper, integrationDumper, tagDumper);
+				                                         identityCache, database);
 				es.execute(runner);
 			}
 			
@@ -345,28 +340,6 @@ public class Main {
 			
 			final boolean ret = es.awaitTermination(30, TimeUnit.DAYS);
 			System.out.println("————————————————————————————————————————");
-			
-			identityDumper.terminate();
-			changeSetDumper.terminate();
-			revisionDumper.terminate();
-			branchDumper.terminate();
-			handleDumper.terminate();
-			graphDumper.terminate();
-			depotDumper.terminate();
-			renamingDumper.terminate();
-			integrationDumper.terminate();
-			tagDumper.terminate();
-			
-			identityDumper.join();
-			changeSetDumper.join();
-			revisionDumper.join();
-			branchDumper.join();
-			handleDumper.join();
-			graphDumper.join();
-			depotDumper.join();
-			renamingDumper.join();
-			integrationDumper.join();
-			tagDumper.join();
 			
 			System.out.println("Creating primary keys.");
 			database.createPrimaryKeys();

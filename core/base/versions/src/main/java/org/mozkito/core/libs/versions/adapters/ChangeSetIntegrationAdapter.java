@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.versions.adapters;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,33 +23,35 @@ import java.util.List;
 import org.mozkito.core.libs.versions.IntegrationType;
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelManager;
+import org.mozkito.skeleton.sequel.AbstractAdapter;
+import org.mozkito.skeleton.sequel.Database;
+import org.mozkito.skeleton.sequel.DatabaseManager;
 
 /**
  * @author Sascha Just
  *
  */
-public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSetIntegration> {
+public class ChangeSetIntegrationAdapter extends AbstractAdapter<ChangeSetIntegration> {
+	
+	private static long  currentId = 0l;
 	
 	private final String typeStatement;
 	
 	/**
 	 * Instantiates a new change set integration adapter.
 	 *
-	 * @param database
-	 *            the database
+	 * @param type
+	 *            the type
 	 */
-	public ChangeSetIntegrationAdapter(final SequelDatabase database) {
-		super(database, "changeset_integrationtype");
-		this.typeStatement = SequelManager.loadStatement(database, "integration_type_save");
+	public ChangeSetIntegrationAdapter(final Database.Type type) {
+		super(type, "changeset_integrationtype");
+		this.typeStatement = DatabaseManager.loadStatement(type, "integration_type_save");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public ChangeSetIntegration create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -60,20 +63,21 @@ public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSet
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.AbstractSequelAdapter#createScheme()
+	 * @see org.mozkito.skeleton.sequel.AbstractAdapter#createScheme(java.sql.Connection)
 	 */
 	@Override
-	public void createScheme() {
-		super.createScheme();
+	public void createScheme(final Connection connection) {
+		super.createScheme(connection);
 		try {
-			final PreparedStatement statement = this.database.getConnection().prepareStatement(this.typeStatement);
+			final PreparedStatement statement = connection.prepareStatement(this.typeStatement);
 			int index;
 			for (final IntegrationType type : IntegrationType.values()) {
 				index = 0;
 				statement.setShort(++index, type.getValue());
 				statement.setString(++index, type.name());
-				statement.executeUpdate();
+				statement.addBatch();
 			}
+			statement.executeBatch();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -82,9 +86,10 @@ public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSet
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
-	public void delete(final ChangeSetIntegration object) {
+	public void delete(final Connection connection,
+	                   final ChangeSetIntegration object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -94,9 +99,9 @@ public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSet
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<ChangeSetIntegration> load() {
+	public Iterator<ChangeSetIntegration> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -106,9 +111,10 @@ public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSet
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<ChangeSetIntegration> load(final long... ids) {
+	public List<ChangeSetIntegration> load(final Connection connection,
+	                                       final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -118,9 +124,10 @@ public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSet
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public ChangeSetIntegration load(final long id) {
+	public ChangeSetIntegration load(final Connection connection,
+	                                 final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -130,7 +137,16 @@ public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSet
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 */
+	public synchronized long nextId() {
+		return ++currentId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
@@ -155,9 +171,10 @@ public class ChangeSetIntegrationAdapter extends AbstractSequelAdapter<ChangeSet
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
-	public void update(final ChangeSetIntegration... objects) {
+	public void update(final Connection connection,
+	                   final ChangeSetIntegration... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

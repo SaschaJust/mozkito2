@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.versions.adapters;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,26 +22,31 @@ import java.util.List;
 
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.AbstractAdapter;
+import org.mozkito.skeleton.sequel.Database;
 
 /**
  * @author Sascha Just
  *
  */
-public class HandleAdapter extends AbstractSequelAdapter<Handle> {
+public class HandleAdapter extends AbstractAdapter<Handle> {
+	
+	private static long currentId = 0l;
 	
 	/**
-	 * @param database
+	 * Instantiates a new handle adapter.
+	 *
+	 * @param type
+	 *            the type
 	 */
-	public HandleAdapter(final SequelDatabase database) {
-		super(database, "handle");
+	public HandleAdapter(final Database.Type type) {
+		super(type, "handle");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public Handle create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -52,9 +58,10 @@ public class HandleAdapter extends AbstractSequelAdapter<Handle> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
-	public void delete(final Handle object) {
+	public void delete(final Connection connection,
+	                   final Handle object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -64,9 +71,9 @@ public class HandleAdapter extends AbstractSequelAdapter<Handle> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<Handle> load() {
+	public Iterator<Handle> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -76,9 +83,10 @@ public class HandleAdapter extends AbstractSequelAdapter<Handle> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<Handle> load(final long... ids) {
+	public List<Handle> load(final Connection connection,
+	                         final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -88,9 +96,10 @@ public class HandleAdapter extends AbstractSequelAdapter<Handle> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public Handle load(final long id) {
+	public Handle load(final Connection connection,
+	                   final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -100,7 +109,16 @@ public class HandleAdapter extends AbstractSequelAdapter<Handle> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 */
+	public synchronized long nextId() {
+		return ++currentId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
@@ -124,9 +142,10 @@ public class HandleAdapter extends AbstractSequelAdapter<Handle> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
-	public void update(final Handle... objects) {
+	public void update(final Connection connection,
+	                   final Handle... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

@@ -26,7 +26,7 @@ import org.mozkito.skeleton.contracts.Requires;
  * @param <T>
  *            the generic type
  */
-public class ResultIterator<T extends ISequelEntity> implements Iterator<T> {
+public class ResultIterator<T extends IEntity> implements Iterator<T> {
 	
 	/** The results. */
 	private final ResultSet         results;
@@ -35,7 +35,7 @@ public class ResultIterator<T extends ISequelEntity> implements Iterator<T> {
 	private boolean                 hasNext;
 	
 	/** The adapter. */
-	private final ISequelAdapter<T> adapter;
+	private final IAdapter<T> adapter;
 	
 	/**
 	 * Instantiates a new result iterator.
@@ -45,7 +45,7 @@ public class ResultIterator<T extends ISequelEntity> implements Iterator<T> {
 	 * @param results
 	 *            the results
 	 */
-	public ResultIterator(final ISequelAdapter<T> adapter, final ResultSet results) {
+	public ResultIterator(final IAdapter<T> adapter, final ResultSet results) {
 		Requires.notNull(adapter);
 		Requires.notNull(results);
 		

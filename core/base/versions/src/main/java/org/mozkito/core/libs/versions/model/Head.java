@@ -14,14 +14,14 @@
 package org.mozkito.core.libs.versions.model;
 
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelEntity;
+import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class Head.
  *
  * @author Sascha Just
  */
-public class Head implements ISequelEntity {
+public class Head implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -2058273091681846846L;
@@ -112,7 +112,7 @@ public class Head implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -121,7 +121,7 @@ public class Head implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;

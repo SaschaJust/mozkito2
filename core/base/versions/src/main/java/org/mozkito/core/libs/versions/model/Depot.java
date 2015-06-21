@@ -16,14 +16,14 @@ package org.mozkito.core.libs.versions.model;
 import java.net.URI;
 import java.time.Instant;
 
-import org.mozkito.skeleton.sequel.ISequelEntity;
+import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class Depot.
  *
  * @author Sascha Just
  */
-public class Depot implements ISequelEntity {
+public class Depot implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 2547303402415479035L;
@@ -126,7 +126,7 @@ public class Depot implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.IEntity#id()
 	 */
 	@Override
 	public long id() {
@@ -136,7 +136,7 @@ public class Depot implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
 	 */
 	@Override
 	public void id(final long id) {

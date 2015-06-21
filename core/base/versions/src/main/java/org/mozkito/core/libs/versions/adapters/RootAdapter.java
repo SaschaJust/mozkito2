@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.versions.adapters;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,30 +22,32 @@ import java.util.List;
 
 import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.AbstractAdapter;
+import org.mozkito.skeleton.sequel.Database;
 
 /**
  * The Class RootAdapter.
  *
  * @author Sascha Just
  */
-public class RootAdapter extends AbstractSequelAdapter<Root> {
+public class RootAdapter extends AbstractAdapter<Root> {
+	
+	private static long currentId = 0l;
 	
 	/**
 	 * Instantiates a new Root adapter.
 	 *
-	 * @param database
+	 * @param type
 	 *            the database
 	 */
-	public RootAdapter(final SequelDatabase database) {
-		super(database, "root");
+	public RootAdapter(final Database.Type type) {
+		super(type, "root");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public Root create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -56,9 +59,10 @@ public class RootAdapter extends AbstractSequelAdapter<Root> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
-	public void delete(final Root object) {
+	public void delete(final Connection connection,
+	                   final Root object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -68,9 +72,9 @@ public class RootAdapter extends AbstractSequelAdapter<Root> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<Root> load() {
+	public Iterator<Root> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -80,9 +84,10 @@ public class RootAdapter extends AbstractSequelAdapter<Root> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<Root> load(final long... ids) {
+	public List<Root> load(final Connection connection,
+	                       final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -92,9 +97,10 @@ public class RootAdapter extends AbstractSequelAdapter<Root> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public Root load(final long id) {
+	public Root load(final Connection connection,
+	                 final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -104,7 +110,16 @@ public class RootAdapter extends AbstractSequelAdapter<Root> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 */
+	public synchronized long nextId() {
+		return ++currentId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement statement,
 	                 final long id,
@@ -129,9 +144,10 @@ public class RootAdapter extends AbstractSequelAdapter<Root> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
-	public void update(final Root... objects) {
+	public void update(final Connection connection,
+	                   final Root... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

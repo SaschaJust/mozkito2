@@ -13,14 +13,14 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.skeleton.sequel.ISequelEntity;
+import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class Branch models a branch in a version archive.
  *
  * @author Sascha Just
  */
-public class Branch implements ISequelEntity {
+public class Branch implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 6406059989807143676L;
@@ -140,7 +140,7 @@ public class Branch implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -149,7 +149,7 @@ public class Branch implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = (int) id;

@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.versions.adapters;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,26 +22,31 @@ import java.util.List;
 
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.AbstractAdapter;
+import org.mozkito.skeleton.sequel.Database;
 
 /**
  * @author Sascha Just
  *
  */
-public class RevisionAdapter extends AbstractSequelAdapter<Revision> {
+public class RevisionAdapter extends AbstractAdapter<Revision> {
+	
+	private static long currentId = 0l;
 	
 	/**
-	 * @param database
+	 * Instantiates a new revision adapter.
+	 *
+	 * @param type
+	 *            the type
 	 */
-	public RevisionAdapter(final SequelDatabase database) {
-		super(database, "revision");
+	public RevisionAdapter(final Database.Type type) {
+		super(type, "revision");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public Revision create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -52,9 +58,10 @@ public class RevisionAdapter extends AbstractSequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
-	public void delete(final Revision object) {
+	public void delete(final Connection connection,
+	                   final Revision object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -64,9 +71,9 @@ public class RevisionAdapter extends AbstractSequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<Revision> load() {
+	public Iterator<Revision> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -76,9 +83,10 @@ public class RevisionAdapter extends AbstractSequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<Revision> load(final long... ids) {
+	public List<Revision> load(final Connection connection,
+	                           final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -88,9 +96,10 @@ public class RevisionAdapter extends AbstractSequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public Revision load(final long id) {
+	public Revision load(final Connection connection,
+	                     final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -100,7 +109,16 @@ public class RevisionAdapter extends AbstractSequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 */
+	public synchronized long nextId() {
+		return ++currentId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
@@ -136,26 +154,10 @@ public class RevisionAdapter extends AbstractSequelAdapter<Revision> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
-	@Override
-	public void save(final Revision... revisions) {
-		Requires.notNull(revisions);
-		
-		final PreparedStatement statement = prepareSaveStatement();
-		final PreparedStatement idStatement = prepareNextIdStatement();
-		
-		for (final Revision revision : revisions) {
-			save(statement, idStatement, revision);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
-	 */
-	public void update(final Revision... objects) {
+	public void update(final Connection connection,
+	                   final Revision... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

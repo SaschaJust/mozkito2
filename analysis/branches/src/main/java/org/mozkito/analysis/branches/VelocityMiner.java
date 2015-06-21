@@ -21,8 +21,8 @@ import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
-import org.mozkito.skeleton.sequel.SequelDatabase;
-import org.mozkito.skeleton.sequel.SequelDatabase.Type;
+import org.mozkito.skeleton.sequel.Database;
+import org.mozkito.skeleton.sequel.Database.Type;
 
 /**
  * @author Sascha Just
@@ -33,12 +33,12 @@ public class VelocityMiner {
 	public static void main(final String[] args) throws SQLException {
 		final String monitoredBranchString = "master";
 		
-		final SequelDatabase database = new SequelDatabase(Type.DERBY, "test", null, null, null, null);
+		final Database database = new Database(Type.DERBY, "test", null, null, null, null);
 		final Graph graph = Graph.load(database);
 		
-		final ChangeSetAdapter changeSetAdapter = new ChangeSetAdapter(database);
-		final BranchAdapter branchAdapter = new BranchAdapter(database);
-		final Iterator<ChangeSet> iterator = changeSetAdapter.load();
+		final ChangeSetAdapter changeSetAdapter = new ChangeSetAdapter(database.getType());
+		final BranchAdapter branchAdapter = new BranchAdapter(database.getType());
+		final Iterator<ChangeSet> iterator = changeSetAdapter.load(database.getConnection());
 		final ChangeSet changeSet = null;
 		final Branch branch = null;
 		// final Branch monitoredBranch = branchAdapter.loadByName(monitoredBranchString);

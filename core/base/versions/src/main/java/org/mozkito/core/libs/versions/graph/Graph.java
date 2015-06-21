@@ -50,17 +50,17 @@ import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelEntity;
-import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.IEntity;
+import org.mozkito.skeleton.sequel.Database;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class DepotGraph represents a multi-layer view on the Git repository. Once built, it does not require the
- * repository to be present The graph can be persisted to a {@link SequelDatabase}.
+ * repository to be present The graph can be persisted to a {@link Database}.
  *
  * @author Sascha Just
  */
-public class Graph implements ISequelEntity {
+public class Graph implements IEntity {
 	
 	/**
 	 * The Class ChangeSetIterator.
@@ -167,7 +167,7 @@ public class Graph implements ISequelEntity {
 	 *            the database
 	 * @return the depot graph
 	 */
-	public static Graph load(final SequelDatabase database) {
+	public static Graph load(final Database database) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -778,7 +778,7 @@ public class Graph implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -787,7 +787,7 @@ public class Graph implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;

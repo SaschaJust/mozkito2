@@ -76,7 +76,7 @@ public class BulkReader<T> {
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
-	public BulkReader(final String query, final SequelDatabase database, final EntityFactory<T> factory)
+	public BulkReader(final String query, final Database database, final EntityFactory<T> factory)
 	        throws SQLException {
 		
 		this.method = null;

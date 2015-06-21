@@ -11,23 +11,18 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.sequel;
+package org.mozkito.core.libs.versions.git.model;
 
 /**
- * The Interface IBuilder.
- * 
- * This is used to create {@link IEntity} instances during parsing.
+ * The Enum RefType.
  *
  * @author Sascha Just
- * @param <T>
- *            the generic type
  */
-public interface IBuilder<T> {
+public enum RRefType {
 	
-	/**
-	 * Creates the.
-	 *
-	 * @return the t
-	 */
-	T create();
+	/** The head. */
+	HEAD,
+	
+	/** The tag. */
+	TAG;
 }

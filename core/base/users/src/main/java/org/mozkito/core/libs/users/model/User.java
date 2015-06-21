@@ -19,14 +19,14 @@ import java.util.Set;
 import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelEntity;
+import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class User.
  *
  * @author Sascha Just
  */
-public class User implements ISequelEntity {
+public class User implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long   serialVersionUID = 2009808652533819571L;
@@ -62,7 +62,7 @@ public class User implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -71,7 +71,7 @@ public class User implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;

@@ -15,14 +15,14 @@ package org.mozkito.core.libs.versions.model;
 
 import java.time.Instant;
 
-import org.mozkito.skeleton.sequel.ISequelEntity;
+import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class Tag.
  *
  * @author Sascha Just
  */
-public class Tag implements ISequelEntity {
+public class Tag implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 4737963776452999836L;
@@ -206,7 +206,7 @@ public class Tag implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -215,7 +215,7 @@ public class Tag implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;

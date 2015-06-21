@@ -13,14 +13,14 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.skeleton.sequel.ISequelEntity;
+import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class ChangeSetOrigin.
  *
  * @author Sascha Just
  */
-public class ChangeSetOrigin implements ISequelEntity {
+public class ChangeSetOrigin implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -262697317026758489L;
@@ -51,7 +51,7 @@ public class ChangeSetOrigin implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -60,7 +60,7 @@ public class ChangeSetOrigin implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;

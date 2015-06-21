@@ -13,7 +13,7 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.skeleton.sequel.ISequelEntity;
+import org.mozkito.skeleton.sequel.IEntity;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -21,7 +21,7 @@ import org.mozkito.skeleton.sequel.ISequelEntity;
  *
  * @author Sascha Just
  */
-public class ConvergenceEdge implements ISequelEntity {
+public class ConvergenceEdge implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 3190680196331117675L;
@@ -129,7 +129,7 @@ public class ConvergenceEdge implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -138,7 +138,7 @@ public class ConvergenceEdge implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;

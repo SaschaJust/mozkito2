@@ -13,6 +13,7 @@
 
 package org.mozkito.skeleton.sequel;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Iterator;
@@ -25,7 +26,7 @@ import java.util.List;
  * @param <T>
  *            the generic type
  */
-public interface ISequelAdapter<T> {
+public interface IAdapter<T extends IEntity> {
 	
 	/**
 	 * Creates the.
@@ -38,79 +39,106 @@ public interface ISequelAdapter<T> {
 	
 	/**
 	 * Creates the constraints.
+	 *
+	 * @param connection
+	 *            the connection
 	 */
-	void createConstraints();
+	void createConstraints(Connection connection);
 	
 	/**
 	 * Creates the indexes.
+	 *
+	 * @param connection
+	 *            the connection
 	 */
-	void createIndexes();
+	void createIndexes(Connection connection);
 	
 	/**
 	 * Creates the primary keys.
+	 *
+	 * @param connection
+	 *            the connection
 	 */
-	void createPrimaryKeys();
+	void createPrimaryKeys(Connection connection);
 	
 	/**
 	 * Creates the scheme.
+	 *
+	 * @param connection
+	 *            the connection
 	 */
-	void createScheme();
+	void createScheme(Connection connection);
 	
 	/**
 	 * Delete.
 	 *
+	 * @param connection
+	 *            the connection
 	 * @param object
 	 *            the object
 	 */
-	void delete(T object);
+	void delete(Connection connection,
+	            T object);
 	
 	/**
 	 * Load.
 	 *
+	 * @param connection
+	 *            the connection
 	 * @return the iterator
 	 */
-	Iterator<T> load();
+	Iterator<T> load(Connection connection);
 	
 	/**
 	 * Load.
 	 *
+	 * @param connection
+	 *            the connection
 	 * @param ids
 	 *            the ids
 	 * @return the t
 	 */
-	List<T> load(long... ids);
+	List<T> load(Connection connection,
+	             long... ids);
 	
 	/**
 	 * Load.
 	 *
+	 * @param connection
+	 *            the connection
 	 * @param id
 	 *            the id
 	 * @return the t
 	 */
-	T load(long id);
+	T load(Connection connection,
+	       long id);
 	
 	/**
 	 * Next id.
 	 *
-	 * @param nextIdStatement
-	 *            the next id statement
 	 * @return the object
 	 */
-	long nextId(PreparedStatement nextIdStatement);
-	
-	/**
-	 * Prepare next id statement.
-	 *
-	 * @return the prepared statement
-	 */
-	PreparedStatement prepareNextIdStatement();
+	long nextId();
 	
 	/**
 	 * Prepare save statement.
 	 *
+	 * @param connection
+	 *            the connection
 	 * @return the prepared statement
 	 */
-	PreparedStatement prepareSaveStatement();
+	PreparedStatement prepareSaveStatement(Connection connection);
+	
+	/**
+	 * Save.
+	 *
+	 * @param connection
+	 *            the connection
+	 * @param objects
+	 *            the objects
+	 */
+	void save(Connection connection,
+	          @SuppressWarnings ("unchecked") T... objects);
 	
 	/**
 	 * Save.
@@ -127,33 +155,14 @@ public interface ISequelAdapter<T> {
 	          T entity);
 	
 	/**
-	 * Save.
-	 *
-	 * @param saveStatement
-	 *            the save statement
-	 * @param idStatement
-	 *            the id statement
-	 * @param entity
-	 *            the entity
-	 */
-	void save(PreparedStatement saveStatement,
-	          PreparedStatement idStatement,
-	          T entity);
-	
-	/**
-	 * Save.
-	 *
-	 * @param objects
-	 *            the objects
-	 */
-	void save(@SuppressWarnings ("unchecked") T... objects);
-	
-	/**
 	 * Update.
 	 *
+	 * @param connection
+	 *            the connection
 	 * @param objects
 	 *            the objects
 	 */
-	void update(@SuppressWarnings ("unchecked") T... objects);
+	void update(Connection connection,
+	            @SuppressWarnings ("unchecked") T... objects);
 	
 }

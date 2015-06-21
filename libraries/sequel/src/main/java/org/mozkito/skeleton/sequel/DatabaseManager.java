@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import org.apache.ibatis.jdbc.ScriptRunner;
 
 import org.mozkito.libraries.logging.Logger;
-import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 
 /**
@@ -32,13 +31,13 @@ import org.mozkito.skeleton.contracts.Requires;
  *
  * @author Sascha Just
  */
-public class SequelManager {
+public class DatabaseManager {
 	
 	/**
 	 * Execute sql.
 	 *
-	 * @param database
-	 *            the database
+	 * @param connection
+	 *            the connection
 	 * @param in
 	 *            the in
 	 * @throws SQLException
@@ -46,10 +45,9 @@ public class SequelManager {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static void executeSQL(final SequelDatabase database,
+	public static void executeSQL(final Connection connection,
 	                              final InputStream in) throws SQLException, IOException {
-		synchronized (database) {
-			final Connection connection = database.getConnection();
+		synchronized (connection) {
 			try {
 				final ScriptRunner runner = new ScriptRunner(connection);
 				runner.setLogWriter(new PrintWriter(Logger.debug));
@@ -66,8 +64,10 @@ public class SequelManager {
 	/**
 	 * Execute sql.
 	 *
-	 * @param database
-	 *            the database
+	 * @param connection
+	 *            the connection
+	 * @param type
+	 *            the type
 	 * @param name
 	 *            the name
 	 * @throws SQLException
@@ -75,16 +75,19 @@ public class SequelManager {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static void executeSQL(final SequelDatabase database,
+	public static void executeSQL(final Connection connection,
+	                              final Database.Type type,
 	                              final String name) throws SQLException, IOException {
-		executeSQL(database, name, false);
+		executeSQL(connection, type, name, false);
 	}
 	
 	/**
 	 * Execute sql.
 	 *
-	 * @param database
-	 *            the database
+	 * @param connection
+	 *            the connection
+	 * @param type
+	 *            the type
 	 * @param name
 	 *            the name
 	 * @param optional
@@ -94,15 +97,15 @@ public class SequelManager {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public static void executeSQL(final SequelDatabase database,
+	public static void executeSQL(final Connection connection,
+	                              final Database.Type type,
 	                              final String name,
 	                              final boolean optional) throws SQLException, IOException {
-		Requires.notNull(database);
+		Requires.notNull(connection);
+		Requires.notNull(type);
 		Requires.notNull(name);
 		
-		Asserts.notNull(database.getType());
-		
-		String path = name + "." + database.getType().name().toLowerCase();
+		String path = name + "." + type.name().toLowerCase();
 		InputStream stream = ClassLoader.getSystemResourceAsStream(path);
 		
 		if (stream == null) {
@@ -117,26 +120,24 @@ public class SequelManager {
 			}
 		}
 		
-		executeSQL(database, stream);
+		executeSQL(connection, stream);
 	}
 	
 	/**
 	 * Load query.
 	 *
-	 * @param database
-	 *            the database
+	 * @param type
+	 *            the type
 	 * @param name
 	 *            the name
 	 * @return the string
 	 */
-	public static String loadStatement(final SequelDatabase database,
+	public static String loadStatement(final Database.Type type,
 	                                   final String name) {
-		Requires.notNull(database);
+		Requires.notNull(type);
 		Requires.notNull(name);
 		
-		Asserts.notNull(database.getType());
-		
-		String path = name + "." + database.getType().name().toLowerCase();
+		String path = name + "." + type.name().toLowerCase();
 		InputStream stream = ClassLoader.getSystemResourceAsStream(path);
 		
 		final StringBuilder statementBuilder = new StringBuilder();

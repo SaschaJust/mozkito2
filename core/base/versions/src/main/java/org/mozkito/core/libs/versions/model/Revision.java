@@ -15,14 +15,14 @@ package org.mozkito.core.libs.versions.model;
 
 import org.mozkito.core.libs.versions.ChangeType;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelEntity;
+import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class Revision.
  *
  * @author Sascha Just
  */
-public class Revision implements ISequelEntity {
+public class Revision implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 2497422551900780440L;
@@ -263,7 +263,7 @@ public class Revision implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.IEntity#id()
 	 */
 	@Override
 	public long id() {
@@ -273,7 +273,7 @@ public class Revision implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
 	 */
 	@Override
 	public void id(final long id) {

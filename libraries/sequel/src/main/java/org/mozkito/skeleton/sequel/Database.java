@@ -36,7 +36,7 @@ import org.mozkito.skeleton.contracts.Requires;
  *
  * @author Sascha Just
  */
-public class SequelDatabase implements DataSource, Closeable {
+public class Database implements DataSource, Closeable {
 	
 	/**
 	 * The Enum IdMode.
@@ -62,19 +62,23 @@ public class SequelDatabase implements DataSource, Closeable {
 		MSSQL;
 	}
 	
+	/** The Constant POOL_SIZE. */
+	public static final int                  POOL_SIZE = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1) + 1;
+	
 	/** The data source. */
-	private final HikariDataSource                 dataSource;
+	private final HikariDataSource           dataSource;
 	
 	/** The type. */
-	private final Type                             type;
+	private final Type                       type;
 	
 	/** The connection. */
-	private final Connection                       connection;
+	private final Connection                 connection;
 	
 	/** The adapters. */
-	private final Map<Class<?>, ISequelAdapter<?>> adapters = new HashMap<>();
+	private final Map<Class<?>, IAdapter<?>> adapters  = new HashMap<>();
 	
-	private IdMode                                 idMode;
+	/** The id mode. */
+	private IdMode                           idMode;
 	
 	/**
 	 * Instantiates a new sequel database.
@@ -94,7 +98,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
-	public SequelDatabase(final Type type, final String name, final String host, final String username,
+	public Database(final Type type, final String name, final String host, final String username,
 	        final String password, final Integer port) throws SQLException {
 		HikariConfig config;
 		switch (type) {
@@ -120,7 +124,8 @@ public class SequelDatabase implements DataSource, Closeable {
 		if (port != null) {
 			this.dataSource.addDataSourceProperty("port", 1433);
 		}
-		this.dataSource.getConnection().setAutoCommit(false);
+		this.dataSource.setAutoCommit(false);
+		this.dataSource.setMaximumPoolSize(POOL_SIZE);
 		this.connection = this.dataSource.getConnection();
 	}
 	
@@ -149,8 +154,8 @@ public class SequelDatabase implements DataSource, Closeable {
 	 * Creates the constraints.
 	 */
 	public void createConstraints() {
-		for (final ISequelAdapter<?> adapter : this.adapters.values()) {
-			adapter.createConstraints();
+		for (final IAdapter<?> adapter : this.adapters.values()) {
+			adapter.createConstraints(this.connection);
 		}
 	}
 	
@@ -158,8 +163,8 @@ public class SequelDatabase implements DataSource, Closeable {
 	 * Creates the indexes.
 	 */
 	public void createIndexes() {
-		for (final ISequelAdapter<?> adapter : this.adapters.values()) {
-			adapter.createIndexes();
+		for (final IAdapter<?> adapter : this.adapters.values()) {
+			adapter.createIndexes(this.connection);
 		}
 	}
 	
@@ -167,8 +172,8 @@ public class SequelDatabase implements DataSource, Closeable {
 	 * Creates the primary keys.
 	 */
 	public void createPrimaryKeys() {
-		for (final ISequelAdapter<?> adapter : this.adapters.values()) {
-			adapter.createPrimaryKeys();
+		for (final IAdapter<?> adapter : this.adapters.values()) {
+			adapter.createPrimaryKeys(this.connection);
 		}
 	}
 	
@@ -176,8 +181,8 @@ public class SequelDatabase implements DataSource, Closeable {
 	 * Creates the scheme.
 	 */
 	public void createScheme() {
-		for (final ISequelAdapter<?> adapter : this.adapters.values()) {
-			adapter.createScheme();
+		for (final IAdapter<?> adapter : this.adapters.values()) {
+			adapter.createScheme(this.connection);
 		}
 	}
 	
@@ -191,8 +196,8 @@ public class SequelDatabase implements DataSource, Closeable {
 	 * @return the adapter
 	 */
 	@SuppressWarnings ("unchecked")
-	public <T> ISequelAdapter<T> getAdapter(final Class<T> managedEntityType) {
-		return (ISequelAdapter<T>) this.adapters.get(managedEntityType);
+	public <T extends IEntity> IAdapter<T> getAdapter(final Class<T> managedEntityType) {
+		return (IAdapter<T>) this.adapters.get(managedEntityType);
 	}
 	
 	/**
@@ -202,7 +207,7 @@ public class SequelDatabase implements DataSource, Closeable {
 	 */
 	@Override
 	public Connection getConnection() throws SQLException {
-		return this.connection;
+		return this.dataSource.getConnection();
 	}
 	
 	/**
@@ -219,6 +224,8 @@ public class SequelDatabase implements DataSource, Closeable {
 	}
 	
 	/**
+	 * Gets the id mode.
+	 *
 	 * @return the idMode
 	 */
 	public final IdMode getIdMode() {
@@ -284,12 +291,14 @@ public class SequelDatabase implements DataSource, Closeable {
 	 * @param adapter
 	 *            the adapter
 	 */
-	public <T> void register(final Class<T> managedEntityType,
-	                         final ISequelAdapter<T> adapter) {
+	public <T extends IEntity> void register(final Class<T> managedEntityType,
+	                                         final IAdapter<T> adapter) {
 		this.adapters.put(managedEntityType, adapter);
 	}
 	
 	/**
+	 * Sets the id mode.
+	 *
 	 * @param idMode
 	 *            the idMode to set
 	 */

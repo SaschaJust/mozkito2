@@ -14,6 +14,7 @@
 package org.mozkito.core.libs.versions.adapters;
 
 import java.net.MalformedURLException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,30 +23,31 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mozkito.core.libs.versions.model.Depot;
-import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.AbstractAdapter;
+import org.mozkito.skeleton.sequel.Database;
 
 /**
  * @author Sascha Just
  *
  */
-public class DepotAdapter extends AbstractSequelAdapter<Depot> {
+public class DepotAdapter extends AbstractAdapter<Depot> {
+	
+	private static long currentId = 0l;
 	
 	/**
 	 * Instantiates a new depot adapter.
 	 *
-	 * @param database
-	 *            the database
+	 * @param type
+	 *            the type
 	 */
-	public DepotAdapter(final SequelDatabase database) {
-		super(database, "depot");
+	public DepotAdapter(final Database.Type type) {
+		super(type, "depot");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public Depot create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -57,9 +59,10 @@ public class DepotAdapter extends AbstractSequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
-	public void delete(final Depot object) {
+	public void delete(final Connection connection,
+	                   final Depot object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -69,9 +72,9 @@ public class DepotAdapter extends AbstractSequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<Depot> load() {
+	public Iterator<Depot> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -81,9 +84,10 @@ public class DepotAdapter extends AbstractSequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<Depot> load(final long... ids) {
+	public List<Depot> load(final Connection connection,
+	                        final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -93,9 +97,10 @@ public class DepotAdapter extends AbstractSequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public Depot load(final long id) {
+	public Depot load(final Connection connection,
+	                  final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -105,24 +110,16 @@ public class DepotAdapter extends AbstractSequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
 	 */
-	@Override
-	public void save(final Depot... depots) {
-		Requires.notNull(depots);
-		
-		final PreparedStatement idStatement = prepareNextIdStatement();
-		final PreparedStatement statement = prepareSaveStatement();
-		
-		for (final Depot depot : depots) {
-			save(statement, idStatement, depot);
-		}
+	public synchronized long nextId() {
+		return ++currentId;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
@@ -145,9 +142,10 @@ public class DepotAdapter extends AbstractSequelAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
-	public void update(final Depot... objects) {
+	public void update(final Connection connection,
+	                   final Depot... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

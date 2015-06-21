@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.versions.adapters;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,62 +31,66 @@ import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
-import org.mozkito.skeleton.sequel.ISequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.AbstractAdapter;
+import org.mozkito.skeleton.sequel.Database;
+import org.mozkito.skeleton.sequel.IAdapter;
 
 /**
  * The Class GraphAdapter.
  *
  * @author Sascha Just
  */
-public class GraphAdapter extends AbstractSequelAdapter<Graph> {
+public class GraphAdapter extends AbstractAdapter<Graph> {
+	
+	private static long                     currentId = 0l;
 	
 	/** The edge adapter. */
-	private final ISequelAdapter<GraphEdge>       edgeAdapter;
+	private final IAdapter<GraphEdge>       edgeAdapter;
 	
 	/** The branch adapter. */
-	private final ISequelAdapter<BranchEdge>      branchAdapter;
+	private final IAdapter<BranchEdge>      branchAdapter;
 	
 	/** The end point adapter. */
-	private final ISequelAdapter<Head>            headAdapter;
+	private final IAdapter<Head>            headAdapter;
 	
 	/** The roots adapter. */
-	private final ISequelAdapter<Root>            rootsAdapter;
-	
+	private final IAdapter<Root>            rootsAdapter;
 	/** The convergence adapter. */
-	private final ISequelAdapter<ConvergenceEdge> convergenceAdapter;
+	private final IAdapter<ConvergenceEdge> convergenceAdapter;
 	
 	/**
 	 * Instantiates a new graph adapter.
 	 *
-	 * @param database
-	 *            the database
+	 * @param type
+	 *            the type
+	 * @param edgeAdapter
+	 *            the edge adapter
+	 * @param branchAdapter
+	 *            the branch adapter
+	 * @param headAdapter
+	 *            the head adapter
+	 * @param rootsAdapter
+	 *            the roots adapter
+	 * @param convergenceAdapter
+	 *            the convergence adapter
 	 */
-	public GraphAdapter(final SequelDatabase database) {
-		super(database, "graph");
+	public GraphAdapter(final Database.Type type, final IAdapter<GraphEdge> edgeAdapter,
+	        final IAdapter<BranchEdge> branchAdapter, final IAdapter<Head> headAdapter,
+	        final IAdapter<Root> rootsAdapter, final IAdapter<ConvergenceEdge> convergenceAdapter) {
+		super(type, "graph");
 		
-		database.register(GraphEdge.class, new GraphEdgeAdapter(database));
-		this.edgeAdapter = database.getAdapter(GraphEdge.class);
-		
-		database.register(BranchEdge.class, new BranchEdgeAdapter(database));
-		this.branchAdapter = database.getAdapter(BranchEdge.class);
-		
-		database.register(ConvergenceEdge.class, new ConvergenceEdgeAdapter(database));
-		this.convergenceAdapter = database.getAdapter(ConvergenceEdge.class);
-		
-		database.register(Head.class, new HeadAdapter(database));
-		this.headAdapter = database.getAdapter(Head.class);
-		
-		database.register(Root.class, new RootAdapter(database));
-		this.rootsAdapter = database.getAdapter(Root.class);
+		this.edgeAdapter = edgeAdapter;
+		this.branchAdapter = branchAdapter;
+		this.convergenceAdapter = convergenceAdapter;
+		this.headAdapter = headAdapter;
+		this.rootsAdapter = rootsAdapter;
 		
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public Graph create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -97,9 +102,10 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
-	public void delete(final Graph object) {
+	public void delete(final Connection connection,
+	                   final Graph object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -109,9 +115,9 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<Graph> load() {
+	public Iterator<Graph> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -121,9 +127,10 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<Graph> load(final long... ids) {
+	public List<Graph> load(final Connection connection,
+	                        final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -133,9 +140,10 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public Graph load(final long id) {
+	public Graph load(final Connection connection,
+	                  final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -145,7 +153,16 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 */
+	public synchronized long nextId() {
+		return ++currentId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
@@ -156,17 +173,12 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 		try {
 			
 			int index = 0;
-			
-			final PreparedStatement edgeStmt = this.edgeAdapter.prepareSaveStatement();
-			final PreparedStatement edgeNextIdStmt = this.edgeAdapter.prepareNextIdStatement();
-			final PreparedStatement branchStmt = this.branchAdapter.prepareSaveStatement();
-			final PreparedStatement branchNextIdStmt = this.branchAdapter.prepareNextIdStatement();
-			final PreparedStatement headStmt = this.headAdapter.prepareSaveStatement();
-			final PreparedStatement headNextIdStmt = this.headAdapter.prepareNextIdStatement();
-			final PreparedStatement rootsStmt = this.rootsAdapter.prepareSaveStatement();
-			final PreparedStatement rootsNextIdStmt = this.rootsAdapter.prepareNextIdStatement();
-			final PreparedStatement convergenceStmt = this.convergenceAdapter.prepareSaveStatement();
-			final PreparedStatement convergenceNextIdStmt = this.convergenceAdapter.prepareNextIdStatement();
+			final Connection connection = saveStatement.getConnection();
+			final PreparedStatement edgeStmt = this.edgeAdapter.prepareSaveStatement(connection);
+			final PreparedStatement branchStmt = this.branchAdapter.prepareSaveStatement(connection);
+			final PreparedStatement headStmt = this.headAdapter.prepareSaveStatement(connection);
+			final PreparedStatement rootsStmt = this.rootsAdapter.prepareSaveStatement(connection);
+			final PreparedStatement convergenceStmt = this.convergenceAdapter.prepareSaveStatement(connection);
 			
 			saveStatement.setLong(++index, id);
 			saveStatement.setLong(++index, entity.getDepot().id());
@@ -186,36 +198,36 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 			for (final Edge edge : edges) {
 				++batchCounter;
 				gEdge = new GraphEdge(entity.getDepot().id(), edge.getSourceId(), edge.getTargetId());
-				this.edgeAdapter.save(edgeStmt, edgeNextIdStmt, gEdge);
+				this.edgeAdapter.save(edgeStmt, this.edgeAdapter.nextId(), gEdge);
 				
 				for (final Entry<Long, Label> entry : edge.getLabels().entrySet()) {
 					label = entry.getValue();
 					++batchCounter;
 					bEdge = new BranchEdge(gEdge.id(), entry.getKey(), label.branchMarker, label.navigationMarker,
 					                       label.integrationMarker);
-					this.branchAdapter.save(branchStmt, branchNextIdStmt, bEdge);
+					this.branchAdapter.save(branchStmt, this.branchAdapter.nextId(), bEdge);
 					if (batchCounter >= batchSize) {
-						this.database.commit();
+						connection.commit();
 						batchCounter = 0;
 					}
 				}
 				
 				if (batchCounter >= batchSize) {
-					this.database.commit();
+					connection.commit();
 					batchCounter = 0;
 				}
 			}
 			
 			for (final ConvergenceEdge cEdge : entity.getConvergence()) {
-				this.convergenceAdapter.save(convergenceStmt, convergenceNextIdStmt, cEdge);
+				this.convergenceAdapter.save(convergenceStmt, this.convergenceAdapter.nextId(), cEdge);
 			}
 			
 			for (final Head head : entity.getHeads()) {
-				this.headAdapter.save(headStmt, headNextIdStmt, head);
+				this.headAdapter.save(headStmt, this.headAdapter.nextId(), head);
 			}
 			
 			for (final Root roots : entity.getRoots()) {
-				this.rootsAdapter.save(rootsStmt, rootsNextIdStmt, roots);
+				this.rootsAdapter.save(rootsStmt, this.rootsAdapter.nextId(), roots);
 			}
 			
 		} catch (final SQLException e) {
@@ -226,9 +238,10 @@ public class GraphAdapter extends AbstractSequelAdapter<Graph> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
-	public void update(final Graph... objects) {
+	public void update(final Connection connection,
+	                   final Graph... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

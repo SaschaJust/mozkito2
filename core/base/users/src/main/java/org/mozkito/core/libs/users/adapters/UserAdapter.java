@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.users.adapters;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,15 +26,15 @@ import org.mozkito.core.libs.users.model.User;
 import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.AbstractAdapter;
+import org.mozkito.skeleton.sequel.Database;
 
 /**
  * The Class UserAdapter.
  *
  * @author Sascha Just
  */
-public class UserAdapter extends AbstractSequelAdapter<User> {
+public class UserAdapter extends AbstractAdapter<User> {
 	
 	/**
 	 * The Class UserIterator.
@@ -138,20 +139,22 @@ public class UserAdapter extends AbstractSequelAdapter<User> {
 		}
 	}
 	
+	private static long currentId = 0l;
+	
 	/**
 	 * Instantiates a new user adapter.
 	 *
-	 * @param database
+	 * @param type
 	 *            the database
 	 */
-	public UserAdapter(final SequelDatabase database) {
-		super(database, "user");
+	public UserAdapter(final Database.Type type) {
+		super(type, "user");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public User create(final ResultSet results) {
 		Requires.notNull(results);
@@ -195,9 +198,10 @@ public class UserAdapter extends AbstractSequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
-	public void delete(final User object) {
+	public void delete(final Connection connection,
+	                   final User object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -207,9 +211,9 @@ public class UserAdapter extends AbstractSequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<User> load() {
+	public Iterator<User> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -219,9 +223,10 @@ public class UserAdapter extends AbstractSequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<User> load(final long... ids) {
+	public List<User> load(final Connection connection,
+	                       final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -231,9 +236,10 @@ public class UserAdapter extends AbstractSequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public User load(final long id) {
+	public User load(final Connection connection,
+	                 final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -243,7 +249,16 @@ public class UserAdapter extends AbstractSequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 */
+	public synchronized long nextId() {
+		return ++currentId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement statement,
 	                 final long id,
@@ -271,10 +286,14 @@ public class UserAdapter extends AbstractSequelAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
-	public void update(final User... objects) {
+	public void update(final Connection connection,
+	                   final User... objects) {
+		// TODO Auto-generated method stub
+		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
+		
 	}
 	
 }

@@ -13,6 +13,7 @@
 
 package org.mozkito.skeleton.sequel;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -26,19 +27,16 @@ import org.mozkito.libraries.logging.Logger;
  * @param <T>
  *            the generic type
  */
-public class DatabaseDumper<T extends ISequelEntity> extends Thread {
+public class DatabaseDumper<T extends IEntity> extends Thread {
 	
 	/** The batch size. */
 	private static int                     BATCH_SIZE = 100000;
 	
 	/** The adapter. */
-	private final ISequelAdapter<T>        adapter;
+	private final IAdapter<T>        adapter;
 	
 	/** The save. */
 	private final PreparedStatement        save;
-	
-	/** The next id. */
-	private final PreparedStatement        nextId;
 	
 	/** The queue. */
 	private final ConcurrentLinkedQueue<T> queue      = new ConcurrentLinkedQueue<>();
@@ -51,21 +49,13 @@ public class DatabaseDumper<T extends ISequelEntity> extends Thread {
 	 *
 	 * @param adapter
 	 *            the adapter
+	 * @param connection
+	 *            the connection
 	 */
-	public DatabaseDumper(final ISequelAdapter<T> adapter) {
+	public DatabaseDumper(final IAdapter<T> adapter, final Connection connection) {
 		super(Thread.currentThread().getName() + "->DatabaseDumper");
 		this.adapter = adapter;
-		this.save = adapter.prepareSaveStatement();
-		this.nextId = adapter.prepareNextIdStatement();
-	}
-	
-	/**
-	 * Next id.
-	 *
-	 * @return the object
-	 */
-	private long nextId() {
-		return this.adapter.nextId(this.nextId);
+		this.save = adapter.prepareSaveStatement(connection);
 	}
 	
 	/**
@@ -134,7 +124,7 @@ public class DatabaseDumper<T extends ISequelEntity> extends Thread {
 	 *            the entity
 	 */
 	public void saveLater(final T entity) {
-		entity.id(nextId());
+		entity.id(this.adapter.nextId());
 		this.queue.add(entity);
 	}
 	

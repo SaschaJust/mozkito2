@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.versions.adapters;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,30 +22,32 @@ import java.util.List;
 
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractSequelAdapter;
-import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.AbstractAdapter;
+import org.mozkito.skeleton.sequel.Database;
 
 /**
  * The Class BranchAdapter.
  *
  * @author Sascha Just
  */
-public class BranchAdapter extends AbstractSequelAdapter<Branch> {
+public class BranchAdapter extends AbstractAdapter<Branch> {
+	
+	private static long currentId = 0l;
 	
 	/**
 	 * Instantiates a new branch adapter.
 	 *
-	 * @param database
-	 *            the database
+	 * @param type
+	 *            the type
 	 */
-	public BranchAdapter(final SequelDatabase database) {
-		super(database, "branch");
+	public BranchAdapter(final Database.Type type) {
+		super(type, "branch");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public Branch create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -56,9 +59,10 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#delete(java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.skeleton.sequel.IEntity)
 	 */
-	public void delete(final Branch object) {
+	public void delete(final Connection connection,
+	                   final Branch object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -68,9 +72,9 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load()
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<Branch> load() {
+	public Iterator<Branch> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -80,9 +84,10 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<Branch> load(final long... ids) {
+	public List<Branch> load(final Connection connection,
+	                         final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -92,9 +97,10 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#load(long)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public Branch load(final long id) {
+	public Branch load(final Connection connection,
+	                   final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -104,7 +110,17 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 */
+	public synchronized long nextId() {
+		return ++currentId;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long,
+	 *      org.mozkito.skeleton.sequel.IEntity)
 	 */
 	public void save(final PreparedStatement statement,
 	                 final long id,
@@ -130,9 +146,10 @@ public class BranchAdapter extends AbstractSequelAdapter<Branch> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelAdapter#update(java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, org.mozkito.skeleton.sequel.IEntity[])
 	 */
-	public void update(final Branch... objects) {
+	public void update(final Connection connection,
+	                   final Branch... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

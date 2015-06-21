@@ -27,11 +27,11 @@ import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.sequel.DatabaseDumper;
-import org.mozkito.skeleton.sequel.SequelDatabase;
+import org.mozkito.skeleton.sequel.Database;
 
 /**
  * The BranchMiner is used to collect all branches known to the underlying depot. The {@link Branch}es are stored in the
- * provided {@link SequelDatabase}, along with their {@link Head} and {@link Root}s.
+ * provided {@link Database}, along with their {@link Head} and {@link Root}s.
  *
  * @author Sascha Just
  */

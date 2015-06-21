@@ -22,14 +22,14 @@ import org.apache.commons.collections4.collection.UnmodifiableCollection;
 
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelEntity;
+import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class ChangeSet.
  *
  * @author Sascha Just
  */
-public class ChangeSet implements ISequelEntity {
+public class ChangeSet implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 230724292878651772L;
@@ -275,7 +275,7 @@ public class ChangeSet implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.IEntity#id()
 	 */
 	@Override
 	public long id() {
@@ -285,7 +285,7 @@ public class ChangeSet implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
 	 */
 	@Override
 	public void id(final long id) {

@@ -11,23 +11,21 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.sequel;
+package org.mozkito.core.libs.versions.git.model;
+
+import java.time.Instant;
+
+import org.mozkito.core.libs.versions.model.Identity;
 
 /**
- * The Interface IBuilder.
- * 
- * This is used to create {@link IEntity} instances during parsing.
- *
  * @author Sascha Just
- * @param <T>
- *            the generic type
+ *
  */
-public interface IBuilder<T> {
+public class RTag extends RObject {
 	
-	/**
-	 * Creates the.
-	 *
-	 * @return the t
-	 */
-	T create();
+	Identity tagger;
+	Instant  taggerTime;
+	String   subject;
+	String   body;
+	RObject  pointer;
 }

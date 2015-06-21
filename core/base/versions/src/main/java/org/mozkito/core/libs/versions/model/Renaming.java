@@ -21,14 +21,14 @@ import org.apache.commons.collections4.collection.UnmodifiableCollection;
 
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.ISequelEntity;
+import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class Renaming.
  *
  * @author Sascha Just
  */
-public class Renaming implements ISequelEntity {
+public class Renaming implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 856906626581054545L;
@@ -134,7 +134,7 @@ public class Renaming implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id()
+	 * @see org.mozkito.skeleton.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -143,7 +143,7 @@ public class Renaming implements ISequelEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.ISequelEntity#id(long)
+	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;

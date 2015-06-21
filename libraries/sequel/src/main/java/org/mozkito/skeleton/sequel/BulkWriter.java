@@ -44,7 +44,7 @@ public class BulkWriter {
 	 * @param database
 	 *            the database
 	 */
-	public BulkWriter(final String query, final SequelDatabase database) {
+	public BulkWriter(final String query, final Database database) {
 		this(query, database, 10000);
 	}
 	
@@ -58,7 +58,7 @@ public class BulkWriter {
 	 * @param batchSize
 	 *            the batch size
 	 */
-	public BulkWriter(final String query, final SequelDatabase database, final int batchSize) {
+	public BulkWriter(final String query, final Database database, final int batchSize) {
 		try {
 			this.batchSize = batchSize;
 			this.connection = database.getConnection();
