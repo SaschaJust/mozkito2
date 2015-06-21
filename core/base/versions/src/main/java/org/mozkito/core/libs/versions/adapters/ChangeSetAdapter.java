@@ -60,7 +60,7 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.skeleton.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
 	                   final ChangeSet object) {
@@ -120,7 +120,8 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long,
+	 *      org.mozkito.skeleton.sequel.IEntity)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
@@ -148,7 +149,7 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 			saveStatement.setString(++index, changeSet.getSubject());
 			saveStatement.setString(++index, changeSet.getBody());
 			
-			saveStatement.executeUpdate();
+			saveStatement.addBatch();
 			
 			changeSet.id(id);
 		} catch (final SQLException e) {
@@ -159,7 +160,7 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
+	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, org.mozkito.skeleton.sequel.IEntity[])
 	 */
 	public void update(final Connection connection,
 	                   final ChangeSet... objects) {

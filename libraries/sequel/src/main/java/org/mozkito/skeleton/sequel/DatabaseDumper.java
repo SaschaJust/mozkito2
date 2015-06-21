@@ -74,7 +74,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 				if (entity == null) {
 					// nothing to store right now. Persist pending stuff.
 					if (counter > 0) {
-						this.save.getConnection().commit();
+						this.save.executeBatch();
 						counter = 0;
 						continue;
 					}
@@ -97,7 +97,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 					throw e;
 				}
 				if (counter % BATCH_SIZE == 0) {
-					this.save.getConnection().commit();
+					this.save.executeBatch();
 					counter = 0;
 				}
 			}
@@ -109,7 +109,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 			for (final T entity2 : this.queue) {
 				this.adapter.save(this.save, entity2.id(), entity2);
 			}
-			this.save.getConnection().commit();
+			this.save.executeBatch();
 		} catch (final SQLException e) {
 			if (Logger.logError()) {
 				Logger.error(e);

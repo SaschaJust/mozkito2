@@ -140,7 +140,7 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 			statement.setString(++index, identity.getEmail());
 			statement.setString(++index, identity.getFullName());
 			
-			statement.executeUpdate();
+			statement.addBatch();
 			
 			identity.id(id);
 			Asserts.positive(identity.id());

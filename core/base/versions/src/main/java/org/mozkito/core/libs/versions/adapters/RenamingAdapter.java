@@ -137,7 +137,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 				saveStatement.setLong(++index, entry.getFrom());
 				saveStatement.setLong(++index, entry.getTo());
 				saveStatement.setLong(++index, entry.getWhere());
-				saveStatement.executeUpdate();
+				saveStatement.addBatch();
 			}
 			
 			renaming.id(id);

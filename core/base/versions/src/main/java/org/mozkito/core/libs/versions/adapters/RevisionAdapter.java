@@ -143,7 +143,7 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 			saveStatement.setInt(++index, revision.getLinesIn());
 			saveStatement.setInt(++index, revision.getLinesOut());
 			
-			saveStatement.executeUpdate();
+			saveStatement.addBatch();
 			
 			revision.id(id);
 		} catch (final SQLException e) {

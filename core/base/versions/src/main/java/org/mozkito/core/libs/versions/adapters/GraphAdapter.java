@@ -184,7 +184,7 @@ public class GraphAdapter extends AbstractAdapter<Graph> {
 			saveStatement.setLong(++index, entity.getDepot().id());
 			// TODO add #vertices #edges
 			
-			saveStatement.executeUpdate();
+			saveStatement.addBatch();
 			
 			entity.id(id);
 			
@@ -192,30 +192,40 @@ public class GraphAdapter extends AbstractAdapter<Graph> {
 			BranchEdge bEdge;
 			
 			final Collection<Edge> edges = entity.getEdges();
-			int batchCounter = 0;
+			int branchCounter = 0, edgeCounter = 0;
 			final int batchSize = 1000000;
 			Label label;
 			for (final Edge edge : edges) {
-				++batchCounter;
+				++edgeCounter;
 				gEdge = new GraphEdge(entity.getDepot().id(), edge.getSourceId(), edge.getTargetId());
 				this.edgeAdapter.save(edgeStmt, this.edgeAdapter.nextId(), gEdge);
 				
 				for (final Entry<Long, Label> entry : edge.getLabels().entrySet()) {
 					label = entry.getValue();
-					++batchCounter;
+					++branchCounter;
 					bEdge = new BranchEdge(gEdge.id(), entry.getKey(), label.branchMarker, label.navigationMarker,
 					                       label.integrationMarker);
 					this.branchAdapter.save(branchStmt, this.branchAdapter.nextId(), bEdge);
-					if (batchCounter >= batchSize) {
-						connection.commit();
-						batchCounter = 0;
+					if (branchCounter >= batchSize) {
+						branchStmt.executeBatch();
+						branchCounter = 0;
 					}
 				}
 				
-				if (batchCounter >= batchSize) {
-					connection.commit();
-					batchCounter = 0;
+				if (edgeCounter >= batchSize) {
+					edgeStmt.executeBatch();
+					edgeCounter = 0;
 				}
+			}
+			
+			if (branchCounter >= batchSize) {
+				branchStmt.executeBatch();
+				branchCounter = 0;
+			}
+			
+			if (edgeCounter >= batchSize) {
+				edgeStmt.executeBatch();
+				edgeCounter = 0;
 			}
 			
 			for (final ConvergenceEdge cEdge : entity.getConvergence()) {

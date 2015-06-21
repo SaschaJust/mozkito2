@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -301,8 +300,6 @@ public class Main {
 				});
 			}
 			
-			final Connection connection = database.getConnection();
-			
 			database.register(Depot.class, new DepotAdapter(database.getType()));
 			database.register(Identity.class, new IdentityAdapter(database.getType()));
 			database.register(ChangeSet.class, new ChangeSetAdapter(database.getType()));
@@ -326,24 +323,27 @@ public class Main {
 			database.createScheme();
 			
 			final DatabaseDumper<Identity> identityDumper = new DatabaseDumper<>(database.getAdapter(Identity.class),
-			                                                                     connection);
+			                                                                     database.getConnection());
 			final DatabaseDumper<ChangeSet> changeSetDumper = new DatabaseDumper<>(
 			                                                                       database.getAdapter(ChangeSet.class),
-			                                                                       connection);
+			                                                                       database.getConnection());
 			final DatabaseDumper<Revision> revisionDumper = new DatabaseDumper<>(database.getAdapter(Revision.class),
-			                                                                     connection);
+			                                                                     database.getConnection());
 			final DatabaseDumper<Branch> branchDumper = new DatabaseDumper<>(database.getAdapter(Branch.class),
-			                                                                 connection);
+			                                                                 database.getConnection());
 			final DatabaseDumper<Handle> handleDumper = new DatabaseDumper<>(database.getAdapter(Handle.class),
-			                                                                 connection);
-			final DatabaseDumper<Graph> graphDumper = new DatabaseDumper<>(database.getAdapter(Graph.class), connection);
-			final DatabaseDumper<Depot> depotDumper = new DatabaseDumper<>(database.getAdapter(Depot.class), connection);
+			                                                                 database.getConnection());
+			final DatabaseDumper<Graph> graphDumper = new DatabaseDumper<>(database.getAdapter(Graph.class),
+			                                                               database.getConnection());
+			final DatabaseDumper<Depot> depotDumper = new DatabaseDumper<>(database.getAdapter(Depot.class),
+			                                                               database.getConnection());
 			final DatabaseDumper<Renaming> renamingDumper = new DatabaseDumper<>(database.getAdapter(Renaming.class),
-			                                                                     connection);
+			                                                                     database.getConnection());
 			final DatabaseDumper<ChangeSetIntegration> integrationDumper = new DatabaseDumper<>(
 			                                                                                    database.getAdapter(ChangeSetIntegration.class),
-			                                                                                    connection);
-			final DatabaseDumper<Tag> tagDumper = new DatabaseDumper<Tag>(database.getAdapter(Tag.class), connection);
+			                                                                                    database.getConnection());
+			final DatabaseDumper<Tag> tagDumper = new DatabaseDumper<Tag>(database.getAdapter(Tag.class),
+			                                                              database.getConnection());
 			
 			identityDumper.start();
 			changeSetDumper.start();

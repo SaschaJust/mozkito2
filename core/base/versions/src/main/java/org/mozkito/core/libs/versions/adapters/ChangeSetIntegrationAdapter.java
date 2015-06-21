@@ -161,7 +161,7 @@ public class ChangeSetIntegrationAdapter extends AbstractAdapter<ChangeSetIntegr
 			
 			saveStatement.setShort(++index, integration.getIntegrationType());
 			
-			saveStatement.executeUpdate();
+			saveStatement.addBatch();
 			
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);

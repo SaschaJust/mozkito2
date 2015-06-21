@@ -62,9 +62,6 @@ public class Database implements DataSource, Closeable {
 		MSSQL;
 	}
 	
-	/** The Constant POOL_SIZE. */
-	public static final int                  POOL_SIZE = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1) + 1;
-	
 	/** The data source. */
 	private final HikariDataSource           dataSource;
 	
@@ -75,7 +72,7 @@ public class Database implements DataSource, Closeable {
 	private final Connection                 connection;
 	
 	/** The adapters. */
-	private final Map<Class<?>, IAdapter<?>> adapters  = new HashMap<>();
+	private final Map<Class<?>, IAdapter<?>> adapters = new HashMap<>();
 	
 	/** The id mode. */
 	private IdMode                           idMode;
@@ -125,7 +122,6 @@ public class Database implements DataSource, Closeable {
 			this.dataSource.addDataSourceProperty("port", 1433);
 		}
 		this.dataSource.setAutoCommit(false);
-		this.dataSource.setMaximumPoolSize(POOL_SIZE);
 		this.connection = this.dataSource.getConnection();
 	}
 	
@@ -294,6 +290,7 @@ public class Database implements DataSource, Closeable {
 	public <T extends IEntity> void register(final Class<T> managedEntityType,
 	                                         final IAdapter<T> adapter) {
 		this.adapters.put(managedEntityType, adapter);
+		this.dataSource.setMaximumPoolSize(this.adapters.size() + 2);
 	}
 	
 	/**

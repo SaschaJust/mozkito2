@@ -133,7 +133,7 @@ public class RootAdapter extends AbstractAdapter<Root> {
 			statement.setInt(++index, (int) id);
 			statement.setLong(++index, root.getBranchId());
 			statement.setLong(++index, root.getChangeSetId());
-			statement.executeUpdate();
+			statement.addBatch();
 			
 			root.id(id);
 		} catch (final SQLException e) {
