@@ -76,48 +76,43 @@ public class BulkReader<T> {
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
-	public BulkReader(final String query, final Database database, final EntityFactory<T> factory)
-	        throws SQLException {
+	public BulkReader(final String query, final Database database, final EntityFactory<T> factory) throws SQLException {
 		
 		this.method = null;
 		
-		try {
-			for (final Method m : factory.getClass().getMethods()) {
-				if ("create".equals(m.getName())) {
-					if (m.getReturnType().equals(getClass().getMethod("read", new Class<?>[0]).getReturnType())) {
-						if (m.getParameterTypes().length > 0) {
-							this.method = m;
-							break;
-						}
-					}
+		for (final Method m : factory.getClass().getMethods()) {
+			if ("create".equals(m.getName())) {
+				// if (m.getReturnType().equals(getClass().getMethod("read", new Class<?>[0]).getReturnType())) {
+				if (m.getParameterTypes().length > 0) {
+					this.method = m;
+					break;
 				}
+				// }
 			}
-			if (this.method == null) {
-				throw new RuntimeException("No factory method found.");
-			}
-			
-			this.factory = factory;
-			this.types = this.method.getParameterTypes();
-			Asserts.notNull(this.types);
-			
-			final Parameter[] parameters = this.method.getParameters();
-			Asserts.notNull(parameters);
-			
-			Asserts.equalTo(this.types.length, parameters.length);
-			
-			for (int i = 0; i < parameters.length; ++i) {
-				if (parameters[i].isNamePresent()) {
-					this.names.put(parameters[i].getName().toLowerCase(), i);
-				} else {
-					this.named = false;
-				}
-			}
-			
-			this.connection = database.getConnection();
-			this.results = this.connection.createStatement().executeQuery(query);
-		} catch (final NoSuchMethodException e) {
-			throw new RuntimeException(e);
 		}
+		if (this.method == null) {
+			throw new RuntimeException("No factory method found.");
+		}
+		
+		this.factory = factory;
+		this.types = this.method.getParameterTypes();
+		Asserts.notNull(this.types);
+		
+		final Parameter[] parameters = this.method.getParameters();
+		Asserts.notNull(parameters);
+		
+		Asserts.equalTo(this.types.length, parameters.length);
+		
+		for (int i = 0; i < parameters.length; ++i) {
+			if (parameters[i].isNamePresent()) {
+				this.names.put(parameters[i].getName().toLowerCase(), i);
+			} else {
+				this.named = false;
+			}
+		}
+		
+		this.connection = database.getConnection();
+		this.results = this.connection.createStatement().executeQuery(query);
 	}
 	
 	/**

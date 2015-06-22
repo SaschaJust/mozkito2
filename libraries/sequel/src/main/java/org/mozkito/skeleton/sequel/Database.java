@@ -92,21 +92,23 @@ public class Database implements DataSource, Closeable {
 	 *            the password
 	 * @param port
 	 *            the port
+	 * @param additionalArgs
+	 *            the additional args
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
 	public Database(final Type type, final String name, final String host, final String username,
-	        final String password, final Integer port) throws SQLException {
+	        final String password, final Integer port, final String additionalArgs) throws SQLException {
 		HikariConfig config;
 		switch (type) {
 			case POSTGRES:
-				config = setupPostgres(name, host, username, password, port);
+				config = setupPostgres(name, host, username, password, port, additionalArgs);
 				break;
 			case MSSQL:
-				config = setupMSSQL(name, host, username, password, port);
+				config = setupMSSQL(name, host, username, password, port, additionalArgs);
 				break;
 			case DERBY:
-				config = setupDerby(name, host, username, password, port);
+				config = setupDerby(name, host, username, password, port, additionalArgs);
 				break;
 			default:
 				throw new RuntimeException("Unsupported database type: " + type);
@@ -342,7 +344,8 @@ public class Database implements DataSource, Closeable {
 	                                final String host,
 	                                final String username,
 	                                final String password,
-	                                final Integer port) {
+	                                final Integer port,
+	                                final String additionalArgs) {
 		final HikariConfig config = new HikariConfig();
 		config.setJdbcUrl("jdbc:derby:" + name);
 		config.addDataSourceProperty("cachePrepStmts", "true");
@@ -371,7 +374,8 @@ public class Database implements DataSource, Closeable {
 	                                final String host,
 	                                final String username,
 	                                final String password,
-	                                final Integer port) {
+	                                final Integer port,
+	                                final String additionalArgs) {
 		Requires.notNull(name);
 		
 		final Properties props = new Properties();
@@ -389,7 +393,14 @@ public class Database implements DataSource, Closeable {
 		                                                     : "localhost") + ":" + (port != null
 		                                                                                         ? port
 		                                                                                         : "1433")
-		        + ";databaseName=" + name + ";user=" + username + ";password=" + password + ";selectMethod=cursor;");
+		        + ";databaseName=" + name + (username != null
+		                                                     ? ";user=" + username
+		                                                     : "") + (password != null
+		                                                                              ? ";password=" + password
+		                                                                              : "") + ";selectMethod=cursor"
+		        + (additionalArgs != null
+		                                 ? additionalArgs
+		                                 : ""));
 		
 		return config;
 	}
@@ -413,7 +424,8 @@ public class Database implements DataSource, Closeable {
 	                                   final String host,
 	                                   final String username,
 	                                   final String password,
-	                                   final Integer port) {
+	                                   final Integer port,
+	                                   final String additionalArgs) {
 		Requires.notNull(name);
 		
 		final Properties props = new Properties();
@@ -433,7 +445,10 @@ public class Database implements DataSource, Closeable {
 		                                                      ? host
 		                                                      : "localhost") + (port != null
 		                                                                                    ? ":" + port
-		                                                                                    : "") + "/" + name);
+		                                                                                    : "") + "/" + name
+		        + (additionalArgs != null
+		                                 ? additionalArgs
+		                                 : ""));
 		
 		return config;
 	}

@@ -139,6 +139,11 @@ public class Main {
 		option.setRequired(false);
 		options.addOption(option);
 		
+		option = new Option("da", "database-args", true, "Additional string to be appended to the connection URL.");
+		option.setArgName("DB_ARGS");
+		option.setRequired(false);
+		options.addOption(option);
+		
 		option = new Option("tb", "mine-branches", false, "Mine branches. Required for changesets.");
 		options.addOption(option);
 		
@@ -250,7 +255,11 @@ public class Main {
 			                                                                      : null,
 			                                       line.hasOption("database-password")
 			                                                                          ? line.getOptionValue("database-password")
-			                                                                          : null, null);
+			                                                                          : null,
+			                                       null,
+			                                       line.hasOption("database-password")
+			                                                                          ? line.getOptionValue("database-args")
+			                                                                          : null);
 			
 			final File baseDir = new File(uri);
 			final List<File> skips = new LinkedList<>();
