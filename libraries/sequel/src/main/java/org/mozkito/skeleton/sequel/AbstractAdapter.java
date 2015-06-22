@@ -18,6 +18,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.sequel.Database.Type;
 
@@ -152,5 +153,24 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	/**
+	 * Truncate.
+	 *
+	 * @param string
+	 *            the string
+	 * @param length
+	 *            the length
+	 * @return the string
+	 */
+	protected final String truncate(final String string,
+	                                final int length) {
+		if (string == null || string.length() < length) {
+			return string;
+		}
+		
+		Logger.warn("Truncating '%s' to fit %s characters to persist to database.", string, length);
+		return string.substring(0, length);
 	}
 }

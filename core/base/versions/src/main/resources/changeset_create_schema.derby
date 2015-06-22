@@ -3,10 +3,10 @@ CREATE TABLE changesets (
 	depot_id BIGINT NOT NULL,
 	commit_hash CHAR(40) NOT NULL,
 	tree_hash CHAR(40) NOT NULL,
-	authored_time DATETIME NOT NULL,
+	authored_time TIMESTAMP NOT NULL,
 	author_id BIGINT NOT NULL,
-	commit_time DATETIME NOT NULL,
+	commit_time TIMESTAMP NOT NULL,
 	committer_id BIGINT NOT NULL,
-	subject VARCHAR(MAX) NOT NULL,
-	body VARCHAR(MAX) NOT NULL
+	subject LONG VARCHAR NOT NULL,
+	body LONG VARCHAR NOT NULL
 );

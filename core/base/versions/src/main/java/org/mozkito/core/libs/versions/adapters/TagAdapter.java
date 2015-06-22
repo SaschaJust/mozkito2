@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 
@@ -133,11 +134,37 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 			statement.setInt(++index, (int) id);
 			statement.setLong(++index, entity.getDepotId());
 			statement.setLong(++index, entity.getChangesetId());
-			statement.setString(++index, entity.getName());
-			statement.setString(++index, entity.getHash());
-			statement.setString(++index, entity.getMessage());
-			statement.setLong(++index, entity.getIdentityId());
-			statement.setTimestamp(++index, Timestamp.from(entity.getTimestamp()));
+			
+			if (entity.getName() == null) {
+				statement.setNull(++index, Types.VARCHAR);
+			} else {
+				statement.setString(++index, truncate(entity.getName(), 900));
+			}
+			
+			if (entity.getHash() == null) {
+				statement.setNull(++index, Types.VARCHAR);
+			} else {
+				statement.setString(++index, entity.getHash());
+			}
+			
+			if (entity.getMessage() == null) {
+				statement.setNull(++index, Types.VARCHAR);
+			} else {
+				statement.setString(++index, entity.getMessage());
+			}
+			
+			if (entity.getIdentityId() == null) {
+				statement.setNull(++index, Types.BIGINT);
+			} else {
+				statement.setLong(++index, entity.getIdentityId());
+			}
+			
+			if (entity.getTimestamp() == null) {
+				statement.setNull(++index, Types.TIMESTAMP);
+			} else {
+				statement.setTimestamp(++index, Timestamp.from(entity.getTimestamp()));
+			}
+			
 			statement.addBatch();
 			
 			entity.id(id);

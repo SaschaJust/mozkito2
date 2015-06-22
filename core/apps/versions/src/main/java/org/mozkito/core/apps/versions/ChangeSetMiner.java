@@ -413,6 +413,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 			Asserts.notNull(changeSet);
 			
 			this.changeSetDumper.saveLater(changeSet);
+			this.changeSets.put(changeSet.getCommitHash(), changeSet);
 			
 			this.fileCache.beginTransaction();
 			
@@ -442,9 +443,6 @@ public class ChangeSetMiner extends Task implements Runnable {
 			
 			revisions.clear();
 			i = 0;
-			
-			assert changeSet != null; // stupid eclipse warning workaround
-			this.changeSets.put(changeSet.getCommitHash(), changeSet);
 			
 			this.graph.addVertex(changeSet);
 		}

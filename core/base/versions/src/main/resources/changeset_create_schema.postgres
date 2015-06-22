@@ -7,6 +7,6 @@ CREATE TABLE changesets (
 	author_id BIGINT NOT NULL,
 	commit_time TIMESTAMP NOT NULL,
 	committer_id BIGINT NOT NULL,
-	subject VARCHAR(900) NOT NULL,
-	body VARCHAR(900) NOT NULL
+	subject VARCHAR NOT NULL,
+	body VARCHAR NOT NULL
 );

@@ -137,8 +137,8 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 			int index = 0;
 			statement.setLong(++index, id);
 			
-			statement.setString(++index, identity.getEmail());
-			statement.setString(++index, identity.getFullName());
+			statement.setString(++index, truncate(identity.getEmail(), 900));
+			statement.setString(++index, truncate(identity.getFullName(), 900));
 			
 			statement.addBatch();
 			

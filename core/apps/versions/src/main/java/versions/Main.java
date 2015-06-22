@@ -36,7 +36,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
-import org.mozkito.core.apps.versions.MozkitoHandler;
 import org.mozkito.core.apps.versions.TaskRunner;
 import org.mozkito.core.apps.versions.TaskRunner.Task;
 import org.mozkito.core.libs.versions.IdentityCache;
@@ -73,6 +72,7 @@ import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Level;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.sequel.Database;
+import org.mozkito.skeleton.sequel.MozkitoHandler;
 import org.mozkito.skeleton.sequel.Database.Type;
 import org.mozkito.skeleton.sequel.DatabaseDumper;
 
@@ -363,6 +363,7 @@ public class Main {
 			depotDumper.start();
 			renamingDumper.start();
 			integrationDumper.start();
+			tagDumper.start();
 			
 			final IdentityCache identityCache = new IdentityCache();
 			

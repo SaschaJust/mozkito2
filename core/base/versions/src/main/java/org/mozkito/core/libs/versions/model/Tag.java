@@ -158,7 +158,7 @@ public class Tag implements IEntity {
 	 *
 	 * @return the identityId
 	 */
-	public final long getIdentityId() {
+	public final Long getIdentityId() {
 		return this.identityId;
 	}
 	

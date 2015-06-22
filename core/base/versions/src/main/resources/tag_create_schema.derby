@@ -4,7 +4,7 @@ CREATE TABLE tags (
 	changeset_id BIGINT NOT NULL,
 	name VARCHAR(900) NOT NULL,
 	hash CHAR(40),
-	message VARCHAR(900),
+	message LONG VARCHAR,
 	tagger_id BIGINT,
 	tag_time TIMESTAMP 
 );

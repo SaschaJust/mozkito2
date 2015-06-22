@@ -128,8 +128,8 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 			
 			int index = 0;
 			saveStatement.setLong(++index, id);
-			saveStatement.setString(++index, depot.getName());
-			saveStatement.setString(++index, depot.getOrigin().toURL().toString());
+			saveStatement.setString(++index, truncate(depot.getName(), 900));
+			saveStatement.setString(++index, truncate(depot.getOrigin().toURL().toString(), 900));
 			saveStatement.setTimestamp(++index, Timestamp.from(depot.getMined()));
 			saveStatement.addBatch();
 			depot.id(id);

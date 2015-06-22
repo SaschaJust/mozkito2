@@ -133,7 +133,7 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 			statement.setInt(++index, (int) id);
 			
 			statement.setLong(++index, branch.getDepotId());
-			statement.setString(++index, branch.getName());
+			statement.setString(++index, truncate(branch.getName(), 900));
 			
 			statement.addBatch();
 			

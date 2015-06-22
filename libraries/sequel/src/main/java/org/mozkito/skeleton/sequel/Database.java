@@ -368,7 +368,9 @@ public class Database implements DataSource, Closeable {
 	                                final Integer port,
 	                                final String additionalArgs) {
 		final HikariConfig config = new HikariConfig();
-		config.setJdbcUrl("jdbc:derby:" + name);
+		config.setJdbcUrl("jdbc:derby:" + name + (additionalArgs != null
+		                                                                ? additionalArgs
+		                                                                : ""));
 		config.addDataSourceProperty("cachePrepStmts", "true");
 		config.addDataSourceProperty("prepStmtCacheSize", "250");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");

@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.apps.versions;
+package org.mozkito.skeleton.sequel;
 
 import java.io.File;
 import java.io.FileWriter;

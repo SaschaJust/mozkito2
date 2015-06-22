@@ -37,6 +37,7 @@ import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.commons.URIUtils;
 import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.sequel.DatabaseDumper;
+import org.mozkito.skeleton.sequel.MozkitoHandler;
 
 /**
  * The Class TaskRunner.
@@ -264,9 +265,8 @@ public class TaskRunner implements Runnable {
 		Logger.info("Spawning TagMiner");
 		final TagMiner tagMiner = new TagMiner(this.cloneDir, this.depot, changeSets, this.identityCache,
 		                                       this.tagDumper);
+		tagMiner.run();
 		resetName();
-		final Thread tmThread = new Thread(tagMiner, "TagMiner:" + this.depot.getName());
-		tmThread.start();
 		
 		if (ArrayUtils.contains(this.tasks, Task.ENDPOINTS)) {
 			Logger.info("Spawning EndPointMiner.");
@@ -297,11 +297,6 @@ public class TaskRunner implements Runnable {
 		}
 		
 		this.graphDumper.saveLater(this.graph);
-		try {
-			tmThread.join();
-		} catch (final InterruptedException e) {
-			throw new RuntimeException(e);
-		}
 	}
 	
 }

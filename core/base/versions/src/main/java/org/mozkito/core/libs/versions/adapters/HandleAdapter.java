@@ -130,7 +130,7 @@ public class HandleAdapter extends AbstractAdapter<Handle> {
 			int index = 0;
 			saveStatement.setLong(++index, id);
 			saveStatement.setLong(++index, handle.getDepotId());
-			saveStatement.setString(++index, handle.getPath());
+			saveStatement.setString(++index, truncate(handle.getPath(), 900));
 			saveStatement.addBatch();
 			
 			handle.id(id);

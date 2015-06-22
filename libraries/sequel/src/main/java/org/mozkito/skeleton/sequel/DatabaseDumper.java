@@ -44,6 +44,8 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 	/** The terminate. */
 	private volatile boolean               terminate  = false;
 	
+	private long                           processed  = 0;
+	
 	/**
 	 * Instantiates a new database dumper.
 	 *
@@ -53,7 +55,9 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 	 *            the connection
 	 */
 	public DatabaseDumper(final IAdapter<T> adapter, final Connection connection) {
-		super(Thread.currentThread().getName() + "->DatabaseDumper");
+		super(adapter.getClass().getSimpleName() + "->DatabaseDumper");
+		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
+		
 		this.adapter = adapter;
 		this.save = adapter.prepareSaveStatement(connection);
 	}
@@ -89,11 +93,10 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 				}
 				++counter;
 				try {
+					++this.processed;
 					this.adapter.save(this.save, entity.id(), entity);
 				} catch (final Throwable e) {
-					if (Logger.logError()) {
-						Logger.error("Could not save '%s'.", entity);
-					}
+					Logger.error("Could not save '%s'.", entity);
 					throw e;
 				}
 				if (counter % BATCH_SIZE == 0) {
@@ -102,18 +105,16 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 				}
 			}
 			
-			if (Logger.logInfo()) {
-				Logger.info("Persisting remaining entities.");
-			}
+			Logger.info("Persisting remaining entities.");
 			
 			for (final T entity2 : this.queue) {
+				++this.processed;
 				this.adapter.save(this.save, entity2.id(), entity2);
 			}
 			this.save.executeBatch();
+			Logger.info("Processed " + this.processed + " entities.");
 		} catch (final SQLException e) {
-			if (Logger.logError()) {
-				Logger.error(e);
-			}
+			throw new RuntimeException(e);
 		}
 	}
 	

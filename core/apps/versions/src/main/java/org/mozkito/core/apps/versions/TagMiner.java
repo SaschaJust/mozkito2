@@ -24,6 +24,7 @@ import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Tag;
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
 import org.mozkito.skeleton.sequel.DatabaseDumper;
@@ -151,10 +152,11 @@ public class TagMiner extends Task implements Runnable {
 				case "commit":
 					targetHash = line;
 					tag = new Tag(this.depot, this.changeSets.get(targetHash), tagName);
+					Logger.info("Adding tag: " + tag);
 					this.tagDumper.saveLater(tag);
 					this.tags.put(tagName, tag);
 					while ((line = command.nextOutput()) != null && !END_TAG.equals(line)) {
-						// keep going
+						// skip
 					}
 					continue RESULTS;
 				case "tag":
@@ -204,6 +206,7 @@ public class TagMiner extends Task implements Runnable {
 					}
 					tag = new Tag(this.depot, this.changeSets.get(targetHash), name, tagHash,
 					              messageBuilder.toString(), this.identityCache.request(email, name), timestamp);
+					Logger.info("Adding tag: " + tag);
 					this.tagDumper.saveLater(tag);
 					this.tags.put(tagName, tag);
 					break;
