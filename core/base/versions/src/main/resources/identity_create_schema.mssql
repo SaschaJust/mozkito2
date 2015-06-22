@@ -1,5 +1,0 @@
-CREATE TABLE identities (
-	id BIGINT,
-	email VARCHAR(900),
-	fullname VARCHAR(900)
-);

@@ -1,0 +1,5 @@
+CREATE TABLE handles (
+	id BIGINT NOT NULL,
+	depot_id BIGINT NOT NULL,
+	path VARCHAR(900) NOT NULL
+);

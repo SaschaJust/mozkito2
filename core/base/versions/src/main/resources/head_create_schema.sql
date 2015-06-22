@@ -1,5 +1,5 @@
 CREATE TABLE heads (
-	id BIGINT,
-	branch_id BIGINT,
-	changeset_id BIGINT
+	id BIGINT NOT NULL,
+	branch_id BIGINT NOT NULL,
+	changeset_id BIGINT NOT NULL
 );

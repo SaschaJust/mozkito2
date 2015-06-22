@@ -1,6 +1,0 @@
-ALTER TABLE branch_edges ALTER COLUMN edge_id SET NOT NULL;
-ALTER TABLE branch_edges ALTER COLUMN branch_id SET NOT NULL;
-ALTER TABLE branch_edges ALTER COLUMN branch_type SET NOT NULL;
-ALTER TABLE branch_edges ALTER COLUMN navigation_type SET NOT NULL;
-ALTER TABLE branch_edges ALTER COLUMN integration_type SET NOT NULL;
-ALTER TABLE branch_edges ADD UNIQUE (branch_id, edge_id);

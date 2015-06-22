@@ -1,6 +1,6 @@
 CREATE TABLE convergences (
-	id BIGINT,
-	branch_id BIGINT,
-	source_id BIGINT,
-	converge_id BIGINT
+	id BIGINT NOT NULL,
+	branch_id BIGINT NOT NULL,
+	source_id BIGINT NOT NULL,
+	converge_id BIGINT NOT NULL
 );

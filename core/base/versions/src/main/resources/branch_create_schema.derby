@@ -1,5 +1,0 @@
-CREATE TABLE branches (
-	id BIGINT,
-	depot_id BIGINT,
-	name VARCHAR(900)
-);

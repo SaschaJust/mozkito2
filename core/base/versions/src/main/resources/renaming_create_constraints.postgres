@@ -1,6 +1,0 @@
-ALTER TABLE renamings ALTER COLUMN similarity SET NOT NULL;
-ALTER TABLE renamings ALTER COLUMN source_id SET NOT NULL;
-ALTER TABLE renamings ALTER COLUMN target_id SET NOT NULL;
-ALTER TABLE renamings ALTER COLUMN changeset_id SET NOT NULL;
-ALTER TABLE renamings ADD UNIQUE (changeset_id, source_id);
-ALTER TABLE renamings ADD UNIQUE (changeset_id, target_id);

@@ -1,3 +1,0 @@
-ALTER TABLE branches ALTER COLUMN depot_id SET NOT NULL;
-ALTER TABLE branches ALTER COLUMN name SET NOT NULL;
-ALTER TABLE branches ADD UNIQUE (depot_id, name);

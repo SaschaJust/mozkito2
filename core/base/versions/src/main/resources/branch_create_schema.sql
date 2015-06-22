@@ -1,0 +1,5 @@
+CREATE TABLE branches (
+	id BIGINT NOT NULL,
+	depot_id BIGINT NOT NULL,
+	name VARCHAR(900) NOT NULL
+);

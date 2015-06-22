@@ -1,4 +1,4 @@
 CREATE TABLE graphs (
-	id BIGINT,
-	depot_id BIGINT
+	id BIGINT NOT NULL,
+	depot_id BIGINT NOT NULL
 );

@@ -1,5 +1,0 @@
-CREATE TABLE handles (
-	id BIGINT,
-	depot_id BIGINT,
-	path VARCHAR(900)
-);

@@ -1,2 +1,0 @@
-ALTER TABLE graphs ALTER COLUMN depot_id BIGINT NOT NULL;
-ALTER TABLE graphs ADD UNIQUE (depot_id);

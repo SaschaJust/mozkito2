@@ -1,6 +1,0 @@
-CREATE TABLE depots (
-	id BIGINT,
-	name VARCHAR,
-	origin VARCHAR,
-	mined TIMESTAMP
-);

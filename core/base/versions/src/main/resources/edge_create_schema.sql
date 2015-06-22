@@ -1,6 +1,6 @@
 CREATE TABLE edges (
-	id BIGINT,
-	depot_id BIGINT,
-	source_id BIGINT,
-	target_id BIGINT
+	id BIGINT NOT NULL,
+	depot_id BIGINT NOT NULL,
+	source_id BIGINT NOT NULL,
+	target_id BIGINT NOT NULL
 );

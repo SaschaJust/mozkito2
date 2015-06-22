@@ -1,7 +1,0 @@
-CREATE TABLE renamings (
-	id BIGINT,
-	similarity SMALLINT,
-	source_id BIGINT,
-	target_id BIGINT,
-	changeset_id BIGINT
-);
