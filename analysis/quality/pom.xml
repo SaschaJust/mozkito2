@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.mozkito</groupId>
+		<artifactId>mozkito-analysis</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+	<groupId>org.mozkito.analysis</groupId>
+	<artifactId>mozkito-quality-analysis</artifactId>
+	<packaging>jar</packaging>
+	<name>quality [analysis]</name>
+	<description>Quality analysis.</description>
+	<dependencies>
+		<dependency>
+			<groupId>org.mozkito.core.base</groupId>
+			<artifactId>mozkito-versions-base</artifactId>
+			<version>2.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>10.11.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1201-jdbc41</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.microsoft.sqlserver</groupId>
+		    <artifactId>sqljdbc4</artifactId>
+		    <version>4.1</version>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
+</project>
