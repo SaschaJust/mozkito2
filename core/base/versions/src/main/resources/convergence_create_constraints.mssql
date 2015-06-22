@@ -1,0 +1,4 @@
+ALTER TABLE convergences ALTER COLUMN branch_id BIGINT NOT NULL;
+ALTER TABLE convergences ALTER COLUMN source_id BIGINT NOT NULL;
+ALTER TABLE convergences ALTER COLUMN converge_id BIGINT NOT NULL;
+ALTER TABLE convergences ADD UNIQUE (branch_id, source_id);

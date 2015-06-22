@@ -1,0 +1,3 @@
+ALTER TABLE branches ALTER COLUMN depot_id BIGINT NOT NULL;
+ALTER TABLE branches ALTER COLUMN name VARCHAR(900) NOT NULL;
+ALTER TABLE branches ADD UNIQUE (depot_id, name);

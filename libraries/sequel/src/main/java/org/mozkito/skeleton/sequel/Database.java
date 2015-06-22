@@ -399,20 +399,7 @@ public class Database implements DataSource, Closeable {
 	                                final String additionalArgs) {
 		Requires.notNull(name);
 		
-		final Properties props = new Properties();
-		props.setProperty("dataSourceClassName", "com.microsoft.sqlserver.jdbc.SQLServerDataSource");
-		props.setProperty("dataSource.databaseName", name);
-		if (username != null) {
-			props.setProperty("dataSource.user", username);
-		}
-		if (password != null) {
-			props.setProperty("dataSource.password", password);
-		}
-		props.setProperty("dataSource.serverName", host != null
-		                                                       ? host
-		                                                       : "localhost");
-		
-		final HikariConfig config = new HikariConfig(props);
+		final HikariConfig config = new HikariConfig();
 		config.setJdbcUrl("jdbc:sqlserver://" + (host != null
 		                                                     ? host
 		                                                     : "localhost") + ":" + (port != null
