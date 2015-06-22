@@ -244,23 +244,22 @@ public class Main {
 			
 			Logger.info("Establishing database connection and creating pool.");
 			
-			// final Database database = new Database(
-			// databaseType,
-			// databaseName,
-			// line.hasOption("database-host")
-			// ? line.getOptionValue("database-host")
-			// : null,
-			// line.hasOption("database-user")
-			// ? line.getOptionValue("database-user")
-			// : null,
-			// line.hasOption("database-password")
-			// ? line.getOptionValue("database-password")
-			// : null,
-			// null,
-			// line.hasOption("database-args")
-			// ? line.getOptionValue("database-args")
-			// : null);
-			final Database database = new Database(databaseType, line.getOptionValue("database-args"));
+			final Database database = new Database(
+			                                       databaseType,
+			                                       databaseName,
+			                                       line.hasOption("database-host")
+			                                                                      ? line.getOptionValue("database-host")
+			                                                                      : null,
+			                                       line.hasOption("database-user")
+			                                                                      ? line.getOptionValue("database-user")
+			                                                                      : null,
+			                                       line.hasOption("database-password")
+			                                                                          ? line.getOptionValue("database-password")
+			                                                                          : null,
+			                                       null,
+			                                       line.hasOption("database-args")
+			                                                                      ? line.getOptionValue("database-args")
+			                                                                      : null);
 			
 			final File baseDir = new File(uri);
 			final List<File> skips = new LinkedList<>();
