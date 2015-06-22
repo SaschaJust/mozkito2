@@ -78,6 +78,27 @@ public class Database implements DataSource, Closeable {
 	private IdMode                           idMode;
 	
 	/**
+	 * Instantiates a new database.
+	 *
+	 * @param type
+	 *            the type
+	 * @param connectionString
+	 *            the connection string
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	public Database(final Type type, final String connectionString) throws SQLException {
+		final HikariConfig config = new HikariConfig();
+		config.setJdbcUrl(connectionString);
+		this.type = type;
+		this.idMode = IdMode.LOCAL;
+		
+		this.dataSource = new HikariDataSource(config);
+		this.dataSource.setAutoCommit(false);
+		this.connection = this.dataSource.getConnection();
+	}
+	
+	/**
 	 * Instantiates a new sequel database.
 	 *
 	 * @param type
@@ -381,8 +402,12 @@ public class Database implements DataSource, Closeable {
 		final Properties props = new Properties();
 		props.setProperty("dataSourceClassName", "com.microsoft.sqlserver.jdbc.SQLServerDataSource");
 		props.setProperty("dataSource.databaseName", name);
-		props.setProperty("dataSource.user", username);
-		props.setProperty("dataSource.password", password);
+		if (username != null) {
+			props.setProperty("dataSource.user", username);
+		}
+		if (password != null) {
+			props.setProperty("dataSource.password", password);
+		}
 		props.setProperty("dataSource.serverName", host != null
 		                                                       ? host
 		                                                       : "localhost");
@@ -397,7 +422,7 @@ public class Database implements DataSource, Closeable {
 		                                                     ? ";user=" + username
 		                                                     : "") + (password != null
 		                                                                              ? ";password=" + password
-		                                                                              : "") + ";selectMethod=cursor"
+		                                                                              : "")
 		        + (additionalArgs != null
 		                                 ? additionalArgs
 		                                 : ""));
