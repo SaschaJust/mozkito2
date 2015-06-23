@@ -15,7 +15,7 @@ package org.mozkito.core.libs.versions.model;
 
 import java.time.Instant;
 
-import org.mozkito.skeleton.sequel.IEntity;
+import org.mozkito.libraries.sequel.IEntity;
 
 /**
  * The Class Tag.
@@ -206,7 +206,7 @@ public class Tag implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -215,7 +215,7 @@ public class Tag implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;

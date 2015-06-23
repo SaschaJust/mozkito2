@@ -14,8 +14,8 @@
 package org.mozkito.core.libs.versions.model;
 
 import org.mozkito.core.libs.versions.ChangeType;
+import org.mozkito.libraries.sequel.IEntity;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class Revision.
@@ -263,7 +263,7 @@ public class Revision implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#id()
 	 */
 	@Override
 	public long id() {
@@ -273,7 +273,7 @@ public class Revision implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
 	 */
 	@Override
 	public void id(final long id) {

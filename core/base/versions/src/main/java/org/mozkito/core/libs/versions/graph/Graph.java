@@ -48,10 +48,10 @@ import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.libraries.logging.Logger;
+import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.IEntity;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.Database;
-import org.mozkito.skeleton.sequel.IEntity;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -783,7 +783,7 @@ public class Graph implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -792,7 +792,7 @@ public class Graph implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;

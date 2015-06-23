@@ -39,10 +39,10 @@ import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Logger;
+import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.MozkitoHandler;
 import org.mozkito.skeleton.commons.URIUtils;
 import org.mozkito.skeleton.exec.Command;
-import org.mozkito.skeleton.sequel.DatabaseDumper;
-import org.mozkito.skeleton.sequel.MozkitoHandler;
 
 /**
  * The Class TaskRunner.
@@ -76,7 +76,8 @@ public class TaskRunner implements Runnable {
 	 * @return the string
 	 */
 	private static String sanitize(final String fileName) {
-		return fileName.replace(File.separator, "_").replace('-', '_').replace(".git", "").trim().toLowerCase()
+		// don't use File.separator here. This comes from a URI. Hence we definitely got forward slashes.
+		return fileName.replace("/", "_").replace('-', '_').replace(".git", "").trim().toLowerCase()
 		               .replaceAll("[^0-9a-z_]", "").replaceAll("(^_*|_*$)", "");
 	}
 	

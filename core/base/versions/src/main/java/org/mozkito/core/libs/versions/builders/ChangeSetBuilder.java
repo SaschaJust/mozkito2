@@ -17,7 +17,7 @@ import java.time.Instant;
 
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Identity;
-import org.mozkito.skeleton.sequel.IBuilder;
+import org.mozkito.libraries.sequel.IBuilder;
 
 /**
  * The Class ChangeSetBuilder.
@@ -134,7 +134,7 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IBuilder#create()
+	 * @see org.mozkito.libraries.sequel.IBuilder#create()
 	 */
 	public ChangeSet create() {
 		if (this.commitTime == null) {

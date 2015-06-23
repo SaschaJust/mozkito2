@@ -21,9 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mozkito.core.libs.versions.model.GraphEdge;
+import org.mozkito.libraries.sequel.AbstractAdapter;
+import org.mozkito.libraries.sequel.Database;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractAdapter;
-import org.mozkito.skeleton.sequel.Database;
 
 /**
  * @author Sascha Just
@@ -43,7 +43,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public GraphEdge create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -55,7 +55,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
 	public void delete(final Connection connection,
 	                   final GraphEdge object) {
@@ -68,7 +68,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
 	 */
 	public Iterator<GraphEdge> load(final Connection connection) {
 		// TODO Auto-generated method stub
@@ -80,7 +80,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
 	public List<GraphEdge> load(final Connection connection,
 	                            final long... ids) {
@@ -93,7 +93,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
 	public GraphEdge load(final Connection connection,
 	                      final long id) {
@@ -106,7 +106,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 * @see org.mozkito.libraries.sequel.IAdapter#nextId()
 	 */
 	public synchronized long nextId() {
 		return ++currentId;
@@ -115,7 +115,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
@@ -143,7 +143,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
 	                   final GraphEdge... objects) {

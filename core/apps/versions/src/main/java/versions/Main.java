@@ -71,10 +71,10 @@ import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Level;
 import org.mozkito.libraries.logging.Logger;
-import org.mozkito.skeleton.sequel.Database;
-import org.mozkito.skeleton.sequel.Database.Type;
-import org.mozkito.skeleton.sequel.DatabaseDumper;
-import org.mozkito.skeleton.sequel.MozkitoHandler;
+import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.MozkitoHandler;
+import org.mozkito.libraries.sequel.Database.Type;
 
 // TODO: Auto-generated Javadoc
 /**

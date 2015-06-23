@@ -16,7 +16,7 @@ package org.mozkito.core.libs.versions.model;
 import org.mozkito.core.libs.versions.graph.BranchMarker;
 import org.mozkito.core.libs.versions.graph.IntegrationMarker;
 import org.mozkito.core.libs.versions.graph.NavigationMarker;
-import org.mozkito.skeleton.sequel.IEntity;
+import org.mozkito.libraries.sequel.IEntity;
 
 /**
  * The Class BranchEdge.
@@ -146,7 +146,7 @@ public class BranchEdge implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -155,7 +155,7 @@ public class BranchEdge implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;

@@ -26,9 +26,9 @@ import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.GraphEdge;
+import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
-import org.mozkito.skeleton.sequel.DatabaseDumper;
 
 /**
  * The Class GraphMiner.

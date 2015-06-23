@@ -22,9 +22,9 @@ import java.util.List;
 
 import org.mozkito.core.libs.versions.model.Entry;
 import org.mozkito.core.libs.versions.model.Renaming;
+import org.mozkito.libraries.sequel.AbstractAdapter;
+import org.mozkito.libraries.sequel.Database;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractAdapter;
-import org.mozkito.skeleton.sequel.Database;
 
 /**
  * @author Sascha Just
@@ -47,7 +47,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public Renaming create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -59,7 +59,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
 	public void delete(final Connection connection,
 	                   final Renaming object) {
@@ -72,7 +72,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
 	 */
 	public Iterator<Renaming> load(final Connection connection) {
 		// TODO Auto-generated method stub
@@ -84,7 +84,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
 	public List<Renaming> load(final Connection connection,
 	                           final long... ids) {
@@ -97,7 +97,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
 	public Renaming load(final Connection connection,
 	                     final long id) {
@@ -110,7 +110,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 * @see org.mozkito.libraries.sequel.IAdapter#nextId()
 	 */
 	public synchronized long nextId() {
 		return ++currentId;
@@ -119,7 +119,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
@@ -149,7 +149,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
 	                   final Renaming... objects) {

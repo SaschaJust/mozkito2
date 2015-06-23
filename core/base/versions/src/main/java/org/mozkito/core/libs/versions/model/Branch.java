@@ -13,7 +13,7 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.skeleton.sequel.IEntity;
+import org.mozkito.libraries.sequel.IEntity;
 
 /**
  * The Class Branch models a branch in a version archive.
@@ -140,7 +140,7 @@ public class Branch implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -149,7 +149,7 @@ public class Branch implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = (int) id;

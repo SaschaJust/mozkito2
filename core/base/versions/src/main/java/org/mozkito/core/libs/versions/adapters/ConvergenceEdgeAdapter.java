@@ -21,9 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mozkito.core.libs.versions.model.ConvergenceEdge;
+import org.mozkito.libraries.sequel.AbstractAdapter;
+import org.mozkito.libraries.sequel.Database;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractAdapter;
-import org.mozkito.skeleton.sequel.Database;
 
 /**
  * @author Sascha Just
@@ -46,7 +46,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public ConvergenceEdge create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -58,7 +58,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
 	public void delete(final Connection connection,
 	                   final ConvergenceEdge object) {
@@ -71,7 +71,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
 	 */
 	public Iterator<ConvergenceEdge> load(final Connection connection) {
 		// TODO Auto-generated method stub
@@ -83,7 +83,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
 	public List<ConvergenceEdge> load(final Connection connection,
 	                                  final long... ids) {
@@ -96,7 +96,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
 	public ConvergenceEdge load(final Connection connection,
 	                            final long id) {
@@ -109,7 +109,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 * @see org.mozkito.libraries.sequel.IAdapter#nextId()
 	 */
 	public synchronized long nextId() {
 		return ++currentId;
@@ -118,7 +118,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
@@ -146,7 +146,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
 	                   final ConvergenceEdge... objects) {

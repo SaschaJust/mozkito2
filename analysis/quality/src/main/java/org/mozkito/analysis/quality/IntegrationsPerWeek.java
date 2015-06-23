@@ -15,10 +15,10 @@ package org.mozkito.analysis.quality;
 
 import java.time.Instant;
 
-import org.mozkito.skeleton.sequel.Database;
-import org.mozkito.skeleton.sequel.Database.Type;
-import org.mozkito.skeleton.sequel.DatabaseManager;
-import org.mozkito.skeleton.sequel.EntityFactory;
+import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.DatabaseManager;
+import org.mozkito.libraries.sequel.EntityFactory;
+import org.mozkito.libraries.sequel.Database.Type;
 
 /**
  * @author Sascha Just

@@ -19,9 +19,9 @@ import java.util.Set;
 
 import org.apache.commons.collections4.collection.UnmodifiableCollection;
 
+import org.mozkito.libraries.sequel.IEntity;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class Renaming.
@@ -134,7 +134,7 @@ public class Renaming implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -143,7 +143,7 @@ public class Renaming implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;

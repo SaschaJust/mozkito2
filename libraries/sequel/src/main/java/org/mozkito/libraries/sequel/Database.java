@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.sequel;
+package org.mozkito.libraries.sequel;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -92,9 +92,11 @@ public class Database implements DataSource, Closeable {
 		config.setJdbcUrl(connectionString);
 		this.type = type;
 		this.idMode = IdMode.LOCAL;
-		
 		this.dataSource = new HikariDataSource(config);
 		this.dataSource.setAutoCommit(false);
+		this.dataSource.setConnectionTimeout(5000);
+		this.dataSource.setLoginTimeout(3000);
+		
 		this.connection = this.dataSource.getConnection();
 	}
 	

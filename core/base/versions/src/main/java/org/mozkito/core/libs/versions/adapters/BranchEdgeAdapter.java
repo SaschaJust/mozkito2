@@ -21,9 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mozkito.core.libs.versions.model.BranchEdge;
+import org.mozkito.libraries.sequel.AbstractAdapter;
+import org.mozkito.libraries.sequel.Database;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.AbstractAdapter;
-import org.mozkito.skeleton.sequel.Database;
 
 /**
  * The Class GraphBranchAdapter.
@@ -47,7 +47,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public BranchEdge create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -59,7 +59,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.skeleton.sequel.IEntity)
+	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
 	                   final BranchEdge object) {
@@ -72,7 +72,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
 	 */
 	public Iterator<BranchEdge> load(final Connection connection) {
 		// TODO Auto-generated method stub
@@ -84,7 +84,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long[])
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
 	public List<BranchEdge> load(final Connection connection,
 	                             final long... ids) {
@@ -97,7 +97,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#load(java.sql.Connection, long)
+	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
 	public BranchEdge load(final Connection connection,
 	                       final long id) {
@@ -110,7 +110,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#nextId()
+	 * @see org.mozkito.libraries.sequel.IAdapter#nextId()
 	 */
 	public synchronized long nextId() {
 		return ++currentId;
@@ -119,7 +119,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
@@ -148,7 +148,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
 	                   final BranchEdge... objects) {

@@ -20,9 +20,9 @@ import org.mozkito.core.libs.versions.IntegrationType;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
 import org.mozkito.core.libs.versions.model.Depot;
+import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
-import org.mozkito.skeleton.sequel.DatabaseDumper;
 
 /**
  * The Class IntegrationMiner.

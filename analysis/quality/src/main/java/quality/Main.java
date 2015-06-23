@@ -24,9 +24,9 @@ import org.apache.commons.cli.ParseException;
 
 import org.mozkito.analysis.quality.IntegrationsPerWeek;
 import org.mozkito.libraries.logging.Logger;
-import org.mozkito.skeleton.sequel.BulkReader;
-import org.mozkito.skeleton.sequel.Database;
-import org.mozkito.skeleton.sequel.Database.Type;
+import org.mozkito.libraries.sequel.BulkReader;
+import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.Database.Type;
 
 /**
  * @author Sascha Just

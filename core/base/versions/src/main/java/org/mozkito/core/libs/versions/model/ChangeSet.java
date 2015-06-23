@@ -20,9 +20,9 @@ import java.util.Set;
 
 import org.apache.commons.collections4.collection.UnmodifiableCollection;
 
+import org.mozkito.libraries.sequel.IEntity;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class ChangeSet.
@@ -275,7 +275,7 @@ public class ChangeSet implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#id()
 	 */
 	@Override
 	public long id() {
@@ -285,7 +285,7 @@ public class ChangeSet implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
 	 */
 	@Override
 	public void id(final long id) {

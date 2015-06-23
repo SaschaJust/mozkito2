@@ -17,7 +17,7 @@ import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ConvergenceEdge;
 import org.mozkito.libraries.logging.Logger;
-import org.mozkito.skeleton.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.DatabaseDumper;
 
 /**
  * @author Sascha Just

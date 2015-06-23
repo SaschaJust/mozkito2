@@ -16,7 +16,7 @@ package org.mozkito.core.libs.versions.model;
 import java.net.URI;
 import java.time.Instant;
 
-import org.mozkito.skeleton.sequel.IEntity;
+import org.mozkito.libraries.sequel.IEntity;
 
 /**
  * The Class Depot.
@@ -126,7 +126,7 @@ public class Depot implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#id()
 	 */
 	@Override
 	public long id() {
@@ -136,7 +136,7 @@ public class Depot implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
 	 */
 	@Override
 	public void id(final long id) {

@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.skeleton.sequel;
+package org.mozkito.libraries.sequel;
 
 /**
  * The Interface IBuilder.

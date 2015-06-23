@@ -25,9 +25,9 @@ import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Renaming;
+import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.DatabaseDumper;
 
 /**
  * The Class FileTracker.

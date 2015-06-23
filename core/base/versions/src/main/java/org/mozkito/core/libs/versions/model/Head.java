@@ -13,8 +13,8 @@
 
 package org.mozkito.core.libs.versions.model;
 
+import org.mozkito.libraries.sequel.IEntity;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.IEntity;
 
 /**
  * The Class Head.
@@ -112,7 +112,7 @@ public class Head implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#id()
 	 */
 	public long id() {
 		return this.id;
@@ -121,7 +121,7 @@ public class Head implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.skeleton.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
 	 */
 	public void id(final long id) {
 		this.id = id;
