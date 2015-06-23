@@ -15,7 +15,9 @@ package org.mozkito.core.apps.versions;
 
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
+import org.mozkito.core.libs.versions.model.ConvergenceEdge;
 import org.mozkito.libraries.logging.Logger;
+import org.mozkito.skeleton.sequel.DatabaseDumper;
 
 /**
  * @author Sascha Just
@@ -23,17 +25,21 @@ import org.mozkito.libraries.logging.Logger;
  */
 public class ConvergenceMiner extends Task implements Runnable {
 	
-	private final Graph graph;
+	private final Graph                           graph;
+	private final DatabaseDumper<ConvergenceEdge> convergenceDumper;
 	
 	/**
 	 * Instantiates a new integration miner.
 	 *
 	 * @param graph
 	 *            the graph
+	 * @param convergenceDumper
+	 *            the convergence dumper
 	 */
-	public ConvergenceMiner(final Graph graph) {
+	public ConvergenceMiner(final Graph graph, final DatabaseDumper<ConvergenceEdge> convergenceDumper) {
 		super(graph.getDepot());
 		this.graph = graph;
+		this.convergenceDumper = convergenceDumper;
 	}
 	
 	/**
@@ -45,6 +51,10 @@ public class ConvergenceMiner extends Task implements Runnable {
 		for (final Branch branch : this.graph.getBranches()) {
 			Logger.info("Processing branch '%s'.", branch.getName());
 			this.graph.computeConvergence(branch);
+		}
+		
+		for (final ConvergenceEdge edge : this.graph.getConvergence()) {
+			this.convergenceDumper.saveLater(edge);
 		}
 	}
 }

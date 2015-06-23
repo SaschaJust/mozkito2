@@ -137,7 +137,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 			saveStatement.setShort(++index, edge.getNavigationType());
 			saveStatement.setShort(++index, edge.getIntegrationType());
 			
-			saveStatement.addBatch();
+			saveStatement.executeUpdate();
 			
 			edge.id(id);
 		} catch (final SQLException e) {

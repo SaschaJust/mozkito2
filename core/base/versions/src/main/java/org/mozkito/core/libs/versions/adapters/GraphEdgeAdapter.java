@@ -132,7 +132,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 			saveStatement.setLong(++index, edge.sourceId);
 			saveStatement.setLong(++index, edge.targetId);
 			
-			saveStatement.addBatch();
+			saveStatement.executeUpdate();
 			
 			edge.id(id);
 		} catch (final SQLException e) {

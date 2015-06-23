@@ -72,9 +72,9 @@ import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Level;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.sequel.Database;
-import org.mozkito.skeleton.sequel.MozkitoHandler;
 import org.mozkito.skeleton.sequel.Database.Type;
 import org.mozkito.skeleton.sequel.DatabaseDumper;
+import org.mozkito.skeleton.sequel.MozkitoHandler;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -319,11 +319,7 @@ public class Main {
 			database.register(Head.class, new HeadAdapter(database.getType()));
 			database.register(Root.class, new RootAdapter(database.getType()));
 			
-			database.register(Graph.class,
-			                  new GraphAdapter(database.getType(), database.getAdapter(GraphEdge.class),
-			                                   database.getAdapter(BranchEdge.class), database.getAdapter(Head.class),
-			                                   database.getAdapter(Root.class),
-			                                   database.getAdapter(ConvergenceEdge.class)));
+			database.register(Graph.class, new GraphAdapter(database.getType()));
 			database.register(Branch.class, new BranchAdapter(database.getType()));
 			database.register(Handle.class, new HandleAdapter(database.getType()));
 			database.register(Renaming.class, new RenamingAdapter(database.getType()));
@@ -351,8 +347,22 @@ public class Main {
 			final DatabaseDumper<ChangeSetIntegration> integrationDumper = new DatabaseDumper<>(
 			                                                                                    database.getAdapter(ChangeSetIntegration.class),
 			                                                                                    database.getConnection());
-			final DatabaseDumper<Tag> tagDumper = new DatabaseDumper<Tag>(database.getAdapter(Tag.class),
-			                                                              database.getConnection());
+			final DatabaseDumper<Tag> tagDumper = new DatabaseDumper<>(database.getAdapter(Tag.class),
+			                                                           database.getConnection());
+			
+			final DatabaseDumper<GraphEdge> graphEdgeDumper = new DatabaseDumper<>(
+			                                                                       database.getAdapter(GraphEdge.class),
+			                                                                       database.getConnection());
+			final DatabaseDumper<BranchEdge> branchEdgeDumper = new DatabaseDumper<>(
+			                                                                         database.getAdapter(BranchEdge.class),
+			                                                                         database.getConnection());
+			final DatabaseDumper<Head> headDumper = new DatabaseDumper<>(database.getAdapter(Head.class),
+			                                                             database.getConnection());
+			final DatabaseDumper<Root> rootDumper = new DatabaseDumper<>(database.getAdapter(Root.class),
+			                                                             database.getConnection());
+			final DatabaseDumper<ConvergenceEdge> convergenceDumper = new DatabaseDumper<>(
+			                                                                               database.getAdapter(ConvergenceEdge.class),
+			                                                                               database.getConnection());
 			
 			identityDumper.start();
 			changeSetDumper.start();
@@ -364,6 +374,11 @@ public class Main {
 			renamingDumper.start();
 			integrationDumper.start();
 			tagDumper.start();
+			graphEdgeDumper.start();
+			branchEdgeDumper.start();
+			headDumper.start();
+			rootDumper.start();
+			convergenceDumper.start();
 			
 			final IdentityCache identityCache = new IdentityCache();
 			
@@ -377,7 +392,9 @@ public class Main {
 				final TaskRunner runner = new TaskRunner(baseDir, workDir, depotURI, tasks.toArray(new Task[0]),
 				                                         identityCache, identityDumper, changeSetDumper,
 				                                         revisionDumper, branchDumper, handleDumper, graphDumper,
-				                                         depotDumper, renamingDumper, integrationDumper, tagDumper);
+				                                         depotDumper, renamingDumper, integrationDumper, tagDumper,
+				                                         graphEdgeDumper, branchEdgeDumper, headDumper, rootDumper,
+				                                         convergenceDumper);
 				es.execute(runner);
 			}
 			
@@ -397,6 +414,11 @@ public class Main {
 			renamingDumper.terminate();
 			integrationDumper.terminate();
 			tagDumper.terminate();
+			graphEdgeDumper.terminate();
+			branchEdgeDumper.terminate();
+			headDumper.terminate();
+			rootDumper.terminate();
+			convergenceDumper.terminate();
 			
 			identityDumper.join();
 			changeSetDumper.join();
@@ -408,6 +430,11 @@ public class Main {
 			renamingDumper.join();
 			integrationDumper.join();
 			tagDumper.join();
+			graphEdgeDumper.join();
+			branchEdgeDumper.join();
+			headDumper.join();
+			rootDumper.join();
+			convergenceDumper.join();
 			
 			System.out.println("Creating primary keys.");
 			database.createPrimaryKeys();

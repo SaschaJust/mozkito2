@@ -14,14 +14,21 @@
 package org.mozkito.core.apps.versions;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.mozkito.core.libs.versions.graph.BranchMarker;
+import org.mozkito.core.libs.versions.graph.Edge;
 import org.mozkito.core.libs.versions.graph.Graph;
+import org.mozkito.core.libs.versions.graph.Label;
 import org.mozkito.core.libs.versions.model.Branch;
+import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
+import org.mozkito.skeleton.sequel.DatabaseDumper;
 
 /**
  * The Class GraphMiner.
@@ -30,16 +37,20 @@ import org.mozkito.skeleton.exec.Command;
  */
 public class GraphMiner extends Task implements Runnable {
 	
-	static final String                  ORIGIN = "origin/";
+	static final String                      ORIGIN = "origin/";
 	
 	/** The clone dir. */
-	private final File                   cloneDir;
+	private final File                       cloneDir;
 	
 	/** The graph. */
-	private final Graph                  graph;
+	private final Graph                      graph;
 	
 	/** The change sets. */
-	private final Map<String, ChangeSet> changeSets;
+	private final Map<String, ChangeSet>     changeSets;
+	
+	private final DatabaseDumper<Graph>      graphDumper;
+	private final DatabaseDumper<GraphEdge>  graphEdgeDumper;
+	private final DatabaseDumper<BranchEdge> branchEdgeDumper;
 	
 	/**
 	 * Instantiates a new graph miner.
@@ -50,12 +61,23 @@ public class GraphMiner extends Task implements Runnable {
 	 *            the graph
 	 * @param changeSets
 	 *            the change sets
+	 * @param graphDumper
+	 *            the graph dumper
+	 * @param graphEdgeDumper
+	 *            the graph edge dumper
+	 * @param branchEdgeDumper
+	 *            the branch edge dumper
 	 */
-	public GraphMiner(final File cloneDir, final Graph graph, final Map<String, ChangeSet> changeSets) {
+	public GraphMiner(final File cloneDir, final Graph graph, final Map<String, ChangeSet> changeSets,
+	        final DatabaseDumper<Graph> graphDumper, final DatabaseDumper<GraphEdge> graphEdgeDumper,
+	        final DatabaseDumper<BranchEdge> branchEdgeDumper) {
 		super(graph.getDepot());
 		this.cloneDir = cloneDir;
 		this.graph = graph;
 		this.changeSets = changeSets;
+		this.graphDumper = graphDumper;
+		this.graphEdgeDumper = graphEdgeDumper;
+		this.branchEdgeDumper = branchEdgeDumper;
 	}
 	
 	/**
@@ -100,6 +122,26 @@ public class GraphMiner extends Task implements Runnable {
 			this.graph.computeNavigationGraph(branch);
 			this.graph.computeIntegrationGraph(branch);
 		}
+		
+		GraphEdge gEdge;
+		BranchEdge bEdge;
+		
+		final Collection<Edge> edges = this.graph.getEdges();
+		
+		Label label;
+		for (final Edge edge : edges) {
+			gEdge = new GraphEdge(this.graph.getDepot().id(), edge.getSourceId(), edge.getTargetId());
+			this.graphEdgeDumper.saveLater(gEdge);
+			
+			for (final Entry<Long, Label> entry : edge.getLabels().entrySet()) {
+				label = entry.getValue();
+				bEdge = new BranchEdge(gEdge.id(), entry.getKey(), label.branchMarker, label.navigationMarker,
+				                       label.integrationMarker);
+				this.branchEdgeDumper.saveLater(bEdge);
+			}
+		}
+		
+		this.graphDumper.saveLater(this.graph);
 		
 	}
 }

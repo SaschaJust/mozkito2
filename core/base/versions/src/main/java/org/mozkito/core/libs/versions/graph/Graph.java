@@ -50,8 +50,8 @@ import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
-import org.mozkito.skeleton.sequel.IEntity;
 import org.mozkito.skeleton.sequel.Database;
+import org.mozkito.skeleton.sequel.IEntity;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -253,10 +253,12 @@ public class Graph implements IEntity {
 	 *            the branch
 	 * @param changeSet
 	 *            the change set
+	 * @return the head
 	 */
-	public void addHead(final Branch branch,
+	public Head addHead(final Branch branch,
 	                    final ChangeSet changeSet) {
 		this.heads.put(branch, new Head(branch.id(), changeSet.id()));
+		return this.heads.get(branch);
 	}
 	
 	/**
@@ -266,14 +268,17 @@ public class Graph implements IEntity {
 	 *            the branch
 	 * @param changeSet
 	 *            the change set
+	 * @return the sets the
 	 */
-	public void addRoot(final Branch branch,
+	public Root addRoot(final Branch branch,
 	                    final ChangeSet changeSet) {
 		if (!this.roots.containsKey(branch)) {
 			this.roots.put(branch, new HashSet<Root>());
 		}
+		final Root root = new Root(branch.id(), changeSet.id());
+		this.roots.get(branch).add(root);
 		
-		this.roots.get(branch).add(new Root(branch.id(), changeSet.id()));
+		return root;
 	}
 	
 	/**

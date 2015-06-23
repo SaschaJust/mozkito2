@@ -25,13 +25,18 @@ import org.mozkito.core.libs.versions.FileCache;
 import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
+import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
+import org.mozkito.core.libs.versions.model.ConvergenceEdge;
 import org.mozkito.core.libs.versions.model.Depot;
+import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.core.libs.versions.model.Handle;
+import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
+import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.commons.URIUtils;
@@ -127,6 +132,16 @@ public class TaskRunner implements Runnable {
 	
 	private final DatabaseDumper<Tag>                  tagDumper;
 	
+	private final DatabaseDumper<GraphEdge>            graphEdgeDumper;
+	
+	private final DatabaseDumper<BranchEdge>           branchEdgeDumper;
+	
+	private final DatabaseDumper<ConvergenceEdge>      convergenceDumper;
+	
+	private final DatabaseDumper<Head>                 headDumper;
+	
+	private final DatabaseDumper<Root>                 rootDumper;
+	
 	/**
 	 * Instantiates a new task runner.
 	 *
@@ -160,6 +175,11 @@ public class TaskRunner implements Runnable {
 	 *            the integration dumper
 	 * @param tagDumper
 	 *            the tag dumper
+	 * @param convergenceDumper
+	 * @param rootDumper
+	 * @param headDumper
+	 * @param branchEdgeDumper
+	 * @param graphEdgeDumper
 	 */
 	public TaskRunner(final File baseDir, final File workDir, final URI depotURI, final Task[] tasks,
 	        final IdentityCache identityCache, final DatabaseDumper<Identity> identityDumper,
@@ -167,7 +187,10 @@ public class TaskRunner implements Runnable {
 	        final DatabaseDumper<Branch> branchDumper, final DatabaseDumper<Handle> handleDumper,
 	        final DatabaseDumper<Graph> graphDumper, final DatabaseDumper<Depot> depotDumper,
 	        final DatabaseDumper<Renaming> renamingDumper,
-	        final DatabaseDumper<ChangeSetIntegration> integrationDumper, final DatabaseDumper<Tag> tagDumper) {
+	        final DatabaseDumper<ChangeSetIntegration> integrationDumper, final DatabaseDumper<Tag> tagDumper,
+	        final DatabaseDumper<GraphEdge> graphEdgeDumper, final DatabaseDumper<BranchEdge> branchEdgeDumper,
+	        final DatabaseDumper<Head> headDumper, final DatabaseDumper<Root> rootDumper,
+	        final DatabaseDumper<ConvergenceEdge> convergenceDumper) {
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
 		this.identityDumper = identityDumper;
@@ -180,6 +203,11 @@ public class TaskRunner implements Runnable {
 		this.renamingDumper = renamingDumper;
 		this.integrationDumper = integrationDumper;
 		this.tagDumper = tagDumper;
+		this.graphEdgeDumper = graphEdgeDumper;
+		this.branchEdgeDumper = branchEdgeDumper;
+		this.convergenceDumper = convergenceDumper;
+		this.headDumper = headDumper;
+		this.rootDumper = rootDumper;
 		
 		this.identityCache = identityCache;
 		
@@ -270,14 +298,16 @@ public class TaskRunner implements Runnable {
 		
 		if (ArrayUtils.contains(this.tasks, Task.ENDPOINTS)) {
 			Logger.info("Spawning EndPointMiner.");
-			final EndPointMiner endPointMiner = new EndPointMiner(this.cloneDir, branchHeads, changeSets, this.graph);
+			final EndPointMiner endPointMiner = new EndPointMiner(this.cloneDir, branchHeads, changeSets, this.graph,
+			                                                      this.headDumper, this.rootDumper);
 			endPointMiner.run();
 			resetName();
 		}
 		
 		if (ArrayUtils.contains(this.tasks, Task.GRAPH)) {
 			Logger.info("Spawning GraphBuilder.");
-			final GraphMiner graphMiner = new GraphMiner(this.cloneDir, this.graph, changeSets);
+			final GraphMiner graphMiner = new GraphMiner(this.cloneDir, this.graph, changeSets, this.graphDumper,
+			                                             this.graphEdgeDumper, this.branchEdgeDumper);
 			graphMiner.run();
 			resetName();
 		}
@@ -291,12 +321,10 @@ public class TaskRunner implements Runnable {
 			
 			Logger.info("Spawning ConvergenceMiner.");
 			
-			final ConvergenceMiner convergenceMiner = new ConvergenceMiner(this.graph);
+			final ConvergenceMiner convergenceMiner = new ConvergenceMiner(this.graph, this.convergenceDumper);
 			convergenceMiner.run();
 			resetName();
 		}
-		
-		this.graphDumper.saveLater(this.graph);
 	}
 	
 }

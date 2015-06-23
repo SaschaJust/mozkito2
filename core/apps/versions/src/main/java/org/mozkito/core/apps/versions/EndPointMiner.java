@@ -20,8 +20,11 @@ import java.util.Map.Entry;
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.core.libs.versions.model.Head;
+import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
+import org.mozkito.skeleton.sequel.DatabaseDumper;
 
 /**
  * The Class EndPointMiner.
@@ -39,7 +42,14 @@ public class EndPointMiner extends Task implements Runnable {
 	/** The change sets. */
 	private final Map<String, ChangeSet> changeSets;
 	
+	/** The graph. */
 	private final Graph                  graph;
+	
+	/** The head dumper. */
+	private final DatabaseDumper<Head>   headDumper;
+	
+	/** The root dumper. */
+	private final DatabaseDumper<Root>   rootDumper;
 	
 	/**
 	 * Instantiates a new end point miner.
@@ -52,14 +62,20 @@ public class EndPointMiner extends Task implements Runnable {
 	 *            the change sets
 	 * @param graph
 	 *            the graph
+	 * @param headDumper
+	 *            the head dumper
+	 * @param rootDumper
+	 *            the root dumper
 	 */
 	public EndPointMiner(final File cloneDir, final Map<String, Branch> heads, final Map<String, ChangeSet> changeSets,
-	        final Graph graph) {
+	        final Graph graph, final DatabaseDumper<Head> headDumper, final DatabaseDumper<Root> rootDumper) {
 		super(graph.getDepot());
 		this.cloneDir = cloneDir;
 		this.branchHeads = heads;
 		this.changeSets = changeSets;
 		this.graph = graph;
+		this.headDumper = headDumper;
+		this.rootDumper = rootDumper;
 	}
 	
 	/**
@@ -74,11 +90,11 @@ public class EndPointMiner extends Task implements Runnable {
 			String root;
 			
 			Asserts.containsKey(this.changeSets, entry.getKey());
-			this.graph.addHead(entry.getValue(), this.changeSets.get(entry.getKey()));
+			this.headDumper.saveLater(this.graph.addHead(entry.getValue(), this.changeSets.get(entry.getKey())));
 			
 			while ((root = command.nextOutput()) != null) {
 				Asserts.containsKey(this.changeSets, root);
-				this.graph.addRoot(entry.getValue(), this.changeSets.get(root));
+				this.rootDumper.saveLater(this.graph.addRoot(entry.getValue(), this.changeSets.get(root)));
 			}
 		}
 	}
