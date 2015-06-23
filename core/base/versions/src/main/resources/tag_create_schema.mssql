@@ -6,5 +6,5 @@ CREATE TABLE tags (
 	hash CHAR(40),
 	message VARCHAR(MAX),
 	tagger_id BIGINT,
-	tag_time TIMESTAMP 
+	tag_time DATETIME 
 );
