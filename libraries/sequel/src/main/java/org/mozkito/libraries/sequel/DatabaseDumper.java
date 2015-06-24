@@ -113,6 +113,8 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 			}
 			this.save.executeBatch();
 			Logger.info("Processed " + this.processed + " entities.");
+			
+			this.save.getConnection().close();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

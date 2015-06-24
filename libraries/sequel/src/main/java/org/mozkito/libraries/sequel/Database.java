@@ -95,7 +95,7 @@ public class Database implements DataSource, Closeable {
 		this.dataSource = new HikariDataSource(config);
 		this.dataSource.setAutoCommit(false);
 		this.dataSource.setTransactionIsolation("TRANSACTION_READ_UNCOMMITTED");
-		this.dataSource.setConnectionTimeout(5000);
+		// this.dataSource.setConnectionTimeout(5000);
 		this.dataSource.setLoginTimeout(3000);
 		
 		this.connection = this.dataSource.getConnection();
@@ -149,7 +149,7 @@ public class Database implements DataSource, Closeable {
 		}
 		this.dataSource.setAutoCommit(false);
 		this.dataSource.setTransactionIsolation("TRANSACTION_READ_UNCOMMITTED");
-		this.dataSource.setConnectionTimeout(5000);
+		// this.dataSource.setConnectionTimeout(5000);
 		this.dataSource.setLoginTimeout(3000);
 		this.connection = this.dataSource.getConnection();
 	}
