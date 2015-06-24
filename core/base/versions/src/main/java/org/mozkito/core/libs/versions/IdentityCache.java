@@ -16,11 +16,13 @@ package org.mozkito.core.libs.versions;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.skeleton.contracts.Asserts;
 
 /**
- * The Class IdentityCache.
+ * The IdentityCache is a cache that maps <code>email</code> and <code>fullname</code> of a user in a version control
+ * system to its {@link Identity} entity. The purpose of the class is to reuse identities throughout {@link Depot}s.
  *
  * @author Sascha Just
  */
@@ -40,16 +42,19 @@ public class IdentityCache {
 	}
 	
 	/**
-	 * Gets the unknown.
+	 * Gets the default identity which is used when both <code>email</code> and <code>fullname</code> are
+	 * <code>null</code>.
 	 *
-	 * @return the unknown
+	 * @return the <code>UNKNOWN_IDENTITY</code>
 	 */
 	public Identity getUnknown() {
 		return request(UNKNOWN_IDENTITY, UNKNOWN_IDENTITY);
 	}
 	
 	/**
-	 * Gets the.
+	 * Looks up and returns the identity represented by <code>email</code> and <code>fullname</code> in the local cash.
+	 * If both arguments are <code>null</code>, the default <code>UNKNOWN_IDENTIY</code> is returned. If the identity is
+	 * not known to the cash, a new identity will be created and stored in the cache.
 	 *
 	 * @param email
 	 *            the email
