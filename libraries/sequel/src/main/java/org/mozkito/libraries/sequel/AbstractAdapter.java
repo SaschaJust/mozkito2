@@ -119,11 +119,18 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	}
 	
 	/**
+	 * @return the type
+	 */
+	public final Type getType() {
+		return this.type;
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see org.mozkito.libraries.sequel.IAdapter#prepareSaveStatement(java.sql.Connection)
 	 */
-	public final PreparedStatement prepareSaveStatement(final Connection connection) {
+	public PreparedStatement prepareSaveStatement(final Connection connection) {
 		try {
 			return connection.prepareStatement(this.saveStatement);
 		} catch (final SQLException e) {

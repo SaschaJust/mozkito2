@@ -59,7 +59,10 @@ public class Database implements DataSource, Closeable {
 		/** The postgres. */
 		POSTGRES,
 		/** The mssql. */
-		MSSQL;
+		MSSQL,
+		
+		/** The azure. */
+		AZURE;
 	}
 	
 	/** The data source. */
@@ -129,6 +132,7 @@ public class Database implements DataSource, Closeable {
 				config = setupPostgres(name, host, username, password, port, additionalArgs);
 				break;
 			case MSSQL:
+			case AZURE:
 				config = setupMSSQL(name, host, username, password, port, additionalArgs);
 				break;
 			case DERBY:

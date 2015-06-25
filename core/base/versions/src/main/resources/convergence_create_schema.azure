@@ -1,0 +1,7 @@
+CREATE TABLE convergences (
+	id BIGINT NOT NULL,
+	branch_id BIGINT NOT NULL,
+	source_id BIGINT NOT NULL,
+	converge_id BIGINT NOT NULL,
+	CONSTRAINT [PK_convergences] PRIMARY KEY CLUSTERED ([id] ASC)
+);

@@ -1,0 +1,7 @@
+CREATE TABLE edges (
+	id BIGINT NOT NULL,
+	depot_id BIGINT NOT NULL,
+	source_id BIGINT NOT NULL,
+	target_id BIGINT NOT NULL,
+	CONSTRAINT [PK_branches] PRIMARY KEY CLUSTERED ([id] ASC)
+);

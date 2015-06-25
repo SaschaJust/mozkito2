@@ -1,0 +1,5 @@
+CREATE TABLE graphs (
+	id BIGINT NOT NULL,
+	depot_id BIGINT NOT NULL,
+	CONSTRAINT [PK_graphs] PRIMARY KEY CLUSTERED ([id] ASC)
+);

@@ -1,0 +1,11 @@
+CREATE TABLE tags (
+	id BIGINT NOT NULL,
+	depot_id BIGINT NOT NULL,
+	changeset_id BIGINT NOT NULL,
+	name VARCHAR(900) NOT NULL,
+	hash CHAR(40),
+	message VARCHAR(MAX),
+	tagger_id BIGINT,
+	tag_time DATETIME,
+	CONSTRAINT [PK_tags] PRIMARY KEY CLUSTERED ([id] ASC)
+);

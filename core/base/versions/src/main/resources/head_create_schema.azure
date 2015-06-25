@@ -1,0 +1,6 @@
+CREATE TABLE heads (
+	id BIGINT NOT NULL,
+	branch_id BIGINT NOT NULL,
+	changeset_id BIGINT NOT NULL,
+	CONSTRAINT [PK_heads] PRIMARY KEY CLUSTERED ([id] ASC)
+);
