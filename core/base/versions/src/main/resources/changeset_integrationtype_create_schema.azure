@@ -1,0 +1,13 @@
+CREATE TABLE changeset_integrationtypes (
+	changeset_id BIGINT NOT NULL,
+	integration_type SMALLINT NOT NULL,
+	CONSTRAINT [PK_changeset_integration_types] PRIMARY KEY CLUSTERED ([id] ASC)
+);
+
+CREATE TABLE integration_types (
+	value SMALLINT PRIMARY KEY,
+	name VARCHAR(32) NOT NULL,
+	CONSTRAINT [PK_integration_types] PRIMARY KEY CLUSTERED ([value] ASC)
+);
+
+
