@@ -1,3 +1,1 @@
-ALTER TABLE renamings ALTER COLUMN id BIGINT NOT NULL;
-ALTER TABLE renamings ALTER COLUMN source_id BIGINT NOT NULL;
 ALTER TABLE renamings ADD PRIMARY KEY (id, source_id);

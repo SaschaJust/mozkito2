@@ -4,5 +4,5 @@ CREATE TABLE renamings (
 	source_id BIGINT NOT NULL,
 	target_id BIGINT NOT NULL,
 	changeset_id BIGINT NOT NULL,
-	CONSTRAINT [PK_renamings] PRIMARY KEY CLUSTERED ([id] ASC)
+	CONSTRAINT [PK_renamings] PRIMARY KEY CLUSTERED ([id], [source_id] ASC)
 );
