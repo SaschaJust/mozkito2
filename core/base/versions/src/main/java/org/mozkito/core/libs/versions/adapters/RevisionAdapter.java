@@ -39,8 +39,8 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 	 * @param type
 	 *            the type
 	 */
-	public RevisionAdapter(final Database.Type type) {
-		super(type, "revision");
+	public RevisionAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "revision");
 	}
 	
 	/**
@@ -143,7 +143,7 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 			saveStatement.setInt(++index, revision.getLinesIn());
 			saveStatement.setInt(++index, revision.getLinesOut());
 			
-			saveStatement.addBatch();
+			schedule(saveStatement);
 			
 			revision.id(id);
 		} catch (final SQLException e) {

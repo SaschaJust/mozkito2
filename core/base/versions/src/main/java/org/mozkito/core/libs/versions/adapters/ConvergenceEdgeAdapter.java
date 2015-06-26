@@ -39,8 +39,8 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	 * @param type
 	 *            the type
 	 */
-	public ConvergenceEdgeAdapter(final Database.Type type) {
-		super(type, "convergence");
+	public ConvergenceEdgeAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "convergence");
 	}
 	
 	/**
@@ -135,7 +135,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 			saveStatement.setLong(++index, edge.getSourceId());
 			saveStatement.setLong(++index, edge.getConvergeId());
 			
-			saveStatement.addBatch();
+			schedule(saveStatement);
 			
 			edge.id(id);
 		} catch (final SQLException e) {

@@ -31,6 +31,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Requires;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class SequelDatabase.
  *
@@ -47,6 +48,17 @@ public class Database implements DataSource, Closeable {
 		SEQUENCE,
 		/** The local. */
 		LOCAL;
+	}
+	
+	/**
+	 * The Enum TxMode.
+	 */
+	public static enum TxMode {
+		
+		/** The transaction. */
+		TRANSACTION,
+		/** The batch. */
+		BATCH;
 	}
 	
 	/**
@@ -80,6 +92,8 @@ public class Database implements DataSource, Closeable {
 	/** The id mode. */
 	private IdMode                           idMode;
 	
+	private final TxMode                     txMode;
+	
 	/**
 	 * Instantiates a new database.
 	 *
@@ -100,6 +114,8 @@ public class Database implements DataSource, Closeable {
 		this.dataSource.setTransactionIsolation("TRANSACTION_READ_UNCOMMITTED");
 		// this.dataSource.setConnectionTimeout(5000);
 		this.dataSource.setLoginTimeout(3000);
+		
+		this.txMode = TxMode.TRANSACTION;
 		
 		this.connection = this.dataSource.getConnection();
 	}
@@ -146,6 +162,7 @@ public class Database implements DataSource, Closeable {
 		
 		this.type = type;
 		this.idMode = IdMode.LOCAL;
+		this.txMode = TxMode.TRANSACTION;
 		
 		this.dataSource = new HikariDataSource(config);
 		if (port != null) {
@@ -292,6 +309,13 @@ public class Database implements DataSource, Closeable {
 	}
 	
 	/**
+	 * @return the txMode
+	 */
+	public final TxMode getTxMode() {
+		return this.txMode;
+	}
+	
+	/**
 	 * Gets the type.
 	 *
 	 * @return the type
@@ -369,6 +393,8 @@ public class Database implements DataSource, Closeable {
 	 *            the password
 	 * @param port
 	 *            the port
+	 * @param additionalArgs
+	 *            the additional args
 	 * @return the hikari config
 	 */
 	private HikariConfig setupDerby(final String name,
@@ -401,6 +427,8 @@ public class Database implements DataSource, Closeable {
 	 *            the password
 	 * @param port
 	 *            the port
+	 * @param additionalArgs
+	 *            the additional args
 	 * @return the hikari config
 	 */
 	private HikariConfig setupMSSQL(final String name,
@@ -442,6 +470,8 @@ public class Database implements DataSource, Closeable {
 	 *            the password
 	 * @param port
 	 *            the port
+	 * @param additionalArgs
+	 *            the additional args
 	 * @return the hikari config
 	 */
 	private HikariConfig setupPostgres(final String name,

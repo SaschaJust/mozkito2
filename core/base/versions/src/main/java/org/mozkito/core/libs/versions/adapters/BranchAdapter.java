@@ -39,9 +39,11 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 	 *
 	 * @param type
 	 *            the type
+	 * @param mode
+	 *            the mode
 	 */
-	public BranchAdapter(final Database.Type type) {
-		super(type, "branch");
+	public BranchAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "branch");
 	}
 	
 	/**
@@ -135,7 +137,7 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 			statement.setLong(++index, branch.getDepotId());
 			statement.setString(++index, truncate(branch.getName(), 900));
 			
-			statement.addBatch();
+			schedule(statement);
 			
 			branch.id(id);
 		} catch (final SQLException e) {

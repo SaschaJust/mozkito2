@@ -23,6 +23,7 @@ import java.util.List;
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.libraries.sequel.AbstractAdapter;
 import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.skeleton.contracts.Requires;
 
 /**
@@ -40,8 +41,8 @@ public class GraphAdapter extends AbstractAdapter<Graph> {
 	 * @param type
 	 *            the type
 	 */
-	public GraphAdapter(final Database.Type type) {
-		super(type, "graph");
+	public GraphAdapter(final Database.Type type, final TxMode mode) {
+		super(type, mode, "graph");
 		
 	}
 	
@@ -135,7 +136,7 @@ public class GraphAdapter extends AbstractAdapter<Graph> {
 			saveStatement.setLong(++index, id);
 			saveStatement.setLong(++index, entity.getDepot().id());
 			// TODO add #vertices #edges
-			saveStatement.addBatch();
+			schedule(saveStatement);
 			
 			entity.id(id);
 		} catch (final SQLException e) {

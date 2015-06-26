@@ -39,9 +39,11 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	 *
 	 * @param database
 	 *            the database
+	 * @param mode
+	 *            the mode
 	 */
-	public RenamingAdapter(final Database.Type database) {
-		super(database, "renaming");
+	public RenamingAdapter(final Database.Type database, final Database.TxMode mode) {
+		super(database, mode, "renaming");
 	}
 	
 	/**
@@ -137,7 +139,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 				saveStatement.setLong(++index, entry.getFrom());
 				saveStatement.setLong(++index, entry.getTo());
 				saveStatement.setLong(++index, entry.getWhere());
-				saveStatement.addBatch();
+				schedule(saveStatement);
 			}
 			
 			renaming.id(id);

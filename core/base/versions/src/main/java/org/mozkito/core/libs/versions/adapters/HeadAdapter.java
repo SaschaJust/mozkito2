@@ -39,9 +39,11 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 	 *
 	 * @param type
 	 *            the database
+	 * @param mode
+	 *            the mode
 	 */
-	public HeadAdapter(final Database.Type type) {
-		super(type, "head");
+	public HeadAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "head");
 	}
 	
 	/**
@@ -132,7 +134,7 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 			statement.setInt(++index, (int) id);
 			statement.setLong(++index, head.getBranchId());
 			statement.setLong(++index, head.getChangeSetId());
-			statement.addBatch();
+			schedule(statement);
 			
 			head.id(id);
 		} catch (final SQLException e) {

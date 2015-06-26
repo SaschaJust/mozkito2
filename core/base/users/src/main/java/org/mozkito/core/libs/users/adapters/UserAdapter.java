@@ -147,8 +147,8 @@ public class UserAdapter extends AbstractAdapter<User> {
 	 * @param type
 	 *            the database
 	 */
-	public UserAdapter(final Database.Type type) {
-		super(type, "user");
+	public UserAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "user");
 	}
 	
 	/**
@@ -274,7 +274,7 @@ public class UserAdapter extends AbstractAdapter<User> {
 				index = 0;
 			}
 			
-			statement.executeUpdate();
+			schedule(statement);
 			
 			user.id(id);
 			Asserts.positive(user.id());

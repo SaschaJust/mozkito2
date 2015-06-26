@@ -72,9 +72,9 @@ import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Level;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.Database.Type;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.libraries.sequel.MozkitoHandler;
-import org.mozkito.libraries.sequel.Database.Type;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -309,22 +309,24 @@ public class Main {
 				});
 			}
 			
-			database.register(Depot.class, new DepotAdapter(database.getType()));
-			database.register(Identity.class, new IdentityAdapter(database.getType()));
-			database.register(ChangeSet.class, new ChangeSetAdapter(database.getType()));
-			database.register(Revision.class, new RevisionAdapter(database.getType()));
-			database.register(GraphEdge.class, new GraphEdgeAdapter(database.getType()));
-			database.register(BranchEdge.class, new BranchEdgeAdapter(database.getType()));
-			database.register(ConvergenceEdge.class, new ConvergenceEdgeAdapter(database.getType()));
-			database.register(Head.class, new HeadAdapter(database.getType()));
-			database.register(Root.class, new RootAdapter(database.getType()));
+			database.register(Depot.class, new DepotAdapter(database.getType(), database.getTxMode()));
+			database.register(Identity.class, new IdentityAdapter(database.getType(), database.getTxMode()));
+			database.register(ChangeSet.class, new ChangeSetAdapter(database.getType(), database.getTxMode()));
+			database.register(Revision.class, new RevisionAdapter(database.getType(), database.getTxMode()));
+			database.register(GraphEdge.class, new GraphEdgeAdapter(database.getType(), database.getTxMode()));
+			database.register(BranchEdge.class, new BranchEdgeAdapter(database.getType(), database.getTxMode()));
+			database.register(ConvergenceEdge.class,
+			                  new ConvergenceEdgeAdapter(database.getType(), database.getTxMode()));
+			database.register(Head.class, new HeadAdapter(database.getType(), database.getTxMode()));
+			database.register(Root.class, new RootAdapter(database.getType(), database.getTxMode()));
 			
-			database.register(Graph.class, new GraphAdapter(database.getType()));
-			database.register(Branch.class, new BranchAdapter(database.getType()));
-			database.register(Handle.class, new HandleAdapter(database.getType()));
-			database.register(Renaming.class, new RenamingAdapter(database.getType()));
-			database.register(ChangeSetIntegration.class, new ChangeSetIntegrationAdapter(database.getType()));
-			database.register(Tag.class, new TagAdapter(database.getType()));
+			database.register(Graph.class, new GraphAdapter(database.getType(), database.getTxMode()));
+			database.register(Branch.class, new BranchAdapter(database.getType(), database.getTxMode()));
+			database.register(Handle.class, new HandleAdapter(database.getType(), database.getTxMode()));
+			database.register(Renaming.class, new RenamingAdapter(database.getType(), database.getTxMode()));
+			database.register(ChangeSetIntegration.class,
+			                  new ChangeSetIntegrationAdapter(database.getType(), database.getTxMode()));
+			database.register(Tag.class, new TagAdapter(database.getType(), database.getTxMode()));
 			database.createScheme();
 			
 			final DatabaseDumper<Identity> identityDumper = new DatabaseDumper<>(database.getAdapter(Identity.class),

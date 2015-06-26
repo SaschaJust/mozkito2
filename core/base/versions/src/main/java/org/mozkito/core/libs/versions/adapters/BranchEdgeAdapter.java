@@ -40,8 +40,8 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	 * @param type
 	 *            the type
 	 */
-	public BranchEdgeAdapter(final Database.Type type) {
-		super(type, "branch_edge");
+	public BranchEdgeAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "branch_edge");
 	}
 	
 	/**
@@ -137,7 +137,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 			saveStatement.setShort(++index, edge.getNavigationType());
 			saveStatement.setShort(++index, edge.getIntegrationType());
 			
-			saveStatement.executeUpdate();
+			schedule(saveStatement);
 			
 			edge.id(id);
 		} catch (final SQLException e) {

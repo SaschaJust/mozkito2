@@ -16,6 +16,7 @@ package org.mozkito.libraries.sequel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -164,5 +165,7 @@ public interface IAdapter<T extends IEntity> {
 	 */
 	void update(Connection connection,
 	            @SuppressWarnings ("unchecked") T... objects);
+
+	public abstract void execute(final PreparedStatement statement) throws SQLException;
 	
 }

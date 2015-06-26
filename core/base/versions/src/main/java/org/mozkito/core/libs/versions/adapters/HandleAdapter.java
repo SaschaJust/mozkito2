@@ -39,8 +39,8 @@ public class HandleAdapter extends AbstractAdapter<Handle> {
 	 * @param type
 	 *            the type
 	 */
-	public HandleAdapter(final Database.Type type) {
-		super(type, "handle");
+	public HandleAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "handle");
 	}
 	
 	/**
@@ -131,7 +131,7 @@ public class HandleAdapter extends AbstractAdapter<Handle> {
 			saveStatement.setLong(++index, id);
 			saveStatement.setLong(++index, handle.getDepotId());
 			saveStatement.setString(++index, truncate(handle.getPath(), 900));
-			saveStatement.addBatch();
+			schedule(saveStatement);
 			
 			handle.id(id);
 		} catch (final SQLException e) {

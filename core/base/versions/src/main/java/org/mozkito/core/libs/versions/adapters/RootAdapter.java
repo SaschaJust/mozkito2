@@ -40,8 +40,8 @@ public class RootAdapter extends AbstractAdapter<Root> {
 	 * @param type
 	 *            the database
 	 */
-	public RootAdapter(final Database.Type type) {
-		super(type, "root");
+	public RootAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "root");
 	}
 	
 	/**
@@ -133,7 +133,8 @@ public class RootAdapter extends AbstractAdapter<Root> {
 			statement.setInt(++index, (int) id);
 			statement.setLong(++index, root.getBranchId());
 			statement.setLong(++index, root.getChangeSetId());
-			statement.addBatch();
+			
+			schedule(statement);
 			
 			root.id(id);
 		} catch (final SQLException e) {

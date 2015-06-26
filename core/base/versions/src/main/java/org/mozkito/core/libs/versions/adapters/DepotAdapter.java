@@ -40,8 +40,8 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 	 * @param type
 	 *            the type
 	 */
-	public DepotAdapter(final Database.Type type) {
-		super(type, "depot");
+	public DepotAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "depot");
 	}
 	
 	/**
@@ -131,7 +131,8 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 			saveStatement.setString(++index, truncate(depot.getName(), 900));
 			saveStatement.setString(++index, truncate(depot.getOrigin().toURL().toString(), 900));
 			saveStatement.setTimestamp(++index, Timestamp.from(depot.getMined()));
-			saveStatement.addBatch();
+			schedule(saveStatement);
+			
 			depot.id(id);
 		} catch (SQLException | MalformedURLException e) {
 			throw new RuntimeException(e);

@@ -43,8 +43,8 @@ public class ChangeSetIntegrationAdapter extends AbstractAdapter<ChangeSetIntegr
 	 * @param type
 	 *            the type
 	 */
-	public ChangeSetIntegrationAdapter(final Database.Type type) {
-		super(type, "changeset_integrationtype");
+	public ChangeSetIntegrationAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "changeset_integrationtype");
 		this.typeStatement = DatabaseManager.loadStatement(type, "integration_type_save");
 	}
 	
@@ -75,9 +75,9 @@ public class ChangeSetIntegrationAdapter extends AbstractAdapter<ChangeSetIntegr
 				index = 0;
 				statement.setShort(++index, type.getValue());
 				statement.setString(++index, type.name());
-				statement.addBatch();
+				schedule(statement);
 			}
-			statement.executeBatch();
+			execute(statement);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -161,7 +161,7 @@ public class ChangeSetIntegrationAdapter extends AbstractAdapter<ChangeSetIntegr
 			
 			saveStatement.setShort(++index, integration.getIntegrationType());
 			
-			saveStatement.addBatch();
+			schedule(saveStatement);
 			
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);

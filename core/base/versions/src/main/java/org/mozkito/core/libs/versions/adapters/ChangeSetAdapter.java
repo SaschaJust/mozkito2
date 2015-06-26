@@ -41,8 +41,8 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 	 * @param type
 	 *            the type
 	 */
-	public ChangeSetAdapter(final Database.Type type) {
-		super(type, "changeset");
+	public ChangeSetAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "changeset");
 	}
 	
 	/**
@@ -149,7 +149,7 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 			saveStatement.setString(++index, changeSet.getSubject());
 			saveStatement.setString(++index, changeSet.getBody());
 			
-			saveStatement.addBatch();
+			schedule(saveStatement);
 			
 			changeSet.id(id);
 		} catch (final SQLException e) {

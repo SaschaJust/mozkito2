@@ -36,8 +36,8 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	/**
 	 * @param type
 	 */
-	public GraphEdgeAdapter(final Database.Type type) {
-		super(type, "edge");
+	public GraphEdgeAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "edge");
 	}
 	
 	/**
@@ -132,7 +132,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 			saveStatement.setLong(++index, edge.sourceId);
 			saveStatement.setLong(++index, edge.targetId);
 			
-			saveStatement.executeUpdate();
+			schedule(saveStatement);
 			
 			edge.id(id);
 		} catch (final SQLException e) {

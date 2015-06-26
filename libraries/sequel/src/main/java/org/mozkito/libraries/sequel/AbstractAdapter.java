@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.mozkito.libraries.logging.Logger;
+import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
 import org.mozkito.skeleton.contracts.Requires;
 
@@ -49,16 +50,21 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/** The type. */
 	private final Type   type;
 	
+	private final TxMode txMode;
+	
 	/**
 	 * Instantiates a new abstract sequel adapter.
 	 *
 	 * @param type
 	 *            the type
+	 * @param mode
+	 *            the mode
 	 * @param identifier
 	 *            the identifier
 	 */
-	public AbstractAdapter(final Database.Type type, final String identifier) {
+	public AbstractAdapter(final Database.Type type, final Database.TxMode mode, final String identifier) {
 		this.type = type;
+		this.txMode = mode;
 		this.saveStatement = DatabaseManager.loadStatement(type, identifier + "_save");
 		this.createSchemaResource = identifier + "_create_schema";
 		this.createIndexesResource = identifier + "_create_indexes";
@@ -119,6 +125,34 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	}
 	
 	/**
+	 * Execute.
+	 *
+	 * @param statement
+	 *            the statement
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	public final void execute(final PreparedStatement statement) throws SQLException {
+		switch (getTxMode()) {
+			case TRANSACTION:
+				statement.getConnection().commit();
+				break;
+			case BATCH:
+				statement.executeBatch();
+				break;
+			default:
+				throw new RuntimeException("Unsupported TxMode: " + getTxMode().name());
+		}
+	}
+	
+	/**
+	 * @return the txMode
+	 */
+	public final TxMode getTxMode() {
+		return this.txMode;
+	}
+	
+	/**
 	 * @return the type
 	 */
 	public final Type getType() {
@@ -159,6 +193,27 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 			statement.getConnection().commit();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * Execute.
+	 *
+	 * @param statement
+	 *            the statement
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	protected final void schedule(final PreparedStatement statement) throws SQLException {
+		switch (getTxMode()) {
+			case TRANSACTION:
+				statement.executeUpdate();
+				break;
+			case BATCH:
+				statement.addBatch();
+				break;
+			default:
+				throw new RuntimeException("Unsupported TxMode: " + getTxMode().name());
 		}
 	}
 	

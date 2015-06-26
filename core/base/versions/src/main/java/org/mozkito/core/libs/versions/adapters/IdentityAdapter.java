@@ -41,8 +41,8 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 	 * @param type
 	 *            the database
 	 */
-	public IdentityAdapter(final Database.Type type) {
-		super(type, "identity");
+	public IdentityAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "identity");
 	}
 	
 	/**
@@ -140,7 +140,7 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 			statement.setString(++index, truncate(identity.getEmail(), 900));
 			statement.setString(++index, truncate(identity.getFullName(), 900));
 			
-			statement.addBatch();
+			schedule(statement);
 			
 			identity.id(id);
 			Asserts.positive(identity.id());

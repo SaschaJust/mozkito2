@@ -42,8 +42,8 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 	 * @param type
 	 *            the database
 	 */
-	public TagAdapter(final Database.Type type) {
-		super(type, "tag");
+	public TagAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "tag");
 	}
 	
 	/**
@@ -165,7 +165,7 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 				statement.setTimestamp(++index, Timestamp.from(entity.getTimestamp()));
 			}
 			
-			statement.addBatch();
+			schedule(statement);
 			
 			entity.id(id);
 		} catch (final SQLException e) {
