@@ -30,7 +30,7 @@ import org.mozkito.libraries.logging.Logger;
 public class DatabaseDumper<T extends IEntity> extends Thread {
 	
 	/** The batch size. */
-	private static int                     BATCH_SIZE = 100000;
+	private static int                     BATCH_SIZE = 1000;
 	
 	/** The adapter. */
 	private final IAdapter<T>              adapter;
