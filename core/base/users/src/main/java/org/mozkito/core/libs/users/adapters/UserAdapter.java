@@ -249,15 +249,6 @@ public class UserAdapter extends AbstractAdapter<User> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#nextId()
-	 */
-	public synchronized long nextId() {
-		return ++currentId;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
 	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement statement,

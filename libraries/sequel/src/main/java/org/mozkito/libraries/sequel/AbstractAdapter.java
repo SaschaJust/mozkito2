@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.Database.TxMode;
@@ -33,24 +34,26 @@ import org.mozkito.skeleton.contracts.Requires;
 public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> {
 	
 	/** The save statement. */
-	private final String saveStatement;
+	private final String     saveStatement;
 	
 	/** The create schema resource. */
-	private final String createSchemaResource;
+	private final String     createSchemaResource;
 	
 	/** The create indexes resource. */
-	private final String createIndexesResource;
+	private final String     createIndexesResource;
 	
 	/** The create constraints resource. */
-	private final String createConstraintsResource;
+	private final String     createConstraintsResource;
 	
 	/** The create primary keys resource. */
-	private final String createPrimaryKeysResource;
+	private final String     createPrimaryKeysResource;
 	
 	/** The type. */
-	private final Type   type;
+	private final Type       type;
 	
-	private final TxMode txMode;
+	private final TxMode     txMode;
+	
+	private final AtomicLong currentId = new AtomicLong(0);
 	
 	/**
 	 * Instantiates a new abstract sequel adapter.
@@ -157,6 +160,15 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	 */
 	public final Type getType() {
 		return this.type;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.libraries.sequel.IAdapter#nextId()
+	 */
+	public long nextId() {
+		return this.currentId.incrementAndGet();
 	}
 	
 	/**

@@ -26,25 +26,26 @@ import org.mozkito.libraries.sequel.Database;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class UserSequelAdapter.
  *
  * @author Sascha Just
  */
 public class IdentityAdapter extends AbstractAdapter<Identity> {
-	
-	private static long currentId = 0l;
-	
+
 	/**
 	 * Instantiates a new user sequel adapter.
 	 *
 	 * @param type
 	 *            the database
+	 * @param mode
+	 *            the mode
 	 */
 	public IdentityAdapter(final Database.Type type, final Database.TxMode mode) {
 		super(type, mode, "identity");
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -60,10 +61,10 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
 	public void delete(final Connection connection,
@@ -71,24 +72,24 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
 	 */
 	public Iterator<Identity> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
 	public List<Identity> load(final Connection connection,
@@ -96,12 +97,12 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
 	public Identity load(final Connection connection,
@@ -109,21 +110,12 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#nextId()
-	 */
-	public synchronized long nextId() {
-		return ++currentId;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement statement,
@@ -131,27 +123,27 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 	                 final Identity identity) {
 		Requires.notNull(statement);
 		Requires.notNull(identity);
-		
+
 		try {
-			
+
 			int index = 0;
 			statement.setLong(++index, id);
-			
+
 			statement.setString(++index, truncate(identity.getEmail(), 900));
 			statement.setString(++index, truncate(identity.getFullName(), 900));
-			
+
 			schedule(statement);
-			
+
 			identity.id(id);
 			Asserts.positive(identity.id());
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
@@ -159,7 +151,7 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 }

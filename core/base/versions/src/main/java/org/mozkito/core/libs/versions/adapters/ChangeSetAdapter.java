@@ -26,40 +26,41 @@ import org.mozkito.libraries.sequel.AbstractAdapter;
 import org.mozkito.libraries.sequel.Database;
 import org.mozkito.skeleton.contracts.Requires;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class ChangeSetAdapter, which is used to load and store {@link ChangeSet} entities from/to a database.
  *
  * @author Sascha Just
  */
 public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
-	
-	private static long currentId = 0l;
-	
+
 	/**
 	 * Instantiates a new change set adapter.
 	 *
 	 * @param type
 	 *            the type
+	 * @param mode
+	 *            the mode
 	 */
 	public ChangeSetAdapter(final Database.Type type, final Database.TxMode mode) {
 		super(type, mode, "changeset");
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
 	public ChangeSet create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
@@ -67,24 +68,24 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
 	 */
 	public Iterator<ChangeSet> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
 	public List<ChangeSet> load(final Connection connection,
@@ -92,12 +93,12 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
 	public ChangeSet load(final Connection connection,
@@ -105,21 +106,12 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#nextId()
-	 */
-	public synchronized long nextId() {
-		return ++currentId;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long,
 	 *      org.mozkito.libraries.sequel.IEntity)
 	 */
@@ -128,38 +120,38 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 	                 final ChangeSet changeSet) {
 		Requires.notNull(saveStatement);
 		Requires.notNull(changeSet);
-		
+
 		try {
-			
+
 			int index = 0;
 			saveStatement.setLong(++index, id);
-			
+
 			saveStatement.setLong(++index, changeSet.getDepotId());
-			
+
 			saveStatement.setString(++index, changeSet.getCommitHash());
-			
+
 			saveStatement.setString(++index, changeSet.getTreeHash());
-			
+
 			saveStatement.setTimestamp(++index, Timestamp.from(changeSet.getAuthoredTime()));
 			saveStatement.setLong(++index, changeSet.getAuthorId());
-			
+
 			saveStatement.setTimestamp(++index, Timestamp.from(changeSet.getCommitTime()));
 			saveStatement.setLong(++index, changeSet.getCommitterId());
-			
+
 			saveStatement.setString(++index, changeSet.getSubject());
 			saveStatement.setString(++index, changeSet.getBody());
-			
+
 			schedule(saveStatement);
-			
+
 			changeSet.id(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void update(final Connection connection,
@@ -167,7 +159,7 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 }
