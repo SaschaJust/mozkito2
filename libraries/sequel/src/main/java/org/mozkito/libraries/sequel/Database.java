@@ -107,15 +107,17 @@ public class Database implements DataSource, Closeable {
 	public Database(final Type type, final String connectionString) throws SQLException {
 		final HikariConfig config = new HikariConfig();
 		config.setJdbcUrl(connectionString);
+		config.setAutoCommit(false);
 		this.type = type;
 		this.idMode = IdMode.LOCAL;
 		this.dataSource = new HikariDataSource(config);
-		this.dataSource.setAutoCommit(false);
+		
 		this.dataSource.setTransactionIsolation("TRANSACTION_READ_UNCOMMITTED");
 		// this.dataSource.setConnectionTimeout(5000);
 		this.dataSource.setLoginTimeout(3000);
 		
 		this.txMode = TxMode.TRANSACTION;
+		this.dataSource.setAutoCommit(false);
 		
 		this.connection = this.dataSource.getConnection();
 	}
@@ -164,14 +166,16 @@ public class Database implements DataSource, Closeable {
 		this.idMode = IdMode.LOCAL;
 		this.txMode = TxMode.TRANSACTION;
 		
+		config.setAutoCommit(false);
 		this.dataSource = new HikariDataSource(config);
 		if (port != null) {
 			this.dataSource.addDataSourceProperty("port", 1433);
 		}
-		this.dataSource.setAutoCommit(false);
+		
 		this.dataSource.setTransactionIsolation("TRANSACTION_READ_UNCOMMITTED");
 		// this.dataSource.setConnectionTimeout(5000);
 		this.dataSource.setLoginTimeout(3000);
+		this.dataSource.setAutoCommit(false);
 		this.connection = this.dataSource.getConnection();
 	}
 	

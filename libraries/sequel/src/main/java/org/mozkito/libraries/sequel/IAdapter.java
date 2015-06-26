@@ -82,6 +82,16 @@ public interface IAdapter<T extends IEntity> {
 	            T object);
 	
 	/**
+	 * Execute.
+	 *
+	 * @param statement
+	 *            the statement
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	void execute(final PreparedStatement statement) throws SQLException;
+	
+	/**
 	 * Load.
 	 *
 	 * @param connection
@@ -165,7 +175,5 @@ public interface IAdapter<T extends IEntity> {
 	 */
 	void update(Connection connection,
 	            @SuppressWarnings ("unchecked") T... objects);
-
-	public abstract void execute(final PreparedStatement statement) throws SQLException;
 	
 }
