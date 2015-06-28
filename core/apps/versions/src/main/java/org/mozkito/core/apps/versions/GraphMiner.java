@@ -129,8 +129,7 @@ public class GraphMiner extends Task implements Runnable {
 					csi = new ChangeSetIntegration(current.getId(), IntegrationType.EDIT);
 				}
 				
-				edge = this.graph.addEdge(this.vertices.get(parentHash), this.vertices.get(currentHash),
-				                          BranchMarker.BRANCH_PARENT);
+				edge = this.graph.addEdge(this.vertices.get(parentHash), current, BranchMarker.BRANCH_PARENT);
 				gEdge = new GraphEdge(this.graph.getDepotId(), edge.getSourceId(), edge.getTargetId(),
 				                      edge.getBranchMarker().getValue());
 				this.graphEdgeDumper.saveLater(gEdge);
@@ -139,8 +138,10 @@ public class GraphMiner extends Task implements Runnable {
 				// hash(40) + space + hash(40) + space + hash(40)
 				for (int i = 3; i <= (line.length() + 1) / 41; ++i) {
 					parentHash = line.substring((i - 1) * 41, i * 41 - 1);
-					edge = this.graph.addEdge(this.vertices.get(parentHash), this.vertices.get(current),
-					                          BranchMarker.MERGE_PARENT);
+					Asserts.containsKey(this.vertices, parentHash,
+					                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
+					                    parentHash);
+					edge = this.graph.addEdge(this.vertices.get(parentHash), current, BranchMarker.MERGE_PARENT);
 					gEdge = new GraphEdge(this.graph.getDepotId(), edge.getSourceId(), edge.getTargetId(),
 					                      edge.getBranchMarker().getValue());
 					this.graphEdgeDumper.saveLater(gEdge);
