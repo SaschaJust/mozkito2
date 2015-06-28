@@ -125,7 +125,7 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 			int index = 0;
 			statement.setInt(++index, (int) id);
 			statement.setLong(++index, entity.getDepotId());
-			statement.setLong(++index, entity.getChangesetId());
+			statement.setLong(++index, entity.getHeadId());
 			
 			if (entity.getName() == null) {
 				statement.setNull(++index, Types.VARCHAR);
@@ -159,7 +159,7 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 			
 			schedule(statement);
 			
-			entity.id(id);
+			entity.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

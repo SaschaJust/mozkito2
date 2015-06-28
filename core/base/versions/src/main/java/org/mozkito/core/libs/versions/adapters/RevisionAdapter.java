@@ -32,7 +32,7 @@ import org.mozkito.skeleton.contracts.Requires;
  * @author Sascha Just
  */
 public class RevisionAdapter extends AbstractAdapter<Revision> {
-
+	
 	/**
 	 * Instantiates a new revision adapter.
 	 *
@@ -44,7 +44,7 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 	public RevisionAdapter(final Database.Type type, final Database.TxMode mode) {
 		super(type, mode, "revision");
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -54,9 +54,9 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -67,9 +67,9 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -79,9 +79,9 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -92,9 +92,9 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -105,9 +105,9 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -119,11 +119,10 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 		Requires.notNull(saveStatement);
 		Requires.positive(id);
 		Requires.notNull(revision);
-
+		
 		try {
 			int index = 0;
 			saveStatement.setLong(++index, id);
-			saveStatement.setLong(++index, revision.getDepotId());
 			saveStatement.setLong(++index, revision.getChangeSetId());
 			saveStatement.setShort(++index, revision.getChangeType());
 			saveStatement.setLong(++index, revision.getSourceId());
@@ -135,15 +134,15 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 			saveStatement.setString(++index, revision.getNewHash());
 			saveStatement.setInt(++index, revision.getLinesIn());
 			saveStatement.setInt(++index, revision.getLinesOut());
-
+			
 			schedule(saveStatement);
-
-			revision.id(id);
+			
+			revision.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -154,7 +153,7 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 }

@@ -14,18 +14,16 @@
 package org.mozkito.core.apps.versions;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.mozkito.core.libs.versions.graph.BranchMarker;
 import org.mozkito.core.libs.versions.graph.Edge;
 import org.mozkito.core.libs.versions.graph.Graph;
-import org.mozkito.core.libs.versions.graph.Label;
-import org.mozkito.core.libs.versions.model.Branch;
-import org.mozkito.core.libs.versions.model.BranchEdge;
-import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.core.libs.versions.graph.Vertex;
+import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
+import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.GraphEdge;
+import org.mozkito.core.libs.versions.model.enums.BranchMarker;
+import org.mozkito.core.libs.versions.model.enums.IntegrationType;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
@@ -37,47 +35,52 @@ import org.mozkito.skeleton.exec.Command;
  */
 public class GraphMiner extends Task implements Runnable {
 	
-	static final String                      ORIGIN = "origin/";
-	
 	/** The clone dir. */
-	private final File                       cloneDir;
+	private final File                                 cloneDir;
 	
 	/** The graph. */
-	private final Graph                      graph;
+	private final Graph                                graph;
 	
 	/** The change sets. */
-	private final Map<String, ChangeSet>     changeSets;
+	private final Map<String, Vertex>                  vertices;
 	
-	private final DatabaseDumper<Graph>      graphDumper;
-	private final DatabaseDumper<GraphEdge>  graphEdgeDumper;
-	private final DatabaseDumper<BranchEdge> branchEdgeDumper;
+	/** The graph dumper. */
+	private final DatabaseDumper<Graph>                graphDumper;
+	
+	/** The graph edge dumper. */
+	private final DatabaseDumper<GraphEdge>            graphEdgeDumper;
+	
+	/** The integration dumper. */
+	private final DatabaseDumper<ChangeSetIntegration> integrationDumper;
 	
 	/**
 	 * Instantiates a new graph miner.
 	 *
+	 * @param depot
+	 *            the depot
 	 * @param cloneDir
 	 *            the clone dir
 	 * @param graph
 	 *            the graph
-	 * @param changeSets
-	 *            the change sets
+	 * @param vertices
+	 *            the vertices
 	 * @param graphDumper
 	 *            the graph dumper
 	 * @param graphEdgeDumper
 	 *            the graph edge dumper
-	 * @param branchEdgeDumper
-	 *            the branch edge dumper
+	 * @param integrationDumper
+	 *            the integration dumper
 	 */
-	public GraphMiner(final File cloneDir, final Graph graph, final Map<String, ChangeSet> changeSets,
+	public GraphMiner(final Depot depot, final File cloneDir, final Graph graph, final Map<String, Vertex> vertices,
 	        final DatabaseDumper<Graph> graphDumper, final DatabaseDumper<GraphEdge> graphEdgeDumper,
-	        final DatabaseDumper<BranchEdge> branchEdgeDumper) {
-		super(graph.getDepot());
+	        final DatabaseDumper<ChangeSetIntegration> integrationDumper) {
+		super(depot);
 		this.cloneDir = cloneDir;
 		this.graph = graph;
-		this.changeSets = changeSets;
+		this.vertices = vertices;
 		this.graphDumper = graphDumper;
 		this.graphEdgeDumper = graphEdgeDumper;
-		this.branchEdgeDumper = branchEdgeDumper;
+		this.integrationDumper = integrationDumper;
 	}
 	
 	/**
@@ -86,58 +89,64 @@ public class GraphMiner extends Task implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		for (final Branch branch : this.graph.getBranches()) {
-			
-			final Command command = Command.execute("git", new String[] { "log", "--no-abbrev", "--format=%H %P",
-			        ORIGIN + branch.getName() }, this.cloneDir);
-			
-			String line;
-			while ((line = command.nextOutput()) != null) {
-				final String[] split = line.trim().split("\\s+");
-				
-				this.changeSets.get(split[0]).addBranchId(branch.id());
-				
-				if (split.length == 1) {
-					// found root
-				} else {
-					Asserts.greater(split.length, 1, "There has to be a parent at this point.");
-					
-					Asserts.containsKey(this.changeSets, split[0],
-					                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
-					                    split[0]);
-					Asserts.containsKey(this.changeSets, split[1],
-					                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
-					                    split[1]);
-					
-					this.graph.addEdge(this.changeSets.get(split[1]), this.changeSets.get(split[0]),
-					                   BranchMarker.BRANCH_PARENT, branch);
-					
-					for (int i = 2; i < split.length; ++i) {
-						this.graph.addEdge(this.changeSets.get(split[i]), this.changeSets.get(split[0]),
-						                   BranchMarker.MERGE_PARENT, branch);
-					}
-				}
-			}
-			
-			this.graph.computeNavigationGraph(branch);
-			this.graph.computeIntegrationGraph(branch);
-		}
+		final Command command = Command.execute("git", new String[] { "log", "--no-abbrev", "--format=%H %P",
+		        "--branches", "--remotes" }, this.cloneDir);
 		
+		Vertex current;
+		ChangeSetIntegration csi;
+		
+		String line, currentHash, parentHash;
+		int length;
+		Edge edge;
 		GraphEdge gEdge;
-		BranchEdge bEdge;
 		
-		final Collection<Edge> edges = this.graph.getEdges();
-		
-		Label label;
-		for (final Edge edge : edges) {
-			gEdge = new GraphEdge(this.graph.getDepot().id(), edge.getSourceId(), edge.getTargetId());
-			this.graphEdgeDumper.saveLater(gEdge);
+		while ((line = command.nextOutput()) != null) {
+			line = line.trim();
+			length = line.length();
+			Asserts.greater(length, 39, "There has to be at least one hash in here.");
+			currentHash = line.substring(0, 40);
+			current = this.vertices.get(currentHash);
+			Asserts.notNull(current);
 			
-			for (final Entry<Long, Label> entry : edge.getLabels().entrySet()) {
-				label = entry.getValue();
-				bEdge = new BranchEdge(gEdge.id(), entry.getKey(), label.branchMarker, label.navigationMarker,
-				                       label.integrationMarker);
-				this.branchEdgeDumper.saveLater(bEdge);
+			if (line.length() == 40) {
+				// found root
+				csi = new ChangeSetIntegration(current.getId(), IntegrationType.EDIT);
+				this.integrationDumper.saveLater(csi);
+			} else {
+				Asserts.greater(length, 80, "There has to be a parent at this point.");
+				Asserts.containsKey(this.vertices, currentHash,
+				                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
+				                    currentHash);
+				parentHash = line.substring(41, 81);
+				Asserts.containsKey(this.vertices, parentHash,
+				                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
+				                    parentHash);
+				
+				if (line.length() >= 122) {
+					csi = new ChangeSetIntegration(current.getId(), IntegrationType.MERGE);
+					
+				} else {
+					csi = new ChangeSetIntegration(current.getId(), IntegrationType.EDIT);
+				}
+				
+				edge = this.graph.addEdge(this.vertices.get(parentHash), this.vertices.get(currentHash),
+				                          BranchMarker.BRANCH_PARENT);
+				gEdge = new GraphEdge(this.graph.getDepotId(), edge.getSourceId(), edge.getTargetId(),
+				                      edge.getBranchMarker().getValue());
+				this.graphEdgeDumper.saveLater(gEdge);
+				edge.setId(gEdge.getId());
+				
+				// hash(40) + space + hash(40) + space + hash(40)
+				for (int i = 3; i < (line.length() + 1) / 41; ++i) {
+					parentHash = line.substring((i - 1) * 41, i * 41 - 1);
+					edge = this.graph.addEdge(this.vertices.get(parentHash), this.vertices.get(current),
+					                          BranchMarker.MERGE_PARENT);
+					gEdge = new GraphEdge(this.graph.getDepotId(), edge.getSourceId(), edge.getTargetId(),
+					                      edge.getBranchMarker().getValue());
+					this.graphEdgeDumper.saveLater(gEdge);
+					edge.setId(gEdge.getId());
+				}
+				this.integrationDumper.saveLater(csi);
 			}
 		}
 		

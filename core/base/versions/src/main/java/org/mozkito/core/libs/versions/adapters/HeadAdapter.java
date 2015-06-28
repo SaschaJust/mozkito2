@@ -125,7 +125,7 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 			statement.setLong(++index, head.getChangeSetId());
 			schedule(statement);
 
-			head.id(id);
+			head.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

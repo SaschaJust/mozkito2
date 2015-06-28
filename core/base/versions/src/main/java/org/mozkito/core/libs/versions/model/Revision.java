@@ -13,7 +13,7 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.core.libs.versions.ChangeType;
+import org.mozkito.core.libs.versions.model.enums.ChangeType;
 import org.mozkito.libraries.sequel.IEntity;
 import org.mozkito.skeleton.contracts.Requires;
 
@@ -45,9 +45,6 @@ public class Revision implements IEntity {
 	/** The confidence. */
 	private final short       confidence;
 	
-	/** The depot id. */
-	private final long        depotId;
-	
 	/** The old mode. */
 	private final int         oldMode;
 	
@@ -69,8 +66,6 @@ public class Revision implements IEntity {
 	/**
 	 * Instantiates a new revision.
 	 *
-	 * @param depot
-	 *            the depot
 	 * @param changeSet
 	 *            the change set
 	 * @param changeType
@@ -90,29 +85,25 @@ public class Revision implements IEntity {
 	 * @param newHash
 	 *            the new hash
 	 */
-	public Revision(final Depot depot, final ChangeSet changeSet, final ChangeType changeType, final Handle source,
-	        final Handle target, final short confidence, final int oldMode, final int newMode, final String oldHash,
-	        final String newHash) {
-		Requires.notNull(depot);
-		Requires.positive(depot.id());
+	public Revision(final ChangeSet changeSet, final ChangeType changeType, final Handle source, final Handle target,
+	        final short confidence, final int oldMode, final int newMode, final String oldHash, final String newHash) {
 		Requires.notNull(changeType);
-		Requires.positive(changeSet.id());
+		Requires.positive(changeSet.getId());
 		Requires.notNull(changeType);
 		Requires.notNull(source);
-		Requires.positive(source.id());
+		Requires.positive(source.getId());
 		Requires.notNull(target);
-		Requires.positive(target.id());
+		Requires.positive(target.getId());
 		Requires.greaterOrEqual(confidence, 50);
 		Requires.notNegative(oldMode);
 		Requires.notNegative(newMode);
 		Requires.notNull(oldHash);
 		Requires.notNull(newHash);
 		
-		this.depotId = depot.id();
-		this.changeSetId = changeSet.id();
+		this.changeSetId = changeSet.getId();
 		this.changeType = changeType.toMask();
-		this.sourceId = source.id();
-		this.targetId = target.id();
+		this.sourceId = source.getId();
+		this.targetId = target.getId();
 		this.confidence = confidence;
 		this.oldMode = oldMode;
 		this.newMode = newMode;
@@ -122,7 +113,7 @@ public class Revision implements IEntity {
 	
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -177,12 +168,13 @@ public class Revision implements IEntity {
 	}
 	
 	/**
-	 * Gets the depot id.
+	 * {@inheritDoc}
 	 *
-	 * @return the depotId
+	 * @see org.mozkito.libraries.sequel.IEntity#getId()
 	 */
-	public final long getDepotId() {
-		return this.depotId;
+	@Override
+	public long getId() {
+		return this.id;
 	}
 	
 	/**
@@ -247,7 +239,7 @@ public class Revision implements IEntity {
 	
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -263,20 +255,10 @@ public class Revision implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#setId(long)
 	 */
 	@Override
-	public long id() {
-		return this.id;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
-	 */
-	@Override
-	public void id(final long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 	
@@ -298,7 +280,7 @@ public class Revision implements IEntity {
 	
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -306,8 +288,6 @@ public class Revision implements IEntity {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("Revision [id=");
 		builder.append(this.id);
-		builder.append(", depotId=");
-		builder.append(this.depotId);
 		builder.append(", changeSetId=");
 		builder.append(this.changeSetId);
 		builder.append(", changeType=");

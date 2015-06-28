@@ -36,6 +36,9 @@ public class GraphEdge implements IEntity {
 	/** The target_id. */
 	public final long         targetId;
 	
+	/** The marker. */
+	public short              marker;
+	
 	/**
 	 * Instantiates a new graph edge.
 	 *
@@ -45,29 +48,32 @@ public class GraphEdge implements IEntity {
 	 *            the source_id
 	 * @param target_id
 	 *            the target_id
+	 * @param branchMarker
+	 *            the branch marker
 	 */
-	public GraphEdge(final long depot_id, final long source_id, final long target_id) {
+	public GraphEdge(final long depot_id, final long source_id, final long target_id, final short branchMarker) {
 		super();
 		this.depotId = depot_id;
 		this.sourceId = source_id;
 		this.targetId = target_id;
+		this.marker = branchMarker;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#getId()
 	 */
-	public long id() {
+	public long getId() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#setId(long)
 	 */
-	public void id(final long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 	

@@ -1,6 +1,5 @@
 INSERT INTO revisions (
 		id,
-		depot_id,
 		changeset_id,
 		change_type,
 		source_id,
@@ -12,4 +11,4 @@ INSERT INTO revisions (
 		new_hash,
 		lines_in,
 		lines_out
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

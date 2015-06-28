@@ -1,1 +1,0 @@
-SELECT NEXTVAL('seq_identities_id')

@@ -1,6 +1,5 @@
 INSERT INTO changesets (
 		id,
-		depot_id,
 		commit_hash,
 		tree_hash,
 		authored_time,
@@ -9,4 +8,4 @@ INSERT INTO changesets (
 		committer_id,
 		subject,
 		body
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)

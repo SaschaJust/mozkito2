@@ -19,12 +19,14 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
 import org.apache.commons.lang3.ArrayUtils;
 
 import org.mozkito.core.libs.versions.FileCache;
 import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.graph.Graph;
-import org.mozkito.core.libs.versions.model.Branch;
+import org.mozkito.core.libs.versions.graph.Vertex;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
@@ -34,6 +36,7 @@ import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.Identity;
+import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.core.libs.versions.model.Root;
@@ -112,7 +115,7 @@ public class TaskRunner implements Runnable {
 	private final DatabaseDumper<Revision>             revisionDumper;
 	
 	/** The branch dumper. */
-	private final DatabaseDumper<Branch>               branchDumper;
+	private final DatabaseDumper<Reference>            branchDumper;
 	
 	/** The handle dumper. */
 	private final DatabaseDumper<Handle>               handleDumper;
@@ -185,7 +188,7 @@ public class TaskRunner implements Runnable {
 	public TaskRunner(final File baseDir, final File workDir, final URI depotURI, final Task[] tasks,
 	        final IdentityCache identityCache, final DatabaseDumper<Identity> identityDumper,
 	        final DatabaseDumper<ChangeSet> changeSetDumper, final DatabaseDumper<Revision> revisionDumper,
-	        final DatabaseDumper<Branch> branchDumper, final DatabaseDumper<Handle> handleDumper,
+	        final DatabaseDumper<Reference> branchDumper, final DatabaseDumper<Handle> handleDumper,
 	        final DatabaseDumper<Graph> graphDumper, final DatabaseDumper<Depot> depotDumper,
 	        final DatabaseDumper<Renaming> renamingDumper,
 	        final DatabaseDumper<ChangeSetIntegration> integrationDumper, final DatabaseDumper<Tag> tagDumper,
@@ -260,21 +263,7 @@ public class TaskRunner implements Runnable {
 			return;
 		}
 		
-		Map<String, Branch> branchHeads;
-		if (ArrayUtils.contains(this.tasks, Task.BRANCHES)) {
-			Logger.info("Spawning BranchMiner.");
-			
-			final BranchMiner branchMiner = new BranchMiner(this.cloneDir, this.depot, this.branchDumper);
-			branchMiner.run();
-			resetName();
-			branchHeads = branchMiner.getBranchHeads();
-			this.graph.setBranchHeads(branchHeads);
-		} else {
-			// TODO load from DB
-			branchHeads = new HashMap<String, Branch>();
-		}
-		
-		Map<String, ChangeSet> changeSets = new HashMap<String, ChangeSet>();
+		Map<String, Vertex> vertices = new HashMap<>();
 		
 		if (ArrayUtils.contains(this.tasks, Task.CHANGESETS)) {
 			Logger.info("Spawning ChangeSetMiner.");
@@ -285,44 +274,70 @@ public class TaskRunner implements Runnable {
 			                                                         this.renamingDumper);
 			changeSetMiner.run();
 			resetName();
-			changeSets = changeSetMiner.getChangeSets();
-			this.graph.setChangeSets(changeSets);
+			vertices = changeSetMiner.getVertexes();
+			this.graph.addVertices(vertices);
 		} else {
 			// TODO load changesets and add to graph and the hashmap
 		}
 		
-		Logger.info("Spawning TagMiner");
-		final TagMiner tagMiner = new TagMiner(this.cloneDir, this.depot, changeSets, this.identityCache,
-		                                       this.tagDumper);
-		tagMiner.run();
-		resetName();
+		System.gc();
+		
+		final MultiMap<String, Reference> references = new MultiValueMap<>();
+		if (ArrayUtils.contains(this.tasks, Task.BRANCHES)) {
+			Logger.info("Spawning BranchMiner.");
+			
+			final MultiMap<String, Reference> branchRefs;
+			final BranchMiner branchMiner = new BranchMiner(this.cloneDir, this.depot, vertices, this.branchDumper);
+			branchMiner.run();
+			resetName();
+			branchRefs = branchMiner.getBranchRefs();
+			this.graph.addRefs(branchRefs);
+			references.putAll(branchRefs);
+		} else {
+			// TODO load from DB
+		}
+		
+		{
+			Logger.info("Spawning TagMiner");
+			final MultiMap<String, Reference> tagRefs;
+			final TagMiner tagMiner = new TagMiner(this.cloneDir, this.depot, vertices, this.identityCache,
+			                                       this.tagDumper, this.branchDumper);
+			tagMiner.run();
+			resetName();
+			tagRefs = tagMiner.getTagRefs();
+			this.graph.addRefs(tagRefs);
+			references.putAll(tagRefs);
+		}
 		
 		if (ArrayUtils.contains(this.tasks, Task.ENDPOINTS)) {
 			Logger.info("Spawning EndPointMiner.");
-			final EndPointMiner endPointMiner = new EndPointMiner(this.cloneDir, branchHeads, changeSets, this.graph,
-			                                                      this.headDumper, this.rootDumper);
+			final EndPointMiner endPointMiner = new EndPointMiner(this.depot, this.cloneDir, references, vertices,
+			                                                      this.graph, this.headDumper, this.rootDumper);
 			endPointMiner.run();
 			resetName();
 		}
 		
+		System.gc();
+		
 		if (ArrayUtils.contains(this.tasks, Task.GRAPH)) {
 			Logger.info("Spawning GraphBuilder.");
-			final GraphMiner graphMiner = new GraphMiner(this.cloneDir, this.graph, changeSets, this.graphDumper,
-			                                             this.graphEdgeDumper, this.branchEdgeDumper);
+			final GraphMiner graphMiner = new GraphMiner(this.depot, this.cloneDir, this.graph, vertices,
+			                                             this.graphDumper, this.graphEdgeDumper, this.integrationDumper);
 			graphMiner.run();
 			resetName();
 		}
 		
 		if (ArrayUtils.contains(this.tasks, Task.INTEGRATION)) {
 			Logger.info("Spawning IntegrationMiner.");
-			final IntegrationMiner integrationMiner = new IntegrationMiner(this.depot, this.cloneDir, changeSets,
-			                                                               this.integrationDumper);
+			final IntegrationMiner integrationMiner = new IntegrationMiner(this.depot, this.graph,
+			                                                               this.branchEdgeDumper);
 			integrationMiner.run();
 			resetName();
 			
 			Logger.info("Spawning ConvergenceMiner.");
 			
-			final ConvergenceMiner convergenceMiner = new ConvergenceMiner(this.graph, this.convergenceDumper);
+			final ConvergenceMiner convergenceMiner = new ConvergenceMiner(this.depot, this.graph,
+			                                                               this.convergenceDumper);
 			convergenceMiner.run();
 			resetName();
 		}

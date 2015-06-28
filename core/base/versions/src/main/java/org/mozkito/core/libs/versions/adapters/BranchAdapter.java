@@ -20,18 +20,17 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.Branch;
+import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.libraries.sequel.AbstractAdapter;
 import org.mozkito.libraries.sequel.Database;
 import org.mozkito.skeleton.contracts.Requires;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class BranchAdapter.
  *
  * @author Sascha Just
  */
-public class BranchAdapter extends AbstractAdapter<Branch> {
+public class BranchAdapter extends AbstractAdapter<Reference> {
 	
 	/** The current id. */
 	public static long currentId = 0l;
@@ -45,7 +44,7 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 	 *            the mode
 	 */
 	public BranchAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "branch");
+		super(type, mode, "ref");
 	}
 	
 	/**
@@ -53,7 +52,7 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
-	public Branch create(final ResultSet result) {
+	public Reference create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -66,7 +65,7 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
-	                   final Branch object) {
+	                   final Reference object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -78,7 +77,7 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<Branch> load(final Connection connection) {
+	public Iterator<Reference> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -90,8 +89,8 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<Branch> load(final Connection connection,
-	                         final long... ids) {
+	public List<Reference> load(final Connection connection,
+	                            final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -103,8 +102,8 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 	 *
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public Branch load(final Connection connection,
-	                   final long id) {
+	public Reference load(final Connection connection,
+	                      final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -119,20 +118,21 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 	 */
 	public void save(final PreparedStatement statement,
 	                 final long id,
-	                 final Branch branch) {
+	                 final Reference reference) {
 		Requires.notNull(statement);
-		Requires.notNull(branch);
+		Requires.notNull(reference);
 		
 		try {
 			int index = 0;
 			statement.setInt(++index, (int) id);
 			
-			statement.setLong(++index, branch.getDepotId());
-			statement.setString(++index, truncate(branch.getName(), 900));
+			statement.setShort(++index, reference.getType().getValue());
+			statement.setLong(++index, reference.getDepotId());
+			statement.setString(++index, truncate(reference.getName(), 900));
 			
 			schedule(statement);
 			
-			branch.id(id);
+			reference.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -144,7 +144,7 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void update(final Connection connection,
-	                   final Branch... objects) {
+	                   final Reference... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

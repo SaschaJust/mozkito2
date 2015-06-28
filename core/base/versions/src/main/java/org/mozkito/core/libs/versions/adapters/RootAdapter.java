@@ -128,7 +128,7 @@ public class RootAdapter extends AbstractAdapter<Root> {
 
 			schedule(statement);
 
-			root.id(id);
+			root.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

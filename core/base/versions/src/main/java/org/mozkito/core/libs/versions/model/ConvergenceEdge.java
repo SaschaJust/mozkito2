@@ -129,18 +129,18 @@ public class ConvergenceEdge implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#getId()
 	 */
-	public long id() {
+	public long getId() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#setId(long)
 	 */
-	public void id(final long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 	

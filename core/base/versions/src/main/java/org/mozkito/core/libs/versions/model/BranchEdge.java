@@ -13,9 +13,8 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.core.libs.versions.graph.BranchMarker;
-import org.mozkito.core.libs.versions.graph.IntegrationMarker;
-import org.mozkito.core.libs.versions.graph.NavigationMarker;
+import org.mozkito.core.libs.versions.model.enums.IntegrationMarker;
+import org.mozkito.core.libs.versions.model.enums.NavigationMarker;
 import org.mozkito.libraries.sequel.IEntity;
 
 /**
@@ -35,9 +34,6 @@ public class BranchEdge implements IEntity {
 	/** The branch id. */
 	private final long        branchId;
 	
-	/** The branch type. */
-	private final short       branchType;
-	
 	/** The navigation type. */
 	private final short       navigationType;
 	
@@ -51,19 +47,16 @@ public class BranchEdge implements IEntity {
 	 *            the edge id
 	 * @param branchId
 	 *            the branch id
-	 * @param branchMarker
-	 *            the type
 	 * @param navigationMarker
 	 *            the navigation marker
 	 * @param integrationMarker
 	 *            the integration marker
 	 */
-	public BranchEdge(final long edgeId, final long branchId, final BranchMarker branchMarker,
-	        final NavigationMarker navigationMarker, final IntegrationMarker integrationMarker) {
+	public BranchEdge(final long edgeId, final long branchId, final NavigationMarker navigationMarker,
+	        final IntegrationMarker integrationMarker) {
 		super();
 		this.edgeId = edgeId;
 		this.branchId = branchId;
-		this.branchType = (short) branchMarker.ordinal();
 		this.navigationType = (short) navigationMarker.ordinal();
 		this.integrationType = (short) integrationMarker.ordinal();
 	}
@@ -99,13 +92,6 @@ public class BranchEdge implements IEntity {
 	 */
 	public final long getBranchId() {
 		return this.branchId;
-	}
-	
-	/**
-	 * @return the branchType
-	 */
-	public final short getBranchType() {
-		return this.branchType;
 	}
 	
 	/**
@@ -146,18 +132,18 @@ public class BranchEdge implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#getId()
 	 */
-	public long id() {
+	public long getId() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#setId(long)
 	 */
-	public void id(final long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 	

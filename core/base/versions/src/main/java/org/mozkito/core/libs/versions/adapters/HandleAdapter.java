@@ -126,7 +126,7 @@ public class HandleAdapter extends AbstractAdapter<Handle> {
 			saveStatement.setString(++index, truncate(handle.getPath(), 900));
 			schedule(saveStatement);
 			
-			handle.id(id);
+			handle.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

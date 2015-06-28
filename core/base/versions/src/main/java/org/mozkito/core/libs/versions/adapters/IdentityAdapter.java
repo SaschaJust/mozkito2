@@ -55,7 +55,7 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 	public Identity create(final ResultSet result) {
 		try {
 			final Identity identity = new Identity(result.getString(2), result.getString(3));
-			identity.id(result.getInt(1));
+			identity.setId(result.getInt(1));
 			return identity;
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
@@ -134,8 +134,8 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 
 			schedule(statement);
 
-			identity.id(id);
-			Asserts.positive(identity.id());
+			identity.setId(id);
+			Asserts.positive(identity.getId());
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

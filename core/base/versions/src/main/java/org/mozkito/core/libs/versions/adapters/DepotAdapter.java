@@ -126,7 +126,7 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 			saveStatement.setTimestamp(++index, Timestamp.from(depot.getMined()));
 			schedule(saveStatement);
 			
-			depot.id(id);
+			depot.setId(id);
 		} catch (SQLException | MalformedURLException e) {
 			throw new RuntimeException(e);
 		}

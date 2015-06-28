@@ -91,17 +91,17 @@ public class UserAdapter extends AbstractAdapter<User> {
 					this.lastId = id;
 					this.user = this.tmpUser;
 					this.tmpUser = new User();
-					this.tmpUser.id(id);
+					this.tmpUser.setId(id);
 					
 					this.identity = new Identity(this.results.getString(3), this.results.getString(4));
-					this.identity.id(this.results.getInt(2));
+					this.identity.setId(this.results.getInt(2));
 					this.tmpUser.addIdentity(this.identity);
 					if (doReturn) {
 						return;
 					}
 				} else {
 					this.identity = new Identity(this.results.getString(3), this.results.getString(4));
-					this.identity.id(this.results.getInt(2));
+					this.identity.setId(this.results.getInt(2));
 					this.tmpUser.addIdentity(this.identity);
 				}
 			}
@@ -177,14 +177,14 @@ public class UserAdapter extends AbstractAdapter<User> {
 					lastId = id;
 					list.add(user);
 					user = new User();
-					user.id(id);
+					user.setId(id);
 					
 					identity = new Identity(results.getString(3), results.getString(4));
-					identity.id(results.getInt(2));
+					identity.setId(results.getInt(2));
 					user.addIdentity(identity);
 				} else {
 					identity = new Identity(results.getString(3), results.getString(4));
-					identity.id(results.getInt(2));
+					identity.setId(results.getInt(2));
 					user.addIdentity(identity);
 				}
 			}
@@ -261,14 +261,14 @@ public class UserAdapter extends AbstractAdapter<User> {
 			for (final Identity identity : user.getIdentities()) {
 				int index = 0;
 				statement.setLong(++index, id);
-				statement.setLong(++index, identity.id());
+				statement.setLong(++index, identity.getId());
 				index = 0;
 			}
 			
 			schedule(statement);
 			
-			user.id(id);
-			Asserts.positive(user.id());
+			user.setId(id);
+			Asserts.positive(user.getId());
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

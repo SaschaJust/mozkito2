@@ -13,16 +13,16 @@
 
 package org.mozkito.core.apps.versions;
 
-import java.io.File;
-import java.util.Map;
+import java.util.Collection;
+import java.util.Map.Entry;
 
-import org.mozkito.core.libs.versions.IntegrationType;
-import org.mozkito.core.libs.versions.model.ChangeSet;
-import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
+import org.mozkito.core.libs.versions.graph.Edge;
+import org.mozkito.core.libs.versions.graph.Graph;
+import org.mozkito.core.libs.versions.graph.Label;
+import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.Depot;
+import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.libraries.sequel.DatabaseDumper;
-import org.mozkito.skeleton.contracts.Asserts;
-import org.mozkito.skeleton.exec.Command;
 
 /**
  * The Class IntegrationMiner.
@@ -31,33 +31,27 @@ import org.mozkito.skeleton.exec.Command;
  */
 public class IntegrationMiner extends Task implements Runnable {
 	
-	/** The clone dir. */
-	private final File                                 cloneDir;
-	
-	/** The change sets. */
-	private final Map<String, ChangeSet>               changeSets;
+	static final String                      ORIGIN = "origin/";
 	
 	/** The integration type dumper. */
-	private final DatabaseDumper<ChangeSetIntegration> integrationTypeDumper;
+	private final DatabaseDumper<BranchEdge> branchEdgeDumper;
+	
+	private final Graph                      graph;
 	
 	/**
 	 * Instantiates a new integration miner.
 	 *
 	 * @param depot
 	 *            the depot
-	 * @param cloneDir
-	 *            the clone dir
-	 * @param changeSets
-	 *            the change sets
-	 * @param integrationTypeDumper
-	 *            the integration type dumper
+	 * @param graph
+	 *            the graph
+	 * @param branchEdgeDumper
+	 *            the branch edge dumper
 	 */
-	public IntegrationMiner(final Depot depot, final File cloneDir, final Map<String, ChangeSet> changeSets,
-	        final DatabaseDumper<ChangeSetIntegration> integrationTypeDumper) {
+	public IntegrationMiner(final Depot depot, final Graph graph, final DatabaseDumper<BranchEdge> branchEdgeDumper) {
 		super(depot);
-		this.cloneDir = cloneDir;
-		this.changeSets = changeSets;
-		this.integrationTypeDumper = integrationTypeDumper;
+		this.graph = graph;
+		this.branchEdgeDumper = branchEdgeDumper;
 	}
 	
 	/**
@@ -66,38 +60,25 @@ public class IntegrationMiner extends Task implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		final Command command = Command.execute("git", new String[] { "log", "--no-abbrev", "--format=%H %P",
-		        "--branches", "--remotes" }, this.cloneDir);
+		for (final Reference reference : this.graph.getBranches()) {
+			
+			this.graph.computeNavigationGraph(reference);
+			this.graph.computeIntegrationGraph(reference);
+		}
 		
-		ChangeSet current;
-		ChangeSetIntegration csi;
+		BranchEdge bEdge;
 		
-		String line;
-		while ((line = command.nextOutput()) != null) {
-			final String[] split = line.trim().split("\\s+");
-			current = this.changeSets.get(split[0]);
-			if (split.length == 1) {
-				// found root
-				csi = new ChangeSetIntegration(current, IntegrationType.EDIT);
-				this.integrationTypeDumper.saveLater(csi);
-			} else {
-				Asserts.greater(split.length, 1, "There has to be a parent at this point.");
-				
-				if (split.length > 2) {
-					csi = new ChangeSetIntegration(current, IntegrationType.MERGE);
-				} else {
-					csi = new ChangeSetIntegration(current, IntegrationType.EDIT);
-				}
-				this.integrationTypeDumper.saveLater(csi);
+		final Collection<Edge> edges = this.graph.getEdges();
+		
+		Label label;
+		for (final Edge edge : edges) {
+			for (final Entry<Long, Label> entry : edge.getLabels().entrySet()) {
+				label = entry.getValue();
+				bEdge = new BranchEdge(edge.getId(), entry.getKey(), label.navigationMarker, label.integrationMarker);
+				this.branchEdgeDumper.saveLater(bEdge);
 			}
 		}
+		
 	}
-	
-	/**
-	 * Compute integration graph.
-	 *
-	 * @param branch
-	 *            the branch
-	 */
 	
 }

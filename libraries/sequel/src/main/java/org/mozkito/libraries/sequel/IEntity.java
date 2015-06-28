@@ -27,7 +27,7 @@ public interface IEntity extends Serializable {
 	 *
 	 * @return the object[]
 	 */
-	long id();
+	long getId();
 	
 	/**
 	 * Id.
@@ -35,5 +35,5 @@ public interface IEntity extends Serializable {
 	 * @param id
 	 *            the id
 	 */
-	void id(long id);
+	void setId(long id);
 }

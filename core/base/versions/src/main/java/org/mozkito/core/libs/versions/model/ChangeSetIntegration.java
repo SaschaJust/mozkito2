@@ -13,7 +13,7 @@
 
 package org.mozkito.core.libs.versions.model;
 
-import org.mozkito.core.libs.versions.IntegrationType;
+import org.mozkito.core.libs.versions.model.enums.IntegrationType;
 import org.mozkito.libraries.sequel.IEntity;
 
 /**
@@ -31,19 +31,6 @@ public class ChangeSetIntegration implements IEntity {
 	
 	/** The integration type. */
 	private final short       integrationType;
-	
-	/**
-	 * Instantiates a new change set integration.
-	 *
-	 * @param changeSet
-	 *            the change set
-	 * @param type
-	 *            the type
-	 */
-	public ChangeSetIntegration(final ChangeSet changeSet, final IntegrationType type) {
-		this.changeSetId = changeSet.id();
-		this.integrationType = type.getValue();
-	}
 	
 	/**
 	 * Instantiates a new change set integration.
@@ -109,18 +96,18 @@ public class ChangeSetIntegration implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#getId()
 	 */
-	public long id() {
+	public long getId() {
 		return this.changeSetId;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#setId(long)
 	 */
-	public void id(final long id) {
+	public void setId(final long id) {
 		this.changeSetId = id;
 	}
 	

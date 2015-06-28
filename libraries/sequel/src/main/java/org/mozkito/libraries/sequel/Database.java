@@ -40,17 +40,6 @@ import org.mozkito.skeleton.contracts.Requires;
 public class Database implements DataSource, Closeable {
 	
 	/**
-	 * The Enum IdMode.
-	 */
-	public static enum IdMode {
-		
-		/** The sequence. */
-		SEQUENCE,
-		/** The local. */
-		LOCAL;
-	}
-	
-	/**
 	 * The Enum TxMode.
 	 */
 	public static enum TxMode {
@@ -89,9 +78,6 @@ public class Database implements DataSource, Closeable {
 	/** The adapters. */
 	private final Map<Class<?>, IAdapter<?>> adapters = new HashMap<>();
 	
-	/** The id mode. */
-	private IdMode                           idMode;
-	
 	private final TxMode                     txMode;
 	
 	/**
@@ -109,7 +95,6 @@ public class Database implements DataSource, Closeable {
 		config.setJdbcUrl(connectionString);
 		config.setAutoCommit(false);
 		this.type = type;
-		this.idMode = IdMode.LOCAL;
 		this.dataSource = new HikariDataSource(config);
 		
 		this.dataSource.setTransactionIsolation("TRANSACTION_READ_UNCOMMITTED");
@@ -163,7 +148,6 @@ public class Database implements DataSource, Closeable {
 		Logger.info("Connecting to database using: " + config.getJdbcUrl());
 		
 		this.type = type;
-		this.idMode = IdMode.LOCAL;
 		this.txMode = TxMode.TRANSACTION;
 		
 		config.setAutoCommit(false);
@@ -274,15 +258,6 @@ public class Database implements DataSource, Closeable {
 	}
 	
 	/**
-	 * Gets the id mode.
-	 *
-	 * @return the idMode
-	 */
-	public final IdMode getIdMode() {
-		return this.idMode;
-	}
-	
-	/**
 	 * {@inheritDoc}
 	 *
 	 * @see javax.sql.CommonDataSource#getLoginTimeout()
@@ -352,16 +327,6 @@ public class Database implements DataSource, Closeable {
 	                                         final IAdapter<T> adapter) {
 		this.adapters.put(managedEntityType, adapter);
 		this.dataSource.setMaximumPoolSize(this.adapters.size() + 2);
-	}
-	
-	/**
-	 * Sets the id mode.
-	 *
-	 * @param idMode
-	 *            the idMode to set
-	 */
-	public final void setIdMode(final IdMode idMode) {
-		this.idMode = idMode;
 	}
 	
 	/**

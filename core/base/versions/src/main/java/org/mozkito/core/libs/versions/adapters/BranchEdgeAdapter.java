@@ -32,7 +32,7 @@ import org.mozkito.skeleton.contracts.Requires;
  * @author Sascha Just
  */
 public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
-
+	
 	/**
 	 * Instantiates a new graph branch adapter.
 	 *
@@ -44,7 +44,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	public BranchEdgeAdapter(final Database.Type type, final Database.TxMode mode) {
 		super(type, mode, "branch_edge");
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -54,9 +54,9 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -67,9 +67,9 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -79,9 +79,9 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -92,9 +92,9 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -105,9 +105,9 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -118,25 +118,24 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	                 final BranchEdge edge) {
 		Requires.notNull(saveStatement);
 		Requires.notNull(edge);
-
+		
 		try {
 			int index = 0;
 			saveStatement.setLong(++index, id);
-
+			
 			saveStatement.setLong(++index, edge.getEdgeId());
 			saveStatement.setLong(++index, edge.getBranchId());
-			saveStatement.setShort(++index, edge.getBranchType());
 			saveStatement.setShort(++index, edge.getNavigationType());
 			saveStatement.setShort(++index, edge.getIntegrationType());
-
+			
 			schedule(saveStatement);
-
-			edge.id(id);
+			
+			edge.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -147,7 +146,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 }

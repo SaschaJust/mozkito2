@@ -126,11 +126,11 @@ public class GraphAdapter extends AbstractAdapter<Graph> {
 			int index = 0;
 			
 			saveStatement.setLong(++index, id);
-			saveStatement.setLong(++index, entity.getDepot().id());
+			saveStatement.setLong(++index, entity.getDepotId());
 			// TODO add #vertices #edges
 			schedule(saveStatement);
 			
-			entity.id(id);
+			entity.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

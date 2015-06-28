@@ -27,41 +27,28 @@ import org.mozkito.libraries.sequel.IBuilder;
 public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	
 	/** The application time. */
-	private Instant    authoredTime;
+	private Instant authoredTime;
 	
 	/** The author id. */
-	private long       authorId;
+	private long    authorId;
 	
 	/** The commit hash. */
-	private String     commitHash;
+	private String  commitHash;
 	
 	/** The committer id. */
-	private long       committerId;
+	private long    committerId;
 	
 	/** The commit time. */
-	private Instant    commitTime;
-	
-	/** The depot id. */
-	private final long depotId;
+	private Instant commitTime;
 	
 	/** The tree hash. */
-	private String     treeHash;
+	private String  treeHash;
 	
 	/** The subject. */
-	private String     subject;
+	private String  subject;
 	
 	/** The body. */
-	private String     body;
-	
-	/**
-	 * Instantiates a new change set builder.
-	 *
-	 * @param depotId
-	 *            the depot id
-	 */
-	public ChangeSetBuilder(final long depotId) {
-		this.depotId = depotId;
-	}
+	private String  body;
 	
 	/**
 	 * Authored on.
@@ -82,7 +69,7 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	 *            the identity
 	 */
 	public void authorId(final Identity identity) {
-		this.authorId = identity.id();
+		this.authorId = identity.getId();
 	}
 	
 	/**
@@ -128,7 +115,7 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 	 *            the identity
 	 */
 	public void committerId(final Identity identity) {
-		this.committerId = identity.id();
+		this.committerId = identity.getId();
 	}
 	
 	/**
@@ -145,8 +132,8 @@ public class ChangeSetBuilder implements IBuilder<ChangeSet> {
 			this.authoredTime = this.commitTime;
 		}
 		
-		return new ChangeSet(this.depotId, this.commitHash, this.treeHash, this.authoredTime, this.authorId,
-		                     this.commitTime, this.committerId, this.subject, this.body);
+		return new ChangeSet(this.commitHash, this.treeHash, this.authoredTime, this.authorId, this.commitTime,
+		                     this.committerId, this.subject, this.body);
 	}
 	
 	/**

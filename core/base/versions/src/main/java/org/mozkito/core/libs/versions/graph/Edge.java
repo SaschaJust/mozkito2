@@ -18,8 +18,10 @@ import java.util.Map;
 
 import org.apache.commons.collections4.map.UnmodifiableMap;
 
-import org.mozkito.core.libs.versions.model.Branch;
-import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.core.libs.versions.model.Reference;
+import org.mozkito.core.libs.versions.model.enums.BranchMarker;
+import org.mozkito.core.libs.versions.model.enums.IntegrationMarker;
+import org.mozkito.core.libs.versions.model.enums.NavigationMarker;
 import org.mozkito.skeleton.contracts.Requires;
 
 /**
@@ -30,61 +32,58 @@ public class Edge {
 	/**
      * 
      */
-	private final Graph graph;
+	private final Graph  graph;
 	
 	/** The labels. */
-	Map<Long, Label>    labels;
+	Map<Long, Label>     labels;
 	
 	/** The child. */
-	final ChangeSet     child;
+	final Vertex         child;
 	
 	/** The parent. */
-	final ChangeSet     parent;
+	final Vertex         parent;
+	
+	private BranchMarker branchMarker;
+	
+	private long         id;
 	
 	/**
 	 * Instantiates a new edge.
 	 *
+	 * @param graph
+	 *            the graph
 	 * @param parent
 	 *            the parent
 	 * @param child
 	 *            the child
 	 * @param type
 	 *            the type
-	 * @param branch
-	 *            the branch
-	 * @param graph
 	 */
-	public Edge(final Graph graph, final ChangeSet parent, final ChangeSet child, final BranchMarker type,
-	        final Branch branch) {
+	public Edge(final Graph graph, final Vertex parent, final Vertex child, final BranchMarker type) {
 		this.graph = graph;
 		this.parent = parent;
 		this.child = child;
+		this.branchMarker = type;
 		this.labels = new HashMap<Long, Label>();
-		final Label label = new Label(branch, type);
-		label.branchMarker = type;
-		label.navigationMarker = null;
-		label.integrationMarker = IntegrationMarker.DIVERGE;
-		this.labels.put(branch.id(), label);
 	}
 	
 	/**
 	 * Adds the branch.
 	 *
-	 * @param branch
+	 * @param reference
 	 *            the branch
 	 * @param marker
 	 *            the type
 	 * @return true, if successful
 	 */
-	public boolean addBranch(final Branch branch,
+	public boolean addBranch(final Reference reference,
 	                         final BranchMarker marker) {
 		
-		if (!this.labels.containsKey(branch.id())) {
-			final Label label = new Label(branch, marker);
-			label.branchMarker = marker;
+		if (!this.labels.containsKey(reference.getId())) {
+			final Label label = new Label(reference, marker);
 			label.navigationMarker = null;
 			label.integrationMarker = IntegrationMarker.DIVERGE;
-			this.labels.put(branch.id(), label);
+			this.labels.put(reference.getId(), label);
 			return true;
 		} else {
 			return false;
@@ -94,37 +93,37 @@ public class Edge {
 	/**
 	 * Adds the integration.
 	 *
-	 * @param branch
+	 * @param reference
 	 *            the branch
 	 * @param marker
 	 *            the marker
 	 */
-	public void addIntegration(final Branch branch,
+	public void addIntegration(final Reference reference,
 	                           final IntegrationMarker marker) {
-		Requires.notNull(branch);
-		if (!this.labels.containsKey(branch.id())) {
-			throw new IllegalArgumentException("This edge is not part of branch " + branch);
+		Requires.notNull(reference);
+		if (!this.labels.containsKey(reference.getId())) {
+			throw new IllegalArgumentException("This edge is not part of branch " + reference);
 		}
 		
-		this.labels.get(branch.id()).integrationMarker = marker;
+		this.labels.get(reference.getId()).integrationMarker = marker;
 	}
 	
 	/**
 	 * Adds the navigation.
 	 *
-	 * @param branch
+	 * @param reference
 	 *            the branch
 	 * @param marker
 	 *            the marker
 	 */
-	public void addNavigation(final Branch branch,
+	public void addNavigation(final Reference reference,
 	                          final NavigationMarker marker) {
-		Requires.notNull(branch);
-		if (!this.labels.containsKey(branch.id())) {
-			throw new IllegalArgumentException("This edge is not part of branch " + branch);
+		Requires.notNull(reference);
+		if (!this.labels.containsKey(reference.getId())) {
+			throw new IllegalArgumentException("This edge is not part of branch " + reference);
 		}
 		
-		this.labels.get(branch.id()).navigationMarker = marker;
+		this.labels.get(reference.getId()).navigationMarker = marker;
 	}
 	
 	/**
@@ -167,31 +166,17 @@ public class Edge {
 	/**
 	 * Gets the type.
 	 *
-	 * @param branch
-	 *            the branch
 	 * @return the type
 	 */
-	public BranchMarker getBranchMarker(final Branch branch) {
-		if (this.labels.containsKey(branch.id())) {
-			return this.labels.get(branch.id()).branchMarker;
-		} else {
-			throw new IllegalArgumentException("This edge is not part of branch " + branch);
-		}
+	public BranchMarker getBranchMarker() {
+		return this.branchMarker;
 	}
 	
 	/**
-	 * Gets the type.
-	 *
-	 * @param branchId
-	 *            the branch id
-	 * @return the type
+	 * @return the id
 	 */
-	public BranchMarker getBranchMarker(final long branchId) {
-		if (this.labels.containsKey(branchId)) {
-			return this.labels.get(branchId).branchMarker;
-		} else {
-			throw new IllegalArgumentException("This edge is not part of branch with id " + branchId);
-		}
+	public final long getId() {
+		return this.id;
 	}
 	
 	/**
@@ -201,21 +186,6 @@ public class Edge {
 	 */
 	public Map<Long, Label> getLabels() {
 		return UnmodifiableMap.unmodifiableMap(this.labels);
-	}
-	
-	/**
-	 * Gets the navigation marker.
-	 *
-	 * @param branch
-	 *            the branch
-	 * @return the navigation marker
-	 */
-	public NavigationMarker getNavigationMarker(final Branch branch) {
-		if (this.labels.containsKey(branch.id())) {
-			return this.labels.get(branch.id()).navigationMarker;
-		} else {
-			throw new IllegalArgumentException("This edge is not part of branch with id " + branch.id());
-		}
 	}
 	
 	/**
@@ -234,6 +204,21 @@ public class Edge {
 	}
 	
 	/**
+	 * Gets the navigation marker.
+	 *
+	 * @param reference
+	 *            the branch
+	 * @return the navigation marker
+	 */
+	public NavigationMarker getNavigationMarker(final Reference reference) {
+		if (this.labels.containsKey(reference.getId())) {
+			return this.labels.get(reference.getId()).navigationMarker;
+		} else {
+			throw new IllegalArgumentException("This edge is not part of branch with id " + reference.getId());
+		}
+	}
+	
+	/**
 	 * Gets the outer type.
 	 *
 	 * @return the outer type
@@ -248,7 +233,7 @@ public class Edge {
 	 * @return the source id
 	 */
 	public long getSourceId() {
-		return this.parent.id();
+		return this.parent.getId();
 	}
 	
 	/**
@@ -257,7 +242,7 @@ public class Edge {
 	 * @return the target id
 	 */
 	public long getTargetId() {
-		return this.child.id();
+		return this.child.getId();
 	}
 	
 	/**
@@ -282,28 +267,28 @@ public class Edge {
 	/**
 	 * In branch.
 	 *
-	 * @param branch
+	 * @param reference
 	 *            the branch
 	 * @return true, if successful
 	 */
-	public boolean inBranch(final Branch branch) {
-		return this.labels.containsKey(branch.id());
+	public boolean inBranch(final Reference reference) {
+		return this.labels.containsKey(reference.getId());
 	}
 	
 	/**
 	 * Integrates.
 	 *
-	 * @param branch
+	 * @param reference
 	 *            the branch
 	 * @return true, if successful
 	 */
-	public boolean integrates(final Branch branch) {
-		Requires.notNull(branch);
-		if (!this.labels.containsKey(branch.id())) {
+	public boolean integrates(final Reference reference) {
+		Requires.notNull(reference);
+		if (!this.labels.containsKey(reference.getId())) {
 			throw new IllegalArgumentException();
 		}
 		
-		return IntegrationMarker.INTEGRATE.equals(this.labels.get(branch.id()).integrationMarker);
+		return IntegrationMarker.INTEGRATE.equals(this.labels.get(reference.getId()).integrationMarker);
 	}
 	
 	/**
@@ -312,46 +297,43 @@ public class Edge {
 	 * @return true, if is merge
 	 */
 	public boolean isMerge() {
-		if (this.labels.isEmpty()) {
-			throw new IllegalStateException("Edge is not attached to a branch.");
-		}
-		return BranchMarker.MERGE_PARENT.equals(this.labels.values().iterator().next().branchMarker);
+		return BranchMarker.MERGE_PARENT.equals(this.branchMarker);
 	}
 	
 	/**
 	 * Sets the type.
 	 *
-	 * @param branch
-	 *            the branch
 	 * @param marker
 	 *            the type
 	 */
-	public void setBranchMarker(final Branch branch,
-	                            final BranchMarker marker) {
-		if (this.labels.containsKey(branch.id())) {
-			this.labels.get(branch.id()).branchMarker = marker;
-		} else {
-			throw new IllegalArgumentException("This edge is not part of branch with id " + branch.id());
-		}
+	public void setBranchMarker(final BranchMarker marker) {
+		this.branchMarker = marker;
+	}
+	
+	/**
+	 * @param id
+	 */
+	public void setId(final long id) {
+		this.id = id;
 	}
 	
 	/**
 	 * To string.
 	 *
-	 * @param branch
+	 * @param reference
 	 *            the branch
 	 * @return the string
 	 */
-	public String toString(final Branch branch) {
+	public String toString(final Reference reference) {
 		
 		final StringBuilder builder = new StringBuilder();
 		builder.append("Edge [");
-		builder.append(this.labels.get(branch.id()).branchMarker.name()).append(" ");
-		builder.append(this.labels.get(branch.id()).navigationMarker.name()).append(" ");
-		builder.append(this.labels.get(branch.id()).integrationMarker.name()).append(" ");
-		builder.append(this.child.getCommitHash());
+		builder.append(this.branchMarker.name()).append(" ");
+		builder.append(this.labels.get(reference.getId()).navigationMarker.name()).append(" ");
+		builder.append(this.labels.get(reference.getId()).integrationMarker.name()).append(" ");
+		builder.append(this.child.getHash());
 		builder.append(" -> ");
-		builder.append(this.parent.getCommitHash());
+		builder.append(this.parent.getHash());
 		builder.append("]");
 		return builder.toString();
 	}

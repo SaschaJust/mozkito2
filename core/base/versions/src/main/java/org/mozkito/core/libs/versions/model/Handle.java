@@ -45,12 +45,12 @@ public class Handle implements IEntity {
 	 */
 	public Handle(final Depot depot, final String path) {
 		Requires.notNull(depot);
-		Requires.positive(depot.id());
+		Requires.positive(depot.getId());
 		Requires.notNull(path);
 		Requires.notEmpty(path);
 		
 		this.path = path;
-		this.depotId = depot.id();
+		this.depotId = depot.getId();
 	}
 	
 	/**
@@ -74,18 +74,18 @@ public class Handle implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#getId()
 	 */
-	public long id() {
+	public long getId() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#setId(long)
 	 */
-	public void id(final long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 	

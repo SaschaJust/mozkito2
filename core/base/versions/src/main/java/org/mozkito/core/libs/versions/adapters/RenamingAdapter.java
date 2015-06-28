@@ -133,7 +133,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 				schedule(saveStatement);
 			}
 
-			renaming.id(id);
+			renaming.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

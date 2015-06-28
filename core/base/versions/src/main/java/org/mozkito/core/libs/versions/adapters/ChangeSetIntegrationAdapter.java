@@ -20,8 +20,8 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.IntegrationType;
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
+import org.mozkito.core.libs.versions.model.enums.IntegrationType;
 import org.mozkito.libraries.sequel.AbstractAdapter;
 import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.DatabaseManager;
@@ -151,7 +151,7 @@ public class ChangeSetIntegrationAdapter extends AbstractAdapter<ChangeSetIntegr
 		try {
 			
 			int index = 0;
-			saveStatement.setLong(++index, integration.id());
+			saveStatement.setLong(++index, integration.getId());
 			
 			saveStatement.setShort(++index, integration.getIntegrationType());
 			

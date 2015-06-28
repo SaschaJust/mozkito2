@@ -14,14 +14,16 @@
 package org.mozkito.core.apps.versions;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections4.map.UnmodifiableMap;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
 
+import org.mozkito.core.libs.versions.graph.Vertex;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Head;
+import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.DatabaseDumper;
@@ -30,24 +32,26 @@ import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.exec.Command;
 
 /**
- * The BranchMiner is used to collect all branches known to the underlying depot. The {@link Branch}es are stored in the
- * provided {@link Database}, along with their {@link Head} and {@link Root}s.
+ * The BranchMiner is used to collect all branches known to the underlying depot. The {@link Reference}es are stored in
+ * the provided {@link Database}, along with their {@link Head} and {@link Root}s.
  *
  * @author Sascha Just
  */
 public class BranchMiner extends Task implements Runnable {
 	
 	/** The Constant TAG. */
-	private static final String          TAG              = "refs/heads/";
+	private static final String               TAG              = "refs/heads/";
 	
 	/** The clone dir. */
-	private final File                   cloneDir;
+	private final File                        cloneDir;
 	
 	/** The branch head hashes. */
-	private final Map<String, Branch>    branchHeadHashes = new HashMap<String, Branch>();
+	private final MultiMap<String, Reference> branchHeadHashes = new MultiValueMap<>();
 	
 	/** The branch dumper. */
-	private final DatabaseDumper<Branch> branchDumper;
+	private final DatabaseDumper<Reference>   referenceDumper;
+	
+	private final Map<String, Vertex>         vertices;
 	
 	/**
 	 * Instantiates a new branch miner.
@@ -56,13 +60,17 @@ public class BranchMiner extends Task implements Runnable {
 	 *            the clone dir
 	 * @param depot
 	 *            the depot
-	 * @param branchDumper
+	 * @param changeSets
+	 *            the change sets
+	 * @param referenceDumper
 	 *            the branch dumper
 	 */
-	public BranchMiner(final File cloneDir, final Depot depot, final DatabaseDumper<Branch> branchDumper) {
+	public BranchMiner(final File cloneDir, final Depot depot, final Map<String, Vertex> changeSets,
+	        final DatabaseDumper<Reference> referenceDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
-		this.branchDumper = branchDumper;
+		this.referenceDumper = referenceDumper;
+		this.vertices = changeSets;
 	}
 	
 	/**
@@ -70,8 +78,8 @@ public class BranchMiner extends Task implements Runnable {
 	 *
 	 * @return the branch heads
 	 */
-	public Map<String, Branch> getBranchHeads() {
-		return UnmodifiableMap.unmodifiableMap(this.branchHeadHashes);
+	public MultiMap<String, Reference> getBranchRefs() {
+		return this.branchHeadHashes;
 	}
 	
 	/**
@@ -83,6 +91,7 @@ public class BranchMiner extends Task implements Runnable {
 		final Command command = Command.execute("git", new String[] { "ls-remote", "--heads" }, this.cloneDir);
 		
 		String line;
+		Vertex head;
 		
 		RESULTS: while ((line = command.nextOutput()) != null) {
 			if (line.startsWith("From ")) {
@@ -93,9 +102,10 @@ public class BranchMiner extends Task implements Runnable {
 			String branchName = line.substring(40).trim();
 			Contract.asserts(branchName.startsWith(TAG));
 			branchName = branchName.substring(TAG.length());
+			head = this.vertices.get(headHash);
 			
-			final Branch branch = new Branch(this.depot, branchName);
-			this.branchDumper.saveLater(branch);
+			final Branch branch = new Branch(this.depot, branchName, head.getId());
+			this.referenceDumper.saveLater(branch);
 			
 			Asserts.notNull(this.branchHeadHashes);
 			this.branchHeadHashes.put(headHash, branch);

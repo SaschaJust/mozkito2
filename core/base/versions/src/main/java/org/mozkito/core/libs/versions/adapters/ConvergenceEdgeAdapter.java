@@ -32,7 +32,7 @@ import org.mozkito.skeleton.contracts.Requires;
  * @author Sascha Just
  */
 public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
-
+	
 	/**
 	 * Instantiates a new convergence edge adapter.
 	 *
@@ -44,7 +44,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	public ConvergenceEdgeAdapter(final Database.Type type, final Database.TxMode mode) {
 		super(type, mode, "convergence");
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -54,9 +54,9 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -67,9 +67,9 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -79,9 +79,9 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -92,9 +92,9 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -105,9 +105,9 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -118,24 +118,24 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	                 final ConvergenceEdge edge) {
 		Requires.notNull(saveStatement);
 		Requires.notNull(edge);
-
+		
 		try {
-
+			
 			int index = 0;
 			saveStatement.setLong(++index, id);
-
+			
 			saveStatement.setLong(++index, edge.getBranchId());
 			saveStatement.setLong(++index, edge.getSourceId());
 			saveStatement.setLong(++index, edge.getConvergeId());
-
+			
 			schedule(saveStatement);
-
-			edge.id(id);
+			
+			edge.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -146,7 +146,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 }

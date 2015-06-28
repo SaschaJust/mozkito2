@@ -58,9 +58,6 @@ public class ChangeSet implements IEntity {
 	/** The commit time. */
 	private final Instant     commitTime;
 	
-	/** The depot id. */
-	private final long        depotId;
-	
 	/** The branch ids. */
 	private final Set<Long>   branchIds        = new HashSet<>();
 	
@@ -79,8 +76,6 @@ public class ChangeSet implements IEntity {
 	/**
 	 * Instantiates a new change set.
 	 *
-	 * @param depotId
-	 *            the depot id
 	 * @param commitHash
 	 *            the commit hash
 	 * @param treeHash
@@ -98,11 +93,9 @@ public class ChangeSet implements IEntity {
 	 * @param body
 	 *            the body
 	 */
-	public ChangeSet(final long depotId, final String commitHash, final String treeHash, final Instant authoredTime,
-	        final long authorId, final Instant commitTime, final long committerId, final String subject,
-	        final String body) {
+	public ChangeSet(final String commitHash, final String treeHash, final Instant authoredTime, final long authorId,
+	        final Instant commitTime, final long committerId, final String subject, final String body) {
 		super();
-		Requires.positive(depotId);
 		Requires.notNull(commitHash);
 		Requires.length(commitHash, 40);
 		Requires.notNull(treeHash);
@@ -114,7 +107,6 @@ public class ChangeSet implements IEntity {
 		Requires.notNull(subject);
 		Requires.notNull(body);
 		
-		this.depotId = depotId;
 		this.commitHash = commitHash;
 		this.treeHash = treeHash;
 		this.authoredTime = authoredTime;
@@ -162,9 +154,6 @@ public class ChangeSet implements IEntity {
 				return false;
 			}
 		} else if (!this.commitHash.equals(other.commitHash)) {
-			return false;
-		}
-		if (this.depotId != other.depotId) {
 			return false;
 		}
 		return true;
@@ -232,12 +221,13 @@ public class ChangeSet implements IEntity {
 	}
 	
 	/**
-	 * Gets the depot id.
+	 * {@inheritDoc}
 	 *
-	 * @return the depotId
+	 * @see org.mozkito.libraries.sequel.IEntity#getId()
 	 */
-	public final long getDepotId() {
-		return this.depotId;
+	@Override
+	public long getId() {
+		return this.id;
 	}
 	
 	/**
@@ -268,27 +258,16 @@ public class ChangeSet implements IEntity {
 		result = prime * result + (this.commitHash == null
 		                                                  ? 0
 		                                                  : this.commitHash.hashCode());
-		result = prime * result + (int) (this.depotId ^ this.depotId >>> 32);
 		return result;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#setId(long)
 	 */
 	@Override
-	public long id() {
-		return this.id;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
-	 */
-	@Override
-	public void id(final long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 	
@@ -302,8 +281,6 @@ public class ChangeSet implements IEntity {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("ChangeSet [id=");
 		builder.append(this.id);
-		builder.append(", depotId=");
-		builder.append(this.depotId);
 		builder.append(", commitHash=");
 		builder.append(this.commitHash);
 		builder.append(", subject=");

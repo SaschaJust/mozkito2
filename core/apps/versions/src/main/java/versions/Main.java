@@ -55,7 +55,7 @@ import org.mozkito.core.libs.versions.adapters.RevisionAdapter;
 import org.mozkito.core.libs.versions.adapters.RootAdapter;
 import org.mozkito.core.libs.versions.adapters.TagAdapter;
 import org.mozkito.core.libs.versions.graph.Graph;
-import org.mozkito.core.libs.versions.model.Branch;
+import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
@@ -321,7 +321,7 @@ public class Main {
 			database.register(Root.class, new RootAdapter(database.getType(), database.getTxMode()));
 			
 			database.register(Graph.class, new GraphAdapter(database.getType(), database.getTxMode()));
-			database.register(Branch.class, new BranchAdapter(database.getType(), database.getTxMode()));
+			database.register(Reference.class, new BranchAdapter(database.getType(), database.getTxMode()));
 			database.register(Handle.class, new HandleAdapter(database.getType(), database.getTxMode()));
 			database.register(Renaming.class, new RenamingAdapter(database.getType(), database.getTxMode()));
 			database.register(ChangeSetIntegration.class,
@@ -336,7 +336,7 @@ public class Main {
 			                                                                       database.getConnection());
 			final DatabaseDumper<Revision> revisionDumper = new DatabaseDumper<>(database.getAdapter(Revision.class),
 			                                                                     database.getConnection());
-			final DatabaseDumper<Branch> branchDumper = new DatabaseDumper<>(database.getAdapter(Branch.class),
+			final DatabaseDumper<Reference> branchDumper = new DatabaseDumper<>(database.getAdapter(Reference.class),
 			                                                                 database.getConnection());
 			final DatabaseDumper<Handle> handleDumper = new DatabaseDumper<>(database.getAdapter(Handle.class),
 			                                                                 database.getConnection());

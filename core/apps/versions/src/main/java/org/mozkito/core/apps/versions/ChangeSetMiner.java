@@ -22,17 +22,18 @@ import java.util.Map;
 
 import org.apache.commons.collections4.map.UnmodifiableMap;
 
-import org.mozkito.core.libs.versions.ChangeType;
 import org.mozkito.core.libs.versions.FileCache;
 import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.builders.ChangeSetBuilder;
 import org.mozkito.core.libs.versions.graph.Graph;
+import org.mozkito.core.libs.versions.graph.Vertex;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
+import org.mozkito.core.libs.versions.model.enums.ChangeType;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
@@ -77,7 +78,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 	private final Graph                     graph;
 	
 	/** The change sets. */
-	private final Map<String, ChangeSet>    changeSets            = new HashMap<String, ChangeSet>();
+	private final Map<String, Vertex>       vertexes              = new HashMap<String, Vertex>();
 	
 	/** The change set dumper. */
 	private final DatabaseDumper<ChangeSet> changeSetDumper;
@@ -144,8 +145,8 @@ public class ChangeSetMiner extends Task implements Runnable {
 	 *
 	 * @return the change sets
 	 */
-	public Map<String, ChangeSet> getChangeSets() {
-		return UnmodifiableMap.unmodifiableMap(this.changeSets);
+	public Map<String, Vertex> getVertexes() {
+		return UnmodifiableMap.unmodifiableMap(this.vertexes);
 	}
 	
 	/**
@@ -292,8 +293,8 @@ public class ChangeSetMiner extends Task implements Runnable {
 				break;
 		}
 		
-		final Revision revision = new Revision(this.depot, changeSet, changeType, from, to, confidence, oldMode,
-		                                       newMode, oldHash, newHash);
+		final Revision revision = new Revision(changeSet, changeType, from, to, confidence, oldMode, newMode, oldHash,
+		                                       newHash);
 		
 		Asserts.positive(revision.getSourceId());
 		Asserts.positive(revision.getTargetId());
@@ -309,7 +310,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		Asserts.positive(this.depot.id());
+		Asserts.positive(this.depot.getId());
 		
 		/*
 		 * hash tree author name author email author timestamp committer name committer email committer timestamp
@@ -324,6 +325,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 		
 		ChangeSetBuilder changeSetBuilder = null;
 		ChangeSet changeSet = null;
+		Vertex vertex = null;
 		final List<Revision> revisions = new LinkedList<>();
 		
 		StringBuilder bodyBuilder = new StringBuilder();
@@ -341,7 +343,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 			}
 			++this.counter;
 			Asserts.notNull(this.line, "Awaiting commit hash.");
-			changeSetBuilder = new ChangeSetBuilder(this.depot.id());
+			changeSetBuilder = new ChangeSetBuilder();
 			changeSetBuilder.commitHash(this.line);
 			
 			this.line = command.nextOutput();
@@ -360,10 +362,10 @@ public class ChangeSetMiner extends Task implements Runnable {
 			                                                                                  ? null
 			                                                                                  : idName);
 			
-			if (identity.id() <= 0) {
+			if (identity.getId() <= 0) {
 				this.identityDumper.saveLater(identity);
 			}
-			Asserts.positive(identity.id());
+			Asserts.positive(identity.getId());
 			changeSetBuilder.authorId(identity);
 			
 			this.line = command.nextOutput();
@@ -379,10 +381,10 @@ public class ChangeSetMiner extends Task implements Runnable {
 			Asserts.notNull(this.line, "Awaiting committer email.");
 			idEmail = this.line;
 			identity = this.identityCache.request(idEmail, idName);
-			if (identity.id() <= 0) {
+			if (identity.getId() <= 0) {
 				this.identityDumper.saveLater(identity);
 			}
-			Asserts.positive(identity.id());
+			Asserts.positive(identity.getId());
 			changeSetBuilder.committerId(identity);
 			
 			this.line = command.nextOutput();
@@ -413,7 +415,6 @@ public class ChangeSetMiner extends Task implements Runnable {
 			Asserts.notNull(changeSet);
 			
 			this.changeSetDumper.saveLater(changeSet);
-			this.changeSets.put(changeSet.getCommitHash(), changeSet);
 			
 			this.fileCache.beginTransaction();
 			
@@ -444,7 +445,9 @@ public class ChangeSetMiner extends Task implements Runnable {
 			revisions.clear();
 			i = 0;
 			
-			this.graph.addVertex(changeSet);
+			vertex = new Vertex(changeSet);
+			this.vertexes.put(vertex.getHash(), vertex);
+			this.graph.addVertex(vertex);
 		}
 		
 		command.waitFor();

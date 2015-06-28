@@ -15,6 +15,7 @@ package org.mozkito.core.libs.versions.model;
 
 import java.time.Instant;
 
+import org.mozkito.core.libs.versions.model.enums.ReferenceType;
 import org.mozkito.libraries.sequel.IEntity;
 
 /**
@@ -22,19 +23,10 @@ import org.mozkito.libraries.sequel.IEntity;
  *
  * @author Sascha Just
  */
-public class Tag implements IEntity {
+public class Tag extends Reference implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 4737963776452999836L;
-	
-	/** The id. */
-	private long              id;
-	
-	/** The commit hash. */
-	private final long        changesetId;
-	
-	/** The name. */
-	private final String      name;
 	
 	/** The hash. */
 	private final String      hash;
@@ -48,29 +40,27 @@ public class Tag implements IEntity {
 	/** The message. */
 	private final String      message;
 	
-	private final long        depotId;
-	
 	/**
 	 * Instantiates a new tag.
-	 * 
-	 * @param depot
 	 *
-	 * @param changeSet
-	 *            the change set
+	 * @param depot
+	 *            the depot
+	 * @param changeSetId
+	 *            the change set id
 	 * @param name
 	 *            the name
 	 */
-	public Tag(final Depot depot, final ChangeSet changeSet, final String name) {
-		this(depot, changeSet, name, null, null, null, null);
+	public Tag(final Depot depot, final long changeSetId, final String name) {
+		this(depot, changeSetId, name, null, null, null, null);
 	}
 	
 	/**
 	 * Instantiates a new tag.
-	 * 
-	 * @param depot
 	 *
-	 * @param changeSet
-	 *            the change set
+	 * @param depot
+	 *            the depot
+	 * @param changeSetId
+	 *            the change set id
 	 * @param name
 	 *            the name
 	 * @param hash
@@ -82,66 +72,15 @@ public class Tag implements IEntity {
 	 * @param timestamp
 	 *            the timestamp
 	 */
-	public Tag(final Depot depot, final ChangeSet changeSet, final String name, final String hash,
-	        final String message, final Identity identity, final Instant timestamp) {
-		super();
-		this.depotId = depot.id();
-		this.changesetId = changeSet.id();
-		this.name = name;
+	public Tag(final Depot depot, final long changeSetId, final String name, final String hash, final String message,
+	        final Identity identity, final Instant timestamp) {
+		super(depot, ReferenceType.TAG, name, changeSetId);
 		this.hash = hash;
 		this.message = message;
 		this.identityId = identity != null
-		                                  ? identity.id()
+		                                  ? identity.getId()
 		                                  : null;
 		this.timestamp = timestamp;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final Tag other = (Tag) obj;
-		if (this.depotId != other.depotId) {
-			return false;
-		}
-		if (this.name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!this.name.equals(other.name)) {
-			return false;
-		}
-		return true;
-	}
-	
-	/**
-	 * Gets the changeset id.
-	 *
-	 * @return the changesetId
-	 */
-	public final long getChangesetId() {
-		return this.changesetId;
-	}
-	
-	/**
-	 * Gets the depot id.
-	 *
-	 * @return the depotId
-	 */
-	public final long getDepotId() {
-		return this.depotId;
 	}
 	
 	/**
@@ -170,15 +109,6 @@ public class Tag implements IEntity {
 	}
 	
 	/**
-	 * Gets the name.
-	 *
-	 * @return the name
-	 */
-	public final String getName() {
-		return this.name;
-	}
-	
-	/**
 	 * Gets the timestamp.
 	 *
 	 * @return the timestamp
@@ -190,65 +120,29 @@ public class Tag implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (this.depotId ^ this.depotId >>> 32);
-		result = prime * result + (this.name == null
-		                                            ? 0
-		                                            : this.name.hashCode());
-		return result;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id()
-	 */
-	public long id() {
-		return this.id;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
-	 */
-	public void id(final long id) {
-		this.id = id;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("Tag [changesetId=");
-		builder.append(this.changesetId);
-		builder.append(", ");
-		builder.append("name=");
-		builder.append(this.name);
-		builder.append(", ");
-		if (this.hash != null) {
-			builder.append("hash=");
-			builder.append(this.hash);
-			builder.append(", ");
-		}
-		if (this.identityId != null) {
-			builder.append("identityId=");
-			builder.append(this.identityId);
-			builder.append(", ");
-		}
-		if (this.timestamp != null) {
-			builder.append("timestamp=");
-			builder.append(this.timestamp);
-		}
+		builder.append("Tag [id()=");
+		builder.append(getId());
+		builder.append(", depot_id=");
+		builder.append(getDepotId());
+		builder.append(", type=");
+		builder.append(getType());
+		builder.append(", name=");
+		builder.append(getName());
+		builder.append(", head_id=");
+		builder.append(getHeadId());
+		builder.append(", hash=");
+		builder.append(this.hash);
+		builder.append(", identity_id=");
+		builder.append(this.identityId);
+		builder.append(", timestamp=");
+		builder.append(this.timestamp);
+		builder.append(", message=");
+		builder.append(this.message);
 		builder.append("]");
 		return builder.toString();
 	}

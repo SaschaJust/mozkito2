@@ -3,5 +3,6 @@ CREATE TABLE edges (
 	depot_id BIGINT NOT NULL,
 	source_id BIGINT NOT NULL,
 	target_id BIGINT NOT NULL,
+	branch_type SMALLINT NOT NULL,
 	CONSTRAINT [PK_edges] PRIMARY KEY CLUSTERED ([id] ASC)
 );

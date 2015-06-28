@@ -1,6 +1,5 @@
 CREATE TABLE changesets (
-	id BIGINT NOT NULL,
-	depot_id BIGINT NOT NULL,
+	id BIGINT NOT NULL
 	commit_hash CHAR(40) NOT NULL,
 	tree_hash CHAR(40) NOT NULL,
 	authored_time TIMESTAMP NOT NULL,

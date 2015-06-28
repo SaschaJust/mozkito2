@@ -1,1 +1,0 @@
-SELECT NEXTVAL('seq_branch_edges_id')

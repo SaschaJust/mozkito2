@@ -77,11 +77,11 @@ public class Renaming implements IEntity {
 		Requires.notNull(where);
 		Requires.notNegative(similarity);
 		Requires.lessOrEqual(similarity, 100);
-		Requires.positive(sourceHandle.id());
-		Requires.positive(targetHandle.id());
+		Requires.positive(sourceHandle.getId());
+		Requires.positive(targetHandle.getId());
 		
 		Asserts.notNull(this.entries);
-		return this.entries.add(new Entry(similarity, sourceHandle.id(), targetHandle.id(), where.id()));
+		return this.entries.add(new Entry(similarity, sourceHandle.getId(), targetHandle.getId(), where.getId()));
 	}
 	
 	/**
@@ -134,18 +134,18 @@ public class Renaming implements IEntity {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id()
+	 * @see org.mozkito.libraries.sequel.IEntity#getId()
 	 */
-	public long id() {
+	public long getId() {
 		return this.id;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IEntity#id(long)
+	 * @see org.mozkito.libraries.sequel.IEntity#setId(long)
 	 */
-	public void id(final long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 	

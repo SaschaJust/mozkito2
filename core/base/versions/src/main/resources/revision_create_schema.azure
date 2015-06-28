@@ -1,6 +1,5 @@
 CREATE TABLE revisions (
 	id BIGINT NOT NULL,
-	depot_id BIGINT NOT NULL,
 	changeset_id BIGINT NOT NULL,
 	change_type SMALLINT NOT NULL,
 	source_id BIGINT NOT NULL,

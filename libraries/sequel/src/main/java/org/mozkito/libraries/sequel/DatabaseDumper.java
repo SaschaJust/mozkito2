@@ -94,7 +94,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 				++counter;
 				try {
 					++this.processed;
-					this.adapter.save(this.save, entity.id(), entity);
+					this.adapter.save(this.save, entity.getId(), entity);
 				} catch (final Throwable e) {
 					Logger.error("Could not save '%s'.", entity);
 					throw e;
@@ -109,7 +109,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 			
 			for (final T entity2 : this.queue) {
 				++this.processed;
-				this.adapter.save(this.save, entity2.id(), entity2);
+				this.adapter.save(this.save, entity2.getId(), entity2);
 			}
 			this.adapter.execute(this.save);
 			Logger.info("Processed " + this.processed + " entities.");
@@ -127,7 +127,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 	 *            the entity
 	 */
 	public void saveLater(final T entity) {
-		entity.id(this.adapter.nextId());
+		entity.setId(this.adapter.nextId());
 		this.queue.add(entity);
 	}
 	

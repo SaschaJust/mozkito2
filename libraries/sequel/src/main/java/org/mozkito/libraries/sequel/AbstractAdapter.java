@@ -198,7 +198,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 			
 			for (final T entity : entities) {
 				final long id = nextId();
-				entity.id(id);
+				entity.setId(id);
 				save(statement, id, entity);
 			}
 			

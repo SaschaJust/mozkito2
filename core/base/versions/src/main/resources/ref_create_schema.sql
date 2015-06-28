@@ -1,0 +1,6 @@
+CREATE TABLE refs (
+	id BIGINT NOT NULL,
+	type SMALLINT NOT NULL,
+	depot_id BIGINT NOT NULL,
+	name VARCHAR(900) NOT NULL
+);

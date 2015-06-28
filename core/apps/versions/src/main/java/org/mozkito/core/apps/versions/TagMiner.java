@@ -15,14 +15,15 @@ package org.mozkito.core.apps.versions;
 
 import java.io.File;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections4.map.UnmodifiableMap;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
 
 import org.mozkito.core.libs.versions.IdentityCache;
-import org.mozkito.core.libs.versions.model.ChangeSet;
+import org.mozkito.core.libs.versions.graph.Vertex;
 import org.mozkito.core.libs.versions.model.Depot;
+import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
@@ -60,31 +61,37 @@ import org.mozkito.skeleton.exec.Command;
 public class TagMiner extends Task implements Runnable {
 	
 	/** The Constant TAG. */
-	private static final String          TAG       = "refs/tags/";
+	private static final String               TAG       = "refs/tags/";
 	
 	/** The Constant END_TAG. */
-	private static final String          END_TAG   = "<<<#$@#$@<<<";
+	private static final String               END_TAG   = "<<<#$@#$@<<<";
 	
 	/** The Constant START_TAG. */
-	private static final String          START_TAG = ">>>#$@#$@>>>";
+	private static final String               START_TAG = ">>>#$@#$@>>>";
 	
 	/** The Constant LS. */
-	private static final String          LS        = System.lineSeparator();
+	private static final String               LS        = System.lineSeparator();
+	
+	/** The Constant PREFIX. */
+	public static final String                PREFIX    = "refs/tags/";
 	
 	/** The clone dir. */
-	private final File                   cloneDir;
+	private final File                        cloneDir;
 	
 	/** The branch head hashes. */
-	private final Map<String, Tag>       tags      = new HashMap<String, Tag>();
+	private final MultiMap<String, Reference> tags      = new MultiValueMap<>();
 	
 	/** The branch dumper. */
-	private final DatabaseDumper<Tag>    tagDumper;
+	private final DatabaseDumper<Tag>         tagDumper;
 	
 	/** The identity cache. */
-	private final IdentityCache          identityCache;
+	private final IdentityCache               identityCache;
 	
 	/** The change sets. */
-	private final Map<String, ChangeSet> changeSets;
+	private final Map<String, Vertex>         vertices;
+	
+	/** The reference dumper. */
+	private final DatabaseDumper<Reference>   referenceDumper;
 	
 	/**
 	 * Instantiates a new branch miner.
@@ -93,20 +100,24 @@ public class TagMiner extends Task implements Runnable {
 	 *            the clone dir
 	 * @param depot
 	 *            the depot
-	 * @param changeSets
+	 * @param vertices
 	 *            the change sets
 	 * @param identityCache
 	 *            the identity cache
 	 * @param tagDumper
 	 *            the tag dumper
+	 * @param referenceDumper
+	 *            the reference dumper
 	 */
-	public TagMiner(final File cloneDir, final Depot depot, final Map<String, ChangeSet> changeSets,
-	        final IdentityCache identityCache, final DatabaseDumper<Tag> tagDumper) {
+	public TagMiner(final File cloneDir, final Depot depot, final Map<String, Vertex> vertices,
+	        final IdentityCache identityCache, final DatabaseDumper<Tag> tagDumper,
+	        final DatabaseDumper<Reference> referenceDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
-		this.changeSets = changeSets;
+		this.vertices = vertices;
 		this.identityCache = identityCache;
 		this.tagDumper = tagDumper;
+		this.referenceDumper = referenceDumper;
 	}
 	
 	/**
@@ -114,8 +125,8 @@ public class TagMiner extends Task implements Runnable {
 	 *
 	 * @return the branch heads
 	 */
-	public Map<String, Tag> getBranchHeads() {
-		return UnmodifiableMap.unmodifiableMap(this.tags);
+	public MultiMap<String, Reference> getTagRefs() {
+		return this.tags;
 	}
 	
 	/**
@@ -129,7 +140,7 @@ public class TagMiner extends Task implements Runnable {
 		        "--format=" + START_TAG + LS + "%(refname)" + LS + "%(objecttype)" + LS + "%(objectname)" + LS
 		                + "%(object)" + LS + "%(type)" + LS + "%(tag)" + LS + "%(taggername)" + LS + "%(taggeremail)"
 		                + LS + "%(taggerdate:raw)" + LS + "%(contents:subject)" + LS + "%(contents:body)" + LS
-		                + END_TAG, "refs/tags" }, this.cloneDir);
+		                + END_TAG, PREFIX }, this.cloneDir);
 		
 		String line;
 		Tag tag;
@@ -150,10 +161,12 @@ public class TagMiner extends Task implements Runnable {
 			switch (tagType) {
 				case "commit":
 					targetHash = line;
-					tag = new Tag(this.depot, this.changeSets.get(targetHash), tagName);
+					tag = new Tag(this.depot, this.vertices.get(targetHash).getId(), tagName);
 					
 					this.tagDumper.saveLater(tag);
-					this.tags.put(tagName, tag);
+					this.referenceDumper.saveLater(tag);
+					this.tags.put(this.vertices.get(targetHash).getHash(), tag);
+					
 					while ((line = command.nextOutput()) != null && !END_TAG.equals(line)) {
 						// skip
 					}
@@ -203,11 +216,12 @@ public class TagMiner extends Task implements Runnable {
 					while ((line = command.nextOutput()) != null && !END_TAG.equals(line)) {
 						messageBuilder.append(line).append(LS);
 					}
-					tag = new Tag(this.depot, this.changeSets.get(targetHash), name, tagHash,
+					tag = new Tag(this.depot, this.vertices.get(targetHash).getId(), tagName, tagHash,
 					              messageBuilder.toString(), this.identityCache.request(email, name), timestamp);
 					
 					this.tagDumper.saveLater(tag);
-					this.tags.put(tagName, tag);
+					this.referenceDumper.saveLater(tag);
+					this.tags.put(this.vertices.get(targetHash).getHash(), tag);
 					break;
 			}
 		}
