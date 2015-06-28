@@ -137,7 +137,7 @@ public class GraphMiner extends Task implements Runnable {
 				edge.setId(gEdge.getId());
 				
 				// hash(40) + space + hash(40) + space + hash(40)
-				for (int i = 3; i < (line.length() + 1) / 41; ++i) {
+				for (int i = 3; i <= (line.length() + 1) / 41; ++i) {
 					parentHash = line.substring((i - 1) * 41, i * 41 - 1);
 					edge = this.graph.addEdge(this.vertices.get(parentHash), this.vertices.get(current),
 					                          BranchMarker.MERGE_PARENT);
