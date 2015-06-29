@@ -14,7 +14,9 @@
 package org.mozkito.core.apps.versions;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.graph.Vertex;
@@ -96,6 +98,7 @@ public class EndPointMiner extends Task implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
+		final Set<Vertex> rootVertices = new HashSet<>();
 		for (final BidirectionalMultiMap.Entry<String, Reference> entry : this.refs.entrySet()) {
 			final Command command = Command.execute("git",
 			                                        new String[] {
@@ -118,9 +121,12 @@ public class EndPointMiner extends Task implements Runnable {
 			while ((root = command.nextOutput()) != null) {
 				Asserts.containsKey(this.vertices, root);
 				this.rootDumper.saveLater(this.graph.addRoot(entry.getValue(), this.vertices.get(root)));
-				this.integrationDumper.saveLater(new ChangeSetIntegration(this.vertices.get(root).getId(),
-				                                                          IntegrationType.EDIT));
+				rootVertices.add(this.vertices.get(root));
 			}
+		}
+		
+		for (final Vertex vertex : rootVertices) {
+			this.integrationDumper.saveLater(new ChangeSetIntegration(vertex.getId(), IntegrationType.EDIT));
 		}
 	}
 }
