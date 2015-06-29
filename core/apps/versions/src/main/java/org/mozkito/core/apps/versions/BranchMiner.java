@@ -104,7 +104,8 @@ public class BranchMiner extends Task implements Runnable {
 			head = this.vertices.get(headHash);
 			
 			if (head == null) {
-				Logger.warn("Illegal branch reference. The commit %s referenced by %s is not known to git.");
+				Logger.warn("Illegal branch reference. The commit %s referenced by %s is not known to git.", headHash,
+				            branchName);
 				continue;
 			}
 			

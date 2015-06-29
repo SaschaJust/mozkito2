@@ -424,10 +424,12 @@ public class ChangeSetMiner extends Task implements Runnable {
 					if (this.line.startsWith(SIGNED_OFF_TAG)) {
 						final int index = this.line.indexOf('<');
 						if (index >= 0) {
-							identity = this.identityCache.request(this.line.substring(0, index).trim(),
-							                                      this.line.substring(index + 1, this.line.indexOf('>')));
+							identity = this.identityCache.request(this.line.substring(index + 1, this.line.indexOf('>')),
+							                                      this.line.substring(SIGNED_OFF_TAG.length(), index)
+							                                               .trim());
 						} else {
-							identity = this.identityCache.request(null, this.line.trim());
+							identity = this.identityCache.request(null, this.line.substring(SIGNED_OFF_TAG.length())
+							                                                     .trim());
 						}
 						if (identity.getId() <= 0) {
 							this.identityDumper.saveLater(identity);
