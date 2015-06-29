@@ -432,6 +432,13 @@ public class Database implements DataSource, Closeable {
 		Requires.notNull(name);
 		
 		final SQLServerDataSource dataSource = new SQLServerDataSource();
+		if (username != null) {
+			dataSource.setUser(username);
+		}
+		
+		if (password != null) {
+			dataSource.setPassword(password);
+		}
 		dataSource.setURL("jdbc:sqlserver://" + (host != null
 		                                                     ? host
 		                                                     : "localhost") + ":" + (port != null
@@ -484,6 +491,14 @@ public class Database implements DataSource, Closeable {
 		        + (additionalArgs != null
 		                                 ? additionalArgs
 		                                 : ""));
+		
+		if (username != null) {
+			dataSource.setUser(username);
+		}
+		
+		if (password != null) {
+			dataSource.setPassword(password);
+		}
 		return dataSource;
 	}
 	
