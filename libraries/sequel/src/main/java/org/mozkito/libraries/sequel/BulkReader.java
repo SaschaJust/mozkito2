@@ -183,6 +183,7 @@ public class BulkReader<T> {
 	 */
 	@SuppressWarnings ("unchecked")
 	public <T> T read() {
+		String cName;
 		try {
 			if (this.results.next()) {
 				final ResultSetMetaData metaData = this.results.getMetaData();
@@ -195,7 +196,8 @@ public class BulkReader<T> {
 				for (int i = 0; i < metaData.getColumnCount(); ++i) {
 					
 					if (this.named) {
-						mapValue(args, i, this.names.get(metaData.getColumnName(i + 1).toLowerCase()));
+						cName = metaData.getColumnName(i + 1);
+						mapValue(args, i, this.names.get(cName.toLowerCase()));
 					} else {
 						mapValue(args, i, i);
 					}

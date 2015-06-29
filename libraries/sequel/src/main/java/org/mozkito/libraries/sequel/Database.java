@@ -14,24 +14,25 @@
 package org.mozkito.libraries.sequel;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
+
+import org.apache.derby.jdbc.EmbeddedDataSource;
+import org.postgresql.ds.PGSimpleDataSource;
 
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Requires;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SequelDatabase.
  *
@@ -67,7 +68,7 @@ public class Database implements DataSource, Closeable {
 	}
 	
 	/** The data source. */
-	private final HikariDataSource           dataSource;
+	private final DataSource                 dataSource;
 	
 	/** The type. */
 	private final Type                       type;
@@ -76,36 +77,40 @@ public class Database implements DataSource, Closeable {
 	private final Connection                 connection;
 	
 	/** The adapters. */
-	private final Map<Class<?>, IAdapter<?>> adapters = new HashMap<>();
+	private final Map<Class<?>, IAdapter<?>> adapters    = new HashMap<>();
 	
+	/** The tx mode. */
 	private final TxMode                     txMode;
 	
-	/**
-	 * Instantiates a new database.
-	 *
-	 * @param type
-	 *            the type
-	 * @param connectionString
-	 *            the connection string
-	 * @throws SQLException
-	 *             the SQL exception
-	 */
-	public Database(final Type type, final String connectionString) throws SQLException {
-		final HikariConfig config = new HikariConfig();
-		config.setJdbcUrl(connectionString);
-		config.setAutoCommit(false);
-		this.type = type;
-		this.dataSource = new HikariDataSource(config);
-		
-		this.dataSource.setTransactionIsolation("TRANSACTION_READ_UNCOMMITTED");
-		// this.dataSource.setConnectionTimeout(5000);
-		this.dataSource.setLoginTimeout(3000);
-		
-		this.txMode = TxMode.TRANSACTION;
-		this.dataSource.setAutoCommit(false);
-		
-		this.connection = this.dataSource.getConnection();
-	}
+	// /**
+	// * Instantiates a new database.
+	// *
+	// * @param type
+	// * the type
+	// * @param connectionString
+	// * the connection string
+	// * @throws SQLException
+	// * the SQL exception
+	// */
+	// public Database(final Type type, final String connectionString) throws SQLException {
+	// final HikariConfig config = new HikariConfig();
+	// config.setJdbcUrl(connectionString);
+	// config.setAutoCommit(false);
+	//
+	// this.type = type;
+	// this.dataSource =
+	// this.dataSource.setTransactionIsolation("TRANSACTION_READ_UNCOMMITTED");
+	// // this.dataSource.setConnectionTimeout(5000);
+	// this.dataSource.setLoginTimeout(3000);
+	//
+	// this.txMode = TxMode.TRANSACTION;
+	// this.dataSource.setAutoCommit(false);
+	//
+	// this.connection = this.dataSource.getConnection();
+	// }
+	
+	/** The connections. */
+	private final List<Connection>           connections = new LinkedList<>();
 	
 	/**
 	 * Instantiates a new sequel database.
@@ -129,48 +134,42 @@ public class Database implements DataSource, Closeable {
 	 */
 	public Database(final Type type, final String name, final String host, final String username,
 	        final String password, final Integer port, final String additionalArgs) throws SQLException {
-		HikariConfig config;
 		switch (type) {
 			case POSTGRES:
-				config = setupPostgres(name, host, username, password, port, additionalArgs);
+				this.dataSource = setupPostgres(name, host, username, password, port, additionalArgs);
 				break;
 			case MSSQL:
 			case AZURE:
-				config = setupMSSQL(name, host, username, password, port, additionalArgs);
+				this.dataSource = setupMSSQL(name, host, username, password, port, additionalArgs);
 				break;
 			case DERBY:
-				config = setupDerby(name, host, username, password, port, additionalArgs);
+				this.dataSource = setupDerby(name, host, username, password, port, additionalArgs);
 				break;
 			default:
 				throw new RuntimeException("Unsupported database type: " + type);
 		}
 		
-		Logger.info("Connecting to database using: " + config.getJdbcUrl());
-		
 		this.type = type;
 		this.txMode = TxMode.TRANSACTION;
 		
-		config.setAutoCommit(false);
-		this.dataSource = new HikariDataSource(config);
-		if (port != null) {
-			this.dataSource.addDataSourceProperty("port", 1433);
-		}
-		
-		this.dataSource.setTransactionIsolation("TRANSACTION_READ_UNCOMMITTED");
 		// this.dataSource.setConnectionTimeout(5000);
 		this.dataSource.setLoginTimeout(3000);
-		this.dataSource.setAutoCommit(false);
 		this.connection = this.dataSource.getConnection();
+		this.connection.setAutoCommit(false);
+		this.connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 	}
 	
 	/**
-	 * {@inheritDoc}
-	 *
-	 * @see java.io.Closeable#close()
+	 * Close.
 	 */
-	@Override
-	public void close() throws IOException {
-		this.dataSource.close();
+	public void close() {
+		for (final Connection connection : this.connections) {
+			try {
+				connection.close();
+			} catch (final SQLException e) {
+				Logger.warn(e, "Closing connection failed.");
+			}
+		}
 	}
 	
 	/**
@@ -241,7 +240,11 @@ public class Database implements DataSource, Closeable {
 	 */
 	@Override
 	public Connection getConnection() throws SQLException {
-		return this.dataSource.getConnection();
+		final Connection connection = this.dataSource.getConnection();
+		connection.setAutoCommit(false);
+		connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+		this.connections.add(connection);
+		return connection;
 	}
 	
 	/**
@@ -288,6 +291,8 @@ public class Database implements DataSource, Closeable {
 	}
 	
 	/**
+	 * Gets the tx mode.
+	 *
 	 * @return the txMode
 	 */
 	public final TxMode getTxMode() {
@@ -326,7 +331,21 @@ public class Database implements DataSource, Closeable {
 	public <T extends IEntity> void register(final Class<T> managedEntityType,
 	                                         final IAdapter<T> adapter) {
 		this.adapters.put(managedEntityType, adapter);
-		this.dataSource.setMaximumPoolSize(this.adapters.size() + 2);
+	}
+	
+	/**
+	 * Release.
+	 *
+	 * @param connection
+	 *            the connection
+	 */
+	public void release(final Connection connection) {
+		this.connections.remove(connection);
+		try {
+			connection.close();
+		} catch (final SQLException e) {
+			Logger.warn(e, "Closing connection failed.");
+		}
 	}
 	
 	/**
@@ -366,21 +385,25 @@ public class Database implements DataSource, Closeable {
 	 *            the additional args
 	 * @return the hikari config
 	 */
-	private HikariConfig setupDerby(final String name,
-	                                final String host,
-	                                final String username,
-	                                final String password,
-	                                final Integer port,
-	                                final String additionalArgs) {
-		final HikariConfig config = new HikariConfig();
-		config.setJdbcUrl("jdbc:derby:" + name + (additionalArgs != null
-		                                                                ? additionalArgs
-		                                                                : ""));
-		config.addDataSourceProperty("cachePrepStmts", "true");
-		config.addDataSourceProperty("prepStmtCacheSize", "250");
-		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+	private DataSource setupDerby(final String name,
+	                              final String host,
+	                              final String username,
+	                              final String password,
+	                              final Integer port,
+	                              final String additionalArgs) {
+		final EmbeddedDataSource dataSource = new EmbeddedDataSource();
+		dataSource.setDatabaseName(name);
+		if (username != null) {
+			dataSource.setUser(username);
+		}
 		
-		return config;
+		if (password != null) {
+			dataSource.setPassword(password);
+		}
+		
+		dataSource.setConnectionAttributes(additionalArgs);
+		
+		return dataSource;
 	}
 	
 	/**
@@ -400,16 +423,16 @@ public class Database implements DataSource, Closeable {
 	 *            the additional args
 	 * @return the hikari config
 	 */
-	private HikariConfig setupMSSQL(final String name,
-	                                final String host,
-	                                final String username,
-	                                final String password,
-	                                final Integer port,
-	                                final String additionalArgs) {
+	private DataSource setupMSSQL(final String name,
+	                              final String host,
+	                              final String username,
+	                              final String password,
+	                              final Integer port,
+	                              final String additionalArgs) {
 		Requires.notNull(name);
 		
-		final HikariConfig config = new HikariConfig();
-		config.setJdbcUrl("jdbc:sqlserver://" + (host != null
+		final SQLServerDataSource dataSource = new SQLServerDataSource();
+		dataSource.setURL("jdbc:sqlserver://" + (host != null
 		                                                     ? host
 		                                                     : "localhost") + ":" + (port != null
 		                                                                                         ? port
@@ -423,7 +446,7 @@ public class Database implements DataSource, Closeable {
 		                                 ? additionalArgs
 		                                 : ""));
 		
-		return config;
+		return dataSource;
 	}
 	
 	/**
@@ -443,28 +466,17 @@ public class Database implements DataSource, Closeable {
 	 *            the additional args
 	 * @return the hikari config
 	 */
-	private HikariConfig setupPostgres(final String name,
-	                                   final String host,
-	                                   final String username,
-	                                   final String password,
-	                                   final Integer port,
-	                                   final String additionalArgs) {
+	private DataSource setupPostgres(final String name,
+	                                 final String host,
+	                                 final String username,
+	                                 final String password,
+	                                 final Integer port,
+	                                 final String additionalArgs) {
+		
 		Requires.notNull(name);
 		
-		final Properties props = new Properties();
-		props.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
-		props.setProperty("dataSource.databaseName", name);
-		
-		if (username != null) {
-			props.setProperty("dataSource.user", username);
-		}
-		
-		if (password != null) {
-			props.setProperty("dataSource.password", password);
-		}
-		
-		final HikariConfig config = new HikariConfig(props);
-		config.setJdbcUrl("jdbc:postgresql://" + (host != null
+		final PGSimpleDataSource dataSource = new PGSimpleDataSource();
+		dataSource.setUrl("jdbc:postgresql://" + (host != null
 		                                                      ? host
 		                                                      : "localhost") + (port != null
 		                                                                                    ? ":" + port
@@ -472,8 +484,7 @@ public class Database implements DataSource, Closeable {
 		        + (additionalArgs != null
 		                                 ? additionalArgs
 		                                 : ""));
-		
-		return config;
+		return dataSource;
 	}
 	
 	/**
