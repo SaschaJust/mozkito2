@@ -17,9 +17,6 @@ import java.io.File;
 import java.time.Instant;
 import java.util.Map;
 
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
-
 import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.graph.Vertex;
 import org.mozkito.core.libs.versions.model.Depot;
@@ -27,6 +24,7 @@ import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
+import org.mozkito.skeleton.datastructures.BidirectionalMultiMap;
 import org.mozkito.skeleton.exec.Command;
 
 /**
@@ -61,37 +59,37 @@ import org.mozkito.skeleton.exec.Command;
 public class TagMiner extends Task implements Runnable {
 	
 	/** The Constant TAG. */
-	private static final String               TAG       = "refs/tags/";
+	private static final String                            TAG       = "refs/tags/";
 	
 	/** The Constant END_TAG. */
-	private static final String               END_TAG   = "<<<#$@#$@<<<";
+	private static final String                            END_TAG   = "<<<#$@#$@<<<";
 	
 	/** The Constant START_TAG. */
-	private static final String               START_TAG = ">>>#$@#$@>>>";
+	private static final String                            START_TAG = ">>>#$@#$@>>>";
 	
 	/** The Constant LS. */
-	private static final String               LS        = System.lineSeparator();
+	private static final String                            LS        = System.lineSeparator();
 	
 	/** The Constant PREFIX. */
-	public static final String                PREFIX    = "refs/tags/";
+	public static final String                             PREFIX    = "refs/tags/";
 	
 	/** The clone dir. */
-	private final File                        cloneDir;
+	private final File                                     cloneDir;
 	
 	/** The branch head hashes. */
-	private final MultiMap<String, Reference> tags      = new MultiValueMap<>();
+	private final BidirectionalMultiMap<String, Reference> tags      = new BidirectionalMultiMap<>();
 	
 	/** The branch dumper. */
-	private final DatabaseDumper<Tag>         tagDumper;
+	private final DatabaseDumper<Tag>                      tagDumper;
 	
 	/** The identity cache. */
-	private final IdentityCache               identityCache;
+	private final IdentityCache                            identityCache;
 	
 	/** The change sets. */
-	private final Map<String, Vertex>         vertices;
+	private final Map<String, Vertex>                      vertices;
 	
 	/** The reference dumper. */
-	private final DatabaseDumper<Reference>   referenceDumper;
+	private final DatabaseDumper<Reference>                referenceDumper;
 	
 	/**
 	 * Instantiates a new branch miner.
@@ -125,7 +123,7 @@ public class TagMiner extends Task implements Runnable {
 	 *
 	 * @return the branch heads
 	 */
-	public MultiMap<String, Reference> getTagRefs() {
+	public BidirectionalMultiMap<String, Reference> getTagRefs() {
 		return this.tags;
 	}
 	

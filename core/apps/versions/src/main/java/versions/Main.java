@@ -55,7 +55,6 @@ import org.mozkito.core.libs.versions.adapters.RevisionAdapter;
 import org.mozkito.core.libs.versions.adapters.RootAdapter;
 import org.mozkito.core.libs.versions.adapters.TagAdapter;
 import org.mozkito.core.libs.versions.graph.Graph;
-import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
@@ -65,6 +64,7 @@ import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.Identity;
+import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.core.libs.versions.model.Root;
@@ -289,9 +289,7 @@ public class Main {
 						}
 						
 						if (skips.contains(file)) {
-							if (Logger.logInfo()) {
-								Logger.info("Skipping depot at '%s' due to skip configuration.", file);
-							}
+							Logger.info("Skipping depot at '%s' due to skip configuration.", file);
 							return false;
 						}
 						
@@ -337,7 +335,7 @@ public class Main {
 			final DatabaseDumper<Revision> revisionDumper = new DatabaseDumper<>(database.getAdapter(Revision.class),
 			                                                                     database.getConnection());
 			final DatabaseDumper<Reference> branchDumper = new DatabaseDumper<>(database.getAdapter(Reference.class),
-			                                                                 database.getConnection());
+			                                                                    database.getConnection());
 			final DatabaseDumper<Handle> handleDumper = new DatabaseDumper<>(database.getAdapter(Handle.class),
 			                                                                 database.getConnection());
 			final DatabaseDumper<Graph> graphDumper = new DatabaseDumper<>(database.getAdapter(Graph.class),

@@ -22,8 +22,10 @@ import org.mozkito.core.libs.versions.graph.Vertex;
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.GraphEdge;
+import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.enums.BranchMarker;
 import org.mozkito.core.libs.versions.model.enums.IntegrationType;
+import org.mozkito.core.libs.versions.model.enums.ReferenceType;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
@@ -89,69 +91,86 @@ public class GraphMiner extends Task implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		final Command command = Command.execute("git", new String[] { "log", "--no-abbrev", "--format=%H %P",
-		        "--branches", "--remotes" }, this.cloneDir);
 		
 		Vertex current;
 		ChangeSetIntegration csi;
-		
 		String line, currentHash, parentHash;
 		int length;
 		Edge edge;
 		GraphEdge gEdge;
 		
-		while ((line = command.nextOutput()) != null) {
-			line = line.trim();
-			length = line.length();
-			Asserts.greater(length, 39, "There has to be at least one hash in here.");
-			currentHash = line.substring(0, 40);
-			current = this.vertices.get(currentHash);
-			Asserts.notNull(current);
+		for (final Reference reference : this.graph.getReferences()) {
 			
-			if (line.length() == 40) {
-				// found root
-				csi = new ChangeSetIntegration(current.getId(), IntegrationType.EDIT);
-				this.integrationDumper.saveLater(csi);
-			} else {
-				Asserts.greater(length, 80, "There has to be a parent at this point.");
-				Asserts.containsKey(this.vertices, currentHash,
-				                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
-				                    currentHash);
-				parentHash = line.substring(41, 81);
-				Asserts.containsKey(this.vertices, parentHash,
-				                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
-				                    parentHash);
+			final Command command = Command.execute("git",
+			                                        new String[] {
+			                                                "log",
+			                                                "--no-abbrev",
+			                                                "--format=%H %P",
+			                                                ReferenceType.BRANCH.equals(reference.getType())
+			                                                                                                ? IntegrationMiner.ORIGIN
+			                                                                                                        + reference.getName()
+			                                                                                                : TagMiner.PREFIX
+			                                                                                                        + reference.getName() },
+			                                        this.cloneDir);
+			
+			while ((line = command.nextOutput()) != null) {
+				line = line.trim();
+				length = line.length();
+				Asserts.greater(length, 39, "There has to be at least one hash in here.");
+				currentHash = line.substring(0, 40);
+				current = this.vertices.get(currentHash);
+				Asserts.notNull(current);
 				
-				if (line.length() >= 122) {
-					csi = new ChangeSetIntegration(current.getId(), IntegrationType.MERGE);
-					
+				if (line.length() == 40) {
+					// found root
 				} else {
-					csi = new ChangeSetIntegration(current.getId(), IntegrationType.EDIT);
-				}
-				
-				edge = this.graph.addEdge(this.vertices.get(parentHash), current, BranchMarker.BRANCH_PARENT);
-				gEdge = new GraphEdge(this.graph.getDepotId(), edge.getSourceId(), edge.getTargetId(),
-				                      edge.getBranchMarker().getValue());
-				this.graphEdgeDumper.saveLater(gEdge);
-				edge.setId(gEdge.getId());
-				
-				// hash(40) + space + hash(40) + space + hash(40)
-				for (int i = 3; i <= (line.length() + 1) / 41; ++i) {
-					parentHash = line.substring((i - 1) * 41, i * 41 - 1);
+					Asserts.greater(length, 80, "There has to be a parent at this point.");
+					Asserts.containsKey(this.vertices, currentHash,
+					                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
+					                    currentHash);
+					parentHash = line.substring(41, 81);
 					Asserts.containsKey(this.vertices, parentHash,
 					                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
 					                    parentHash);
-					edge = this.graph.addEdge(this.vertices.get(parentHash), current, BranchMarker.MERGE_PARENT);
-					gEdge = new GraphEdge(this.graph.getDepotId(), edge.getSourceId(), edge.getTargetId(),
-					                      edge.getBranchMarker().getValue());
-					this.graphEdgeDumper.saveLater(gEdge);
-					edge.setId(gEdge.getId());
+					
+					edge = this.graph.addEdge(this.vertices.get(parentHash), current, BranchMarker.BRANCH_PARENT,
+					                          reference);
+					if (edge != null) {
+						gEdge = new GraphEdge(this.graph.getDepotId(), edge.getSourceId(), edge.getTargetId(),
+						                      edge.getBranchMarker().getValue());
+						this.graphEdgeDumper.saveLater(gEdge);
+						edge.setId(gEdge.getId());
+						
+						if (line.length() >= 122) {
+							csi = new ChangeSetIntegration(current.getId(), IntegrationType.MERGE);
+							
+						} else {
+							csi = new ChangeSetIntegration(current.getId(), IntegrationType.EDIT);
+						}
+						this.integrationDumper.saveLater(csi);
+					}
+					
+					// hash(40) + space + hash(40) + space + hash(40)
+					for (int i = 3; i <= (line.length() + 1) / 41; ++i) {
+						parentHash = line.substring((i - 1) * 41, i * 41 - 1);
+						Asserts.containsKey(this.vertices,
+						                    parentHash,
+						                    "ChangeSet '%s' is not known to the graph and hasn't been seen during mining.",
+						                    parentHash);
+						edge = this.graph.addEdge(this.vertices.get(parentHash), current, BranchMarker.MERGE_PARENT,
+						                          reference);
+						if (edge != null) {
+							
+							gEdge = new GraphEdge(this.graph.getDepotId(), edge.getSourceId(), edge.getTargetId(),
+							                      edge.getBranchMarker().getValue());
+							this.graphEdgeDumper.saveLater(gEdge);
+							edge.setId(gEdge.getId());
+						}
+					}
 				}
-				this.integrationDumper.saveLater(csi);
 			}
+			
 		}
-		
 		this.graphDumper.saveLater(this.graph);
-		
 	}
 }

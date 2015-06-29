@@ -16,9 +16,6 @@ package org.mozkito.core.apps.versions;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
-
 import org.mozkito.core.libs.versions.graph.Vertex;
 import org.mozkito.core.libs.versions.model.Branch;
 import org.mozkito.core.libs.versions.model.Depot;
@@ -29,6 +26,7 @@ import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
+import org.mozkito.skeleton.datastructures.BidirectionalMultiMap;
 import org.mozkito.skeleton.exec.Command;
 
 /**
@@ -40,18 +38,18 @@ import org.mozkito.skeleton.exec.Command;
 public class BranchMiner extends Task implements Runnable {
 	
 	/** The Constant TAG. */
-	private static final String               TAG              = "refs/heads/";
+	private static final String                            TAG              = "refs/heads/";
 	
 	/** The clone dir. */
-	private final File                        cloneDir;
+	private final File                                     cloneDir;
 	
 	/** The branch head hashes. */
-	private final MultiMap<String, Reference> branchHeadHashes = new MultiValueMap<>();
+	private final BidirectionalMultiMap<String, Reference> branchHeadHashes = new BidirectionalMultiMap<>();
 	
 	/** The branch dumper. */
-	private final DatabaseDumper<Reference>   referenceDumper;
+	private final DatabaseDumper<Reference>                referenceDumper;
 	
-	private final Map<String, Vertex>         vertices;
+	private final Map<String, Vertex>                      vertices;
 	
 	/**
 	 * Instantiates a new branch miner.
@@ -78,7 +76,7 @@ public class BranchMiner extends Task implements Runnable {
 	 *
 	 * @return the branch heads
 	 */
-	public MultiMap<String, Reference> getBranchRefs() {
+	public BidirectionalMultiMap<String, Reference> getBranchRefs() {
 		return this.branchHeadHashes;
 	}
 	

@@ -68,29 +68,6 @@ public class Edge {
 	}
 	
 	/**
-	 * Adds the branch.
-	 *
-	 * @param reference
-	 *            the branch
-	 * @param marker
-	 *            the type
-	 * @return true, if successful
-	 */
-	public boolean addBranch(final Reference reference,
-	                         final BranchMarker marker) {
-		
-		if (!this.labels.containsKey(reference.getId())) {
-			final Label label = new Label(reference, marker);
-			label.navigationMarker = null;
-			label.integrationMarker = IntegrationMarker.DIVERGE;
-			this.labels.put(reference.getId(), label);
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	/**
 	 * Adds the integration.
 	 *
 	 * @param reference
@@ -124,6 +101,18 @@ public class Edge {
 		}
 		
 		this.labels.get(reference.getId()).navigationMarker = marker;
+	}
+	
+	/**
+	 * @param reference
+	 */
+	public void assign(final Reference reference) {
+		if (!this.labels.containsKey(reference.getId())) {
+			final Label label = new Label(reference);
+			label.navigationMarker = null;
+			label.integrationMarker = IntegrationMarker.DIVERGE;
+			this.labels.put(reference.getId(), label);
+		}
 	}
 	
 	/**

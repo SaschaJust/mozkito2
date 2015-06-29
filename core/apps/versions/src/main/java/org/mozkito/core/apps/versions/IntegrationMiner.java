@@ -60,8 +60,7 @@ public class IntegrationMiner extends Task implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		for (final Reference reference : this.graph.getBranches()) {
-			
+		for (final Reference reference : this.graph.getReferences()) {
 			this.graph.computeNavigationGraph(reference);
 			this.graph.computeIntegrationGraph(reference);
 		}

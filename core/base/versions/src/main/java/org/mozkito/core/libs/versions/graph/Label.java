@@ -14,7 +14,6 @@
 package org.mozkito.core.libs.versions.graph;
 
 import org.mozkito.core.libs.versions.model.Reference;
-import org.mozkito.core.libs.versions.model.enums.BranchMarker;
 import org.mozkito.core.libs.versions.model.enums.IntegrationMarker;
 import org.mozkito.core.libs.versions.model.enums.NavigationMarker;
 
@@ -37,10 +36,8 @@ public class Label {
 	 *
 	 * @param reference
 	 *            the branch
-	 * @param branchMarker
-	 *            the type
 	 */
-	public Label(final Reference reference, final BranchMarker branchMarker) {
+	public Label(final Reference reference) {
 		this.reference = reference;
 		this.navigationMarker = null;
 		this.integrationMarker = IntegrationMarker.DIVERGE;

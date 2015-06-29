@@ -52,7 +52,7 @@ public class ConvergenceMiner extends Task implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		for (final Reference reference : this.graph.getBranches()) {
+		for (final Reference reference : this.graph.getReferences()) {
 			Logger.info("Processing branch '%s'.", reference.getName());
 			this.graph.computeConvergence(reference);
 		}

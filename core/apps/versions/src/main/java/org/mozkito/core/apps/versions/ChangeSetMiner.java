@@ -419,7 +419,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 			this.fileCache.beginTransaction();
 			
 			// raw format (which gives us file mode before after and hash before/after) and numstat (which give us lines
-			// in/lines out) are separate blocsk
+			// in/lines out) are separate block
 			REVISIONS: while ((this.line = command.nextOutput()) != null) {
 				if (START_TAG.equals(this.line)) {
 					break REVISIONS;

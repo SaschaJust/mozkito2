@@ -22,17 +22,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.collection.UnmodifiableCollection;
 import org.apache.commons.collections4.iterators.UnmodifiableIterator;
 import org.apache.commons.collections4.list.UnmodifiableList;
-import org.apache.commons.collections4.map.MultiValueMap;
 import org.apache.commons.collections4.set.UnmodifiableSet;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
@@ -57,6 +54,7 @@ import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.IEntity;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.skeleton.datastructures.BidirectionalMultiMap;
 
 /**
  * The Class DepotGraph represents a multi-layer view on the Git repository. Once built, it does not require the
@@ -179,28 +177,28 @@ public class Graph implements IEntity {
 	}
 	
 	/** The graph. */
-	private final org.jgrapht.DirectedGraph<Vertex, Edge> graph;
+	private final org.jgrapht.DirectedGraph<Vertex, Edge>  graph;
 	
 	/** The depot. */
-	private final long                                    depotId;
+	private final long                                     depotId;
 	
 	/** The id. */
-	private long                                          id;
+	private long                                           id;
 	
 	/** The endpoints. */
-	private final Map<Reference, Head>                    heads       = new HashMap<>();
+	private final Map<Reference, Head>                     heads       = new HashMap<>();
 	
 	/** The roots. */
-	private final Map<Reference, Set<Root>>               roots       = new HashMap<>();
+	private final Map<Reference, Set<Root>>                roots       = new HashMap<>();
 	
 	/** The vertices. */
-	private final Map<String, Vertex>                     vertices    = new HashMap<>();
+	private final Map<String, Vertex>                      vertices    = new HashMap<>();
 	
 	/** The branch heads. */
-	private final MultiValueMap<String, Reference>        references  = new MultiValueMap<>();
+	private final BidirectionalMultiMap<String, Reference> references  = new BidirectionalMultiMap<>();
 	
 	/** The convergence. */
-	private final List<ConvergenceEdge>                   convergence = new LinkedList<ConvergenceEdge>();
+	private final List<ConvergenceEdge>                    convergence = new LinkedList<ConvergenceEdge>();
 	
 	/**
 	 * Instantiates a new depot graph.
@@ -224,11 +222,13 @@ public class Graph implements IEntity {
 	 *            the child
 	 * @param type
 	 *            the type
+	 * @param reference
 	 * @return true, if successful
 	 */
 	public Edge addEdge(final Vertex parent,
 	                    final Vertex child,
-	                    final BranchMarker type) {
+	                    final BranchMarker type,
+	                    final Reference reference) {
 		Requires.notNull(parent);
 		Requires.notNull(child);
 		Requires.notNull(type);
@@ -237,7 +237,10 @@ public class Graph implements IEntity {
 		
 		if (!this.graph.containsEdge(edge)) {
 			this.graph.addEdge(parent, child, edge);
+			edge.assign(reference);
 			return edge;
+		} else {
+			this.graph.getEdge(parent, child).assign(reference);
 		}
 		
 		return null;
@@ -264,7 +267,7 @@ public class Graph implements IEntity {
 	 * @param references
 	 *            the references
 	 */
-	public void addRefs(final MultiMap<String, Reference> references) {
+	public void addRefs(final BidirectionalMultiMap<String, Reference> references) {
 		this.references.putAll(references);
 	}
 	
@@ -543,15 +546,6 @@ public class Graph implements IEntity {
 	}
 	
 	/**
-	 * Gets the branches.
-	 *
-	 * @return the branches
-	 */
-	public Set<Reference> getBranches() {
-		return UnmodifiableSet.unmodifiableSet(this.heads.keySet());
-	}
-	
-	/**
 	 * Gets the branch parent.
 	 *
 	 * @param changeSet
@@ -643,13 +637,13 @@ public class Graph implements IEntity {
 	 *            the branch
 	 * @return the head
 	 */
-	@SuppressWarnings ("unchecked")
 	public Vertex getHead(final Reference reference) {
 		Requires.notNull(reference);
-		for (final Entry<String, Object> entry : this.references.entrySet()) {
-			if (((Collection<Reference>) entry.getValue()).contains(reference)) {
-				return this.vertices.get(entry.getKey());
-			}
+		
+		if (this.references.containsValue(reference)) {
+			final String key = this.references.getKey(reference).iterator().next();
+			Asserts.notNull(key);
+			return this.vertices.get(key);
 		}
 		
 		throw new IllegalArgumentException("Reference " + reference + " unknown.");
@@ -724,6 +718,15 @@ public class Graph implements IEntity {
 	public Set<Edge> getParents(final Vertex changeSet,
 	                            final MaskSubgraph<Vertex, Edge> graph) {
 		return graph.incomingEdgesOf(changeSet);
+	}
+	
+	/**
+	 * Gets the branches.
+	 *
+	 * @return the branches
+	 */
+	public Set<Reference> getReferences() {
+		return this.references.toKeySet();
 	}
 	
 	/**

@@ -19,8 +19,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
 import org.apache.commons.lang3.ArrayUtils;
 
 import org.mozkito.core.libs.versions.FileCache;
@@ -45,6 +43,7 @@ import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.libraries.sequel.MozkitoHandler;
 import org.mozkito.skeleton.commons.URIUtils;
+import org.mozkito.skeleton.datastructures.BidirectionalMultiMap;
 import org.mozkito.skeleton.exec.Command;
 
 /**
@@ -282,11 +281,11 @@ public class TaskRunner implements Runnable {
 		
 		System.gc();
 		
-		final MultiMap<String, Reference> references = new MultiValueMap<>();
+		final BidirectionalMultiMap<String, Reference> references = new BidirectionalMultiMap<>();
 		if (ArrayUtils.contains(this.tasks, Task.BRANCHES)) {
 			Logger.info("Spawning BranchMiner.");
 			
-			final MultiMap<String, Reference> branchRefs;
+			final BidirectionalMultiMap<String, Reference> branchRefs;
 			final BranchMiner branchMiner = new BranchMiner(this.cloneDir, this.depot, vertices, this.branchDumper);
 			branchMiner.run();
 			resetName();
@@ -299,7 +298,7 @@ public class TaskRunner implements Runnable {
 		
 		{
 			Logger.info("Spawning TagMiner");
-			final MultiMap<String, Reference> tagRefs;
+			final BidirectionalMultiMap<String, Reference> tagRefs;
 			final TagMiner tagMiner = new TagMiner(this.cloneDir, this.depot, vertices, this.identityCache,
 			                                       this.tagDumper, this.branchDumper);
 			tagMiner.run();
@@ -312,7 +311,8 @@ public class TaskRunner implements Runnable {
 		if (ArrayUtils.contains(this.tasks, Task.ENDPOINTS)) {
 			Logger.info("Spawning EndPointMiner.");
 			final EndPointMiner endPointMiner = new EndPointMiner(this.depot, this.cloneDir, references, vertices,
-			                                                      this.graph, this.headDumper, this.rootDumper);
+			                                                      this.graph, this.headDumper, this.rootDumper,
+			                                                      this.integrationDumper);
 			endPointMiner.run();
 			resetName();
 		}

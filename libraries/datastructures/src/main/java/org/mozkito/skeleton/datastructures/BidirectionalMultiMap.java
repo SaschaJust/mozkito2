@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -31,59 +30,66 @@ import java.util.Set;
  */
 public class BidirectionalMultiMap<K, V> {
 	
+	/**
+	 * The Class Entry.
+	 *
+	 * @param <K>
+	 *            the key type
+	 * @param <V>
+	 *            the value type
+	 */
+	public static class Entry<K, V> implements Map.Entry<K, V> {
+		
+		private final K key;
+		private final V value;
+		
+		/**
+		 * Instantiates a new entry.
+		 *
+		 * @param key
+		 *            the key
+		 * @param value
+		 *            the value
+		 */
+		public Entry(final K key, final V value) {
+			this.key = key;
+			this.value = value;
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @see java.util.Map.Entry#getKey()
+		 */
+		public K getKey() {
+			return this.key;
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @see java.util.Map.Entry#getValue()
+		 */
+		public V getValue() {
+			return this.value;
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * @see java.util.Map.Entry#setValue(java.lang.Object)
+		 */
+		public V setValue(final V value) {
+			throw new UnsupportedOperationException();
+		}
+		
+	}
+	
 	/** The from map. */
 	private final Map<K, Set<V>> fromMap = new HashMap<>();
 	
 	/** The to map. */
 	private final Map<V, Set<K>> toMap   = new HashMap<>();
-	
-	/** The k class. */
-	@SuppressWarnings ("rawtypes")
-	private Class<? extends Set> kClass;
-	
-	/** The v class. */
-	@SuppressWarnings ("rawtypes")
-	private Class<? extends Set> vClass;
-	
-	/**
-	 * Instantiates a new bidirectional multi map.
-	 */
-	public BidirectionalMultiMap() {
-		this(HashSet.class);
-	}
-	
-	/**
-	 * Instantiates a new re map set.
-	 * 
-	 * @param <X>
-	 *            the generic type
-	 * @param setClass
-	 *            the set class
-	 */
-	@SuppressWarnings ("rawtypes")
-	public <X extends Set> BidirectionalMultiMap(final Class<X> setClass) {
-		this(setClass, setClass);
-	}
-	
-	/**
-	 * Instantiates a new re map set.
-	 * 
-	 * @param <X>
-	 *            the generic type
-	 * @param <Y>
-	 *            the generic type
-	 * @param kClass
-	 *            the k class
-	 * @param vClass
-	 *            the v class
-	 */
-	@SuppressWarnings ("rawtypes")
-	public <X extends Set, Y extends Set> BidirectionalMultiMap(final Class<X> kClass, final Class<Y> vClass) {
-		
-		this.kClass = kClass;
-		this.vClass = vClass;
-		
-	}
 	
 	/*
 	 * (non-Javadoc)
@@ -107,7 +113,7 @@ public class BidirectionalMultiMap<K, V> {
 	 *            the key
 	 * @return true, if successful
 	 */
-	public boolean containsFrom(final K key) {
+	public boolean containsKey(final K key) {
 		
 		return this.fromMap.containsKey(key);
 		
@@ -120,54 +126,26 @@ public class BidirectionalMultiMap<K, V> {
 	 *            the value
 	 * @return true, if successful
 	 */
-	public boolean containsTo(final V value) {
+	public boolean containsValue(final V value) {
 		
 		return this.toMap.containsKey(value);
 		
 	}
 	
 	/**
-	 * From entry set.
-	 * 
+	 * Entry set.
+	 *
 	 * @return the sets the
 	 */
-	public Set<java.util.Map.Entry<K, Set<V>>> fromEntrySet() {
+	public Set<Entry<K, V>> entrySet() {
+		final HashSet<Entry<K, V>> set = new HashSet<>();
+		for (final Map.Entry<K, Set<V>> entry : this.fromMap.entrySet()) {
+			for (final V value : entry.getValue()) {
+				set.add(new Entry<>(entry.getKey(), value));
+			}
+		}
 		
-		return this.fromMap.entrySet();
-		
-	}
-	
-	/**
-	 * From key set.
-	 * 
-	 * @return the sets the
-	 */
-	public Set<K> fromKeySet() {
-		
-		return this.fromMap.keySet();
-		
-	}
-	
-	/**
-	 * From size.
-	 * 
-	 * @return the int
-	 */
-	public int fromSize() {
-		
-		return this.fromMap.size();
-		
-	}
-	
-	/**
-	 * From values.
-	 * 
-	 * @return the collection
-	 */
-	public Collection<Set<V>> fromValues() {
-		
-		return this.fromMap.values();
-		
+		return set;
 	}
 	
 	/**
@@ -186,7 +164,7 @@ public class BidirectionalMultiMap<K, V> {
 	 *            the value
 	 * @return the froms
 	 */
-	public Set<K> getFroms(final V value) {
+	public Set<K> getKey(final V value) {
 		
 		return this.toMap.get(value);
 		
@@ -199,7 +177,7 @@ public class BidirectionalMultiMap<K, V> {
 	 *            the key
 	 * @return the tos
 	 */
-	public Set<V> getTos(final K key) {
+	public Set<V> getValue(final K key) {
 		
 		return this.fromMap.get(key);
 		
@@ -222,6 +200,39 @@ public class BidirectionalMultiMap<K, V> {
 	}
 	
 	/**
+	 * From entry set.
+	 * 
+	 * @return the sets the
+	 */
+	public Set<java.util.Map.Entry<K, Set<V>>> keyEntrySet() {
+		
+		return this.fromMap.entrySet();
+		
+	}
+	
+	/**
+	 * From key set.
+	 * 
+	 * @return the sets the
+	 */
+	public Set<K> keySet() {
+		
+		return this.fromMap.keySet();
+		
+	}
+	
+	/**
+	 * From size.
+	 * 
+	 * @return the int
+	 */
+	public int keySize() {
+		
+		return this.fromMap.size();
+		
+	}
+	
+	/**
 	 * Put.
 	 * 
 	 * @param key
@@ -230,13 +241,12 @@ public class BidirectionalMultiMap<K, V> {
 	 *            the value
 	 * @return true, if successful
 	 */
-	@SuppressWarnings ("unchecked")
 	public boolean put(final K key,
 	                   final V value) {
 		try {
 			
 			if (!this.fromMap.containsKey(key)) {
-				this.fromMap.put(key, this.vClass.newInstance());
+				this.fromMap.put(key, new HashSet<>());
 				
 			}
 			
@@ -246,7 +256,7 @@ public class BidirectionalMultiMap<K, V> {
 			}
 			
 			if (!this.toMap.containsKey(value)) {
-				this.toMap.put(value, this.kClass.newInstance());
+				this.toMap.put(value, new HashSet<>());
 			}
 			
 			return this.toMap.get(value).add(key);
@@ -262,20 +272,19 @@ public class BidirectionalMultiMap<K, V> {
 	 * @param m
 	 *            the m
 	 */
-	@SuppressWarnings ("unchecked")
 	public void putAll(final BidirectionalMultiMap<K, V> m) {
 		try {
-			for (final Entry<K, Set<V>> entry : m.fromEntrySet()) {
-				if (this.fromMap.containsKey(entry.getKey())) {
-					this.fromMap.put(entry.getKey(), this.kClass.newInstance());
+			for (final Map.Entry<K, Set<V>> entry : m.keyEntrySet()) {
+				if (!this.fromMap.containsKey(entry.getKey())) {
+					this.fromMap.put(entry.getKey(), new HashSet<>());
 				}
 				
 				this.fromMap.get(entry.getKey()).addAll(entry.getValue());
 			}
 			
-			for (final Entry<V, Set<K>> entry : m.toEntrySet()) {
-				if (this.toMap.containsKey(entry.getKey())) {
-					this.toMap.put(entry.getKey(), this.vClass.newInstance());
+			for (final Map.Entry<V, Set<K>> entry : m.valueEntrySet()) {
+				if (!this.toMap.containsKey(entry.getKey())) {
+					this.toMap.put(entry.getKey(), new HashSet<>());
 				}
 				
 				this.toMap.get(entry.getKey()).addAll(entry.getValue());
@@ -298,7 +307,7 @@ public class BidirectionalMultiMap<K, V> {
 	 *            the key
 	 * @return the v
 	 */
-	public Set<V> removeFrom(final K key) {
+	public Set<V> removeKey(final K key) {
 		
 		final Set<V> set = this.fromMap.get(key);
 		for (final V value : set) {
@@ -323,7 +332,7 @@ public class BidirectionalMultiMap<K, V> {
 	 *            the value
 	 * @return the sets the
 	 */
-	public Set<K> removeTo(final V value) {
+	public Set<K> removeValue(final V value) {
 		
 		final Set<K> set = this.toMap.get(value);
 		for (final K key : set) {
@@ -342,17 +351,6 @@ public class BidirectionalMultiMap<K, V> {
 	}
 	
 	/**
-	 * To entry set.
-	 * 
-	 * @return the sets the
-	 */
-	public Set<java.util.Map.Entry<V, Set<K>>> toEntrySet() {
-		
-		return this.toMap.entrySet();
-		
-	}
-	
-	/**
 	 * To key set.
 	 * 
 	 * @return the sets the
@@ -364,17 +362,6 @@ public class BidirectionalMultiMap<K, V> {
 	}
 	
 	/**
-	 * To size.
-	 * 
-	 * @return the int
-	 */
-	public int toSize() {
-		
-		return this.toMap.size();
-		
-	}
-	
-	/**
 	 * To values.
 	 * 
 	 * @return the collection
@@ -382,6 +369,37 @@ public class BidirectionalMultiMap<K, V> {
 	public Collection<Set<K>> toValues() {
 		
 		return this.toMap.values();
+		
+	}
+	
+	/**
+	 * To entry set.
+	 * 
+	 * @return the sets the
+	 */
+	public Set<java.util.Map.Entry<V, Set<K>>> valueEntrySet() {
+		
+		return this.toMap.entrySet();
+		
+	}
+	
+	/**
+	 * Value set.
+	 *
+	 * @return the sets the
+	 */
+	public Set<V> valueSet() {
+		return this.toMap.keySet();
+	}
+	
+	/**
+	 * To size.
+	 * 
+	 * @return the int
+	 */
+	public int valueSize() {
+		
+		return this.toMap.size();
 		
 	}
 }

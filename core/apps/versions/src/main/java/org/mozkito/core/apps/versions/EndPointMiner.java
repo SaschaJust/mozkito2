@@ -14,21 +14,20 @@
 package org.mozkito.core.apps.versions;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.collections4.MultiMap;
 
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.graph.Vertex;
+import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Root;
+import org.mozkito.core.libs.versions.model.enums.IntegrationType;
 import org.mozkito.core.libs.versions.model.enums.ReferenceType;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
+import org.mozkito.skeleton.datastructures.BidirectionalMultiMap;
 import org.mozkito.skeleton.exec.Command;
 
 /**
@@ -39,22 +38,24 @@ import org.mozkito.skeleton.exec.Command;
 public class EndPointMiner extends Task implements Runnable {
 	
 	/** The clone dir. */
-	private final File                        cloneDir;
+	private final File                                     cloneDir;
 	
 	/** The branch heads. */
-	private final MultiMap<String, Reference> refs;
+	private final BidirectionalMultiMap<String, Reference> refs;
 	
 	/** The change sets. */
-	private final Map<String, Vertex>         vertices;
+	private final Map<String, Vertex>                      vertices;
 	
 	/** The graph. */
-	private final Graph                       graph;
+	private final Graph                                    graph;
 	
 	/** The head dumper. */
-	private final DatabaseDumper<Head>        headDumper;
+	private final DatabaseDumper<Head>                     headDumper;
 	
 	/** The root dumper. */
-	private final DatabaseDumper<Root>        rootDumper;
+	private final DatabaseDumper<Root>                     rootDumper;
+	
+	private final DatabaseDumper<ChangeSetIntegration>     integrationDumper;
 	
 	/**
 	 * Instantiates a new end point miner.
@@ -73,10 +74,12 @@ public class EndPointMiner extends Task implements Runnable {
 	 *            the head dumper
 	 * @param rootDumper
 	 *            the root dumper
+	 * @param integrationDumper
+	 *            the integration dumper
 	 */
-	public EndPointMiner(final Depot depot, final File cloneDir, final MultiMap<String, Reference> heads,
+	public EndPointMiner(final Depot depot, final File cloneDir, final BidirectionalMultiMap<String, Reference> heads,
 	        final Map<String, Vertex> vertices, final Graph graph, final DatabaseDumper<Head> headDumper,
-	        final DatabaseDumper<Root> rootDumper) {
+	        final DatabaseDumper<Root> rootDumper, final DatabaseDumper<ChangeSetIntegration> integrationDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
 		this.refs = heads;
@@ -84,6 +87,7 @@ public class EndPointMiner extends Task implements Runnable {
 		this.graph = graph;
 		this.headDumper = headDumper;
 		this.rootDumper = rootDumper;
+		this.integrationDumper = integrationDumper;
 	}
 	
 	/**
@@ -91,23 +95,31 @@ public class EndPointMiner extends Task implements Runnable {
 	 * 
 	 * @see java.lang.Runnable#run()
 	 */
-	@SuppressWarnings ("unchecked")
 	public void run() {
-		for (final Entry<String, Object> entry : this.refs.entrySet()) {
-			for (final Reference ref : (Collection<Reference>) entry.getValue()) {
-				final Command command = Command.execute("git", new String[] { "log", "--max-parents=0", "--format=%H",
-				        ReferenceType.BRANCH.equals(ref.getType())
-				                                                  ? IntegrationMiner.ORIGIN + ref.getName()
-				                                                  : TagMiner.PREFIX + ref.getName() }, this.cloneDir);
-				String root;
-				
-				Asserts.containsKey(this.vertices, entry.getKey());
-				this.headDumper.saveLater(this.graph.addHead(ref, this.vertices.get(entry.getKey())));
-				
-				while ((root = command.nextOutput()) != null) {
-					Asserts.containsKey(this.vertices, root);
-					this.rootDumper.saveLater(this.graph.addRoot(ref, this.vertices.get(root)));
-				}
+		for (final BidirectionalMultiMap.Entry<String, Reference> entry : this.refs.entrySet()) {
+			final Command command = Command.execute("git",
+			                                        new String[] {
+			                                                "log",
+			                                                "--max-parents=0",
+			                                                "--format=%H",
+			                                                ReferenceType.BRANCH.equals(entry.getValue().getType())
+			                                                                                                       ? IntegrationMiner.ORIGIN
+			                                                                                                               + entry.getValue()
+			                                                                                                                      .getName()
+			                                                                                                       : TagMiner.PREFIX
+			                                                                                                               + entry.getValue()
+			                                                                                                                      .getName() },
+			                                        this.cloneDir);
+			String root;
+			
+			Asserts.containsKey(this.vertices, entry.getKey());
+			this.headDumper.saveLater(this.graph.addHead(entry.getValue(), this.vertices.get(entry.getKey())));
+			
+			while ((root = command.nextOutput()) != null) {
+				Asserts.containsKey(this.vertices, root);
+				this.rootDumper.saveLater(this.graph.addRoot(entry.getValue(), this.vertices.get(root)));
+				this.integrationDumper.saveLater(new ChangeSetIntegration(this.vertices.get(root).getId(),
+				                                                          IntegrationType.EDIT));
 			}
 		}
 	}
