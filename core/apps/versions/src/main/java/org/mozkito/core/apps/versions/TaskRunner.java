@@ -14,11 +14,13 @@
 package org.mozkito.core.apps.versions;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import org.mozkito.core.libs.versions.FileCache;
@@ -340,6 +342,12 @@ public class TaskRunner implements Runnable {
 			                                                               this.convergenceDumper);
 			convergenceMiner.run();
 			resetName();
+		}
+		
+		try {
+			FileUtils.deleteDirectory(this.cloneDir);
+		} catch (final IOException e) {
+			// ignore
 		}
 	}
 	

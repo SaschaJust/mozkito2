@@ -206,7 +206,7 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 					File file;
 					Logger.fatal(e, "%s: Unhandled exception. Terminated.", t.getName());
 					try {
-						file = File.createTempFile("mozkito-", ".crash", new File("."));
+						file = File.createTempFile("mozkito-" + t.getName(), ".crash", new File("."));
 						Logger.fatal("Writing crash report to " + file.getAbsolutePath());
 						try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
 							writer.println(t.getName() + ": Unhandled exception. Terminated.");
@@ -220,7 +220,7 @@ public class MozkitoHandler implements UncaughtExceptionHandler {
 						Logger.fatal(getCrashReport(e));
 					}
 					
-					System.exit(404);
+					// System.exit(404);
 				}
 			}
 			

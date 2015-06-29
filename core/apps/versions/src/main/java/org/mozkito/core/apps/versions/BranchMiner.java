@@ -101,7 +101,7 @@ public class BranchMiner extends Task implements Runnable {
 			Contract.asserts(branchName.startsWith(TAG));
 			branchName = branchName.substring(TAG.length());
 			head = this.vertices.get(headHash);
-			
+			Asserts.notNull(head, "Could not find commit %s referenced by %s.", headHash, branchName);
 			final Branch branch = new Branch(this.depot, branchName, head.getId());
 			this.referenceDumper.saveLater(branch);
 			
