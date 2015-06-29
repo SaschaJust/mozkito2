@@ -40,6 +40,7 @@ import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.core.libs.versions.model.Root;
+import org.mozkito.core.libs.versions.model.SignedOff;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.DatabaseDumper;
@@ -147,6 +148,8 @@ public class TaskRunner implements Runnable {
 	
 	private final DatabaseDumper<Root>                 rootDumper;
 	
+	private final DatabaseDumper<SignedOff>            signedOffDumper;
+	
 	/**
 	 * Instantiates a new task runner.
 	 *
@@ -195,7 +198,7 @@ public class TaskRunner implements Runnable {
 	        final DatabaseDumper<ChangeSetIntegration> integrationDumper, final DatabaseDumper<Tag> tagDumper,
 	        final DatabaseDumper<GraphEdge> graphEdgeDumper, final DatabaseDumper<BranchEdge> branchEdgeDumper,
 	        final DatabaseDumper<Head> headDumper, final DatabaseDumper<Root> rootDumper,
-	        final DatabaseDumper<ConvergenceEdge> convergenceDumper) {
+	        final DatabaseDumper<ConvergenceEdge> convergenceDumper, final DatabaseDumper<SignedOff> signedOffDumper) {
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
 		this.identityDumper = identityDumper;
@@ -213,6 +216,7 @@ public class TaskRunner implements Runnable {
 		this.convergenceDumper = convergenceDumper;
 		this.headDumper = headDumper;
 		this.rootDumper = rootDumper;
+		this.signedOffDumper = signedOffDumper;
 		
 		this.identityCache = identityCache;
 		
@@ -272,7 +276,7 @@ public class TaskRunner implements Runnable {
 			                                                         this.identityCache, this.fileCache,
 			                                                         this.identityDumper, this.changeSetDumper,
 			                                                         this.revisionDumper, this.handleDumper,
-			                                                         this.renamingDumper);
+			                                                         this.renamingDumper, this.signedOffDumper);
 			changeSetMiner.run();
 			resetName();
 			vertices = changeSetMiner.getVertexes();

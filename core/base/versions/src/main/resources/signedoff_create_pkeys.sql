@@ -1,0 +1,2 @@
+ALTER TABLE signedoffs ALTER COLUMN id NOT NULL;
+ALTER TABLE signedoffs ADD PRIMARY KEY (id);

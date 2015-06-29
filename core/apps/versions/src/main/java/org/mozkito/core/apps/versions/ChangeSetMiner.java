@@ -33,6 +33,7 @@ import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
+import org.mozkito.core.libs.versions.model.SignedOff;
 import org.mozkito.core.libs.versions.model.enums.ChangeType;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.DatabaseDumper;
@@ -55,6 +56,9 @@ public class ChangeSetMiner extends Task implements Runnable {
 	
 	/** The Constant BIN_CHANGE_INDICATOR. */
 	private static final char               BIN_CHANGE_INDICATOR  = '-';
+	
+	/** The Constant SIGNED_OFF_TAG. */
+	private static final String             SIGNED_OFF_TAG        = "Signed-off-by: ";
 	
 	/** The raw old mode offset. */
 	private static int                      RAW_OLD_MODE_OFFSET   = 1;
@@ -92,13 +96,20 @@ public class ChangeSetMiner extends Task implements Runnable {
 	/** The counter. */
 	private long                            counter               = 0;
 	
+	/** The line. */
 	private String                          line;
 	
+	/** The renaming dumper. */
 	private final DatabaseDumper<Renaming>  renamingDumper;
 	
+	/** The identity cache. */
 	private final IdentityCache             identityCache;
 	
+	/** The file cache. */
 	private final FileCache                 fileCache;
+	
+	/** The signed off dumper. */
+	private final DatabaseDumper<SignedOff> signedOffDumper;
 	
 	/**
 	 * Instantiates a new change set miner.
@@ -123,11 +134,14 @@ public class ChangeSetMiner extends Task implements Runnable {
 	 *            the handle dumper
 	 * @param renamingDumper
 	 *            the renaming dumper
+	 * @param signedOffDumper
+	 *            the signed off dumper
 	 */
 	public ChangeSetMiner(final File cloneDir, final Depot depot, final Graph graph, final IdentityCache identityCache,
 	        final FileCache fileCache, final DatabaseDumper<Identity> identityDumper,
 	        final DatabaseDumper<ChangeSet> changeSetDumper, final DatabaseDumper<Revision> revisionDumper,
-	        final DatabaseDumper<Handle> handleDumper, final DatabaseDumper<Renaming> renamingDumper) {
+	        final DatabaseDumper<Handle> handleDumper, final DatabaseDumper<Renaming> renamingDumper,
+	        final DatabaseDumper<SignedOff> signedOffDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
 		this.graph = graph;
@@ -138,6 +152,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 		this.changeSetDumper = changeSetDumper;
 		this.revisionDumper = revisionDumper;
 		this.renamingDumper = renamingDumper;
+		this.signedOffDumper = signedOffDumper;
 	}
 	
 	/**
@@ -329,6 +344,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 		final List<Revision> revisions = new LinkedList<>();
 		
 		StringBuilder bodyBuilder = new StringBuilder();
+		final List<Identity> signers = new LinkedList<Identity>();
 		
 		Identity identity;
 		String idName, idEmail;
@@ -338,6 +354,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 		int i = 0;
 		
 		while ((this.line = command.nextOutput()) != null) {
+			signers.clear();
 			if (START_TAG.equalsIgnoreCase(this.line)) {
 				this.line = command.nextOutput();
 			}
@@ -404,7 +421,21 @@ public class ChangeSetMiner extends Task implements Runnable {
 				if (END_TAG.equals(this.line)) {
 					break BODY;
 				} else {
-					bodyBuilder.append(this.line).append(System.lineSeparator());
+					if (this.line.startsWith(SIGNED_OFF_TAG)) {
+						final int index = this.line.indexOf('<');
+						if (index >= 0) {
+							identity = this.identityCache.request(this.line.substring(0, index).trim(),
+							                                      this.line.substring(index + 1, this.line.indexOf('>')));
+						} else {
+							identity = this.identityCache.request(null, this.line.trim());
+						}
+						if (identity.getId() <= 0) {
+							this.identityDumper.saveLater(identity);
+						}
+						signers.add(identity);
+					} else {
+						bodyBuilder.append(this.line).append(System.lineSeparator());
+					}
 				}
 			}
 			
@@ -415,6 +446,9 @@ public class ChangeSetMiner extends Task implements Runnable {
 			Asserts.notNull(changeSet);
 			
 			this.changeSetDumper.saveLater(changeSet);
+			for (final Identity signer : signers) {
+				this.signedOffDumper.saveLater(new SignedOff(changeSet.getId(), signer.getId()));
+			}
 			
 			this.fileCache.beginTransaction();
 			

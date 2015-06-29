@@ -53,6 +53,7 @@ import org.mozkito.core.libs.versions.adapters.IdentityAdapter;
 import org.mozkito.core.libs.versions.adapters.RenamingAdapter;
 import org.mozkito.core.libs.versions.adapters.RevisionAdapter;
 import org.mozkito.core.libs.versions.adapters.RootAdapter;
+import org.mozkito.core.libs.versions.adapters.SignedOffAdapter;
 import org.mozkito.core.libs.versions.adapters.TagAdapter;
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.BranchEdge;
@@ -68,6 +69,7 @@ import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.core.libs.versions.model.Root;
+import org.mozkito.core.libs.versions.model.SignedOff;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Level;
 import org.mozkito.libraries.logging.Logger;
@@ -325,6 +327,7 @@ public class Main {
 			database.register(ChangeSetIntegration.class,
 			                  new ChangeSetIntegrationAdapter(database.getType(), database.getTxMode()));
 			database.register(Tag.class, new TagAdapter(database.getType(), database.getTxMode()));
+			database.register(SignedOff.class, new SignedOffAdapter(database.getType(), database.getTxMode()));
 			database.createScheme();
 			
 			final DatabaseDumper<Identity> identityDumper = new DatabaseDumper<>(database.getAdapter(Identity.class),
@@ -364,6 +367,10 @@ public class Main {
 			                                                                               database.getAdapter(ConvergenceEdge.class),
 			                                                                               database.getConnection());
 			
+			final DatabaseDumper<SignedOff> signedOffDumper = new DatabaseDumper<>(
+			                                                                       database.getAdapter(SignedOff.class),
+			                                                                       database.getConnection());
+			
 			identityDumper.start();
 			changeSetDumper.start();
 			revisionDumper.start();
@@ -379,6 +386,7 @@ public class Main {
 			headDumper.start();
 			rootDumper.start();
 			convergenceDumper.start();
+			signedOffDumper.start();
 			
 			final IdentityCache identityCache = new IdentityCache();
 			
@@ -394,7 +402,7 @@ public class Main {
 				                                         revisionDumper, branchDumper, handleDumper, graphDumper,
 				                                         depotDumper, renamingDumper, integrationDumper, tagDumper,
 				                                         graphEdgeDumper, branchEdgeDumper, headDumper, rootDumper,
-				                                         convergenceDumper);
+				                                         convergenceDumper, signedOffDumper);
 				es.execute(runner);
 			}
 			
@@ -406,6 +414,7 @@ public class Main {
 			
 			identityDumper.terminate();
 			changeSetDumper.terminate();
+			signedOffDumper.terminate();
 			revisionDumper.terminate();
 			branchDumper.terminate();
 			handleDumper.terminate();
@@ -422,6 +431,7 @@ public class Main {
 			
 			identityDumper.join();
 			changeSetDumper.join();
+			signedOffDumper.join();
 			revisionDumper.join();
 			branchDumper.join();
 			handleDumper.join();

@@ -22,6 +22,7 @@ import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Root;
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
@@ -101,6 +102,12 @@ public class BranchMiner extends Task implements Runnable {
 			Contract.asserts(branchName.startsWith(TAG));
 			branchName = branchName.substring(TAG.length());
 			head = this.vertices.get(headHash);
+			
+			if (head == null) {
+				Logger.warn("Illegal branch reference. The commit %s referenced by %s is not known to git.");
+				continue;
+			}
+			
 			Asserts.notNull(head, "Could not find commit %s referenced by %s.", headHash, branchName);
 			final Branch branch = new Branch(this.depot, branchName, head.getId());
 			this.referenceDumper.saveLater(branch);
