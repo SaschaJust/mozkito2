@@ -23,7 +23,7 @@ public enum ReferenceType {
 	/** The branch. */
 	BRANCH (1),
 	/** The tag. */
-	TAG (1);
+	TAG (2);
 	
 	/** The value. */
 	private short value;
