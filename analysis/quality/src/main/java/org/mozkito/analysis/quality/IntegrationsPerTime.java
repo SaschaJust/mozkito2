@@ -16,19 +16,21 @@ package org.mozkito.analysis.quality;
 import java.time.Instant;
 
 import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.Database.Type;
 import org.mozkito.libraries.sequel.DatabaseManager;
 import org.mozkito.libraries.sequel.EntityFactory;
-import org.mozkito.libraries.sequel.Database.Type;
 
 /**
  * @author Sascha Just
  *
  */
-public class IntegrationsPerWeek implements EntityFactory<IntegrationsPerWeek> {
+public class IntegrationsPerTime implements EntityFactory<IntegrationsPerTime> {
 	
-	private Type type;
+	private Type   type;
+	public Instant integrationTime;
+	public long    handleId;
 	
-	public IntegrationsPerWeek(final Database.Type type) {
+	public IntegrationsPerTime(final Database.Type type) {
 		this.type = type;
 	}
 	
@@ -37,13 +39,14 @@ public class IntegrationsPerWeek implements EntityFactory<IntegrationsPerWeek> {
 	 * @param week
 	 * @param effective_integrations
 	 */
-	public IntegrationsPerWeek(final long handle_id, final Instant week, final int effective_integrations) {
+	public IntegrationsPerTime(final long handle_id, final Instant commit_time) {
+		this.handleId = handle_id;
+		this.integrationTime = commit_time;
 	}
 	
-	public IntegrationsPerWeek create(final long handle_id,
-	                                  final Instant week,
-	                                  final int effective_integrations) {
-		return new IntegrationsPerWeek(handle_id, week, effective_integrations);
+	public IntegrationsPerTime create(final long handle_id,
+	                                  final Instant commit_time) {
+		return new IntegrationsPerTime(handle_id, commit_time);
 	}
 	
 	public String query() {

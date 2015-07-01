@@ -22,7 +22,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import org.mozkito.analysis.quality.IntegrationsPerWeek;
+import org.mozkito.analysis.quality.IntegrationsPerTime;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.BulkReader;
 import org.mozkito.libraries.sequel.Database;
@@ -108,11 +108,9 @@ public class Main {
 		                                                                          ? line.getOptionValue("database-args")
 		                                                                          : null);
 		
-		IntegrationsPerWeek ipw = new IntegrationsPerWeek(database.getType());
-		final BulkReader<IntegrationsPerWeek> ipwReader = new BulkReader<IntegrationsPerWeek>(ipw.query(), database,
+		final IntegrationsPerTime ipw = new IntegrationsPerTime(database.getType());
+		final BulkReader<IntegrationsPerTime> ipwReader = new BulkReader<IntegrationsPerTime>(ipw.query(), database,
 		                                                                                      ipw);
-		while ((ipw = ipwReader.read()) != null) {
-			System.err.println(ipw);
-		}
+		new StabilizationMiner(ipwReader).run();
 	}
 }
