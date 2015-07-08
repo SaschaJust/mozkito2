@@ -141,6 +141,11 @@ public class Main {
 		option.setRequired(false);
 		options.addOption(option);
 		
+		option = new Option("do", "database-port", true, "The port to be used to connect to the database.");
+		option.setArgName("PORT");
+		option.setRequired(false);
+		options.addOption(option);
+		
 		option = new Option("da", "database-args", true, "Additional string to be appended to the connection URL.");
 		option.setArgName("DB_ARGS");
 		option.setRequired(false);
@@ -258,7 +263,9 @@ public class Main {
 			                                       line.hasOption("database-password")
 			                                                                          ? line.getOptionValue("database-password")
 			                                                                          : null,
-			                                       null,
+			                                       line.hasOption("database-port")
+			                                                                      ? Integer.parseInt(line.getOptionValue("database-port"))
+			                                                                      : null,
 			                                       line.hasOption("database-args")
 			                                                                      ? line.getOptionValue("database-args")
 			                                                                      : null);
