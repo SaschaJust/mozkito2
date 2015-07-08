@@ -22,7 +22,7 @@ public enum IntegrationMarker {
 	INTEGRATE (1),
 	
 	/** The diverge. */
-	DIVERGE (1);
+	DIVERGE (2);
 	
 	/** The value. */
 	private short value;
