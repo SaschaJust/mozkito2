@@ -32,6 +32,7 @@ import org.mozkito.libraries.sequel.BulkReader;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class StabilizationMiner.
  *
@@ -39,39 +40,61 @@ import org.mozkito.skeleton.contracts.Requires;
  */
 public class StabilizationMiner implements Runnable {
 	
+	/**
+	 * The Class Stats.
+	 */
 	private static class Stats {
 		
+		/** The min. */
 		int    min    = Integer.MAX_VALUE;
+		
+		/** The max. */
 		int    max    = 0;
+		
+		/** The mean. */
 		double mean   = 0;
+		
+		/** The median. */
 		double median = 0;
+		
+		/** The count. */
 		int    count  = 0;
 	}
 	
 	/** The Constant SEP. */
-	private final static char                     SEP      = ';';
+	private final static char                     SEP     = ';';
 	
 	/** The reader. */
 	private final BulkReader<IntegrationsPerTime> reader;
 	
 	/** The latest. */
-	Map<Long, Instant>                            latest   = new HashMap<>();
+	Map<Long, Instant>                            latest  = new HashMap<>();
 	
 	/** The buckets. */
-	Map<Long, ArrayList<List<Integer>>>           buckets  = new HashMap<>();
+	Map<Long, ArrayList<List<Integer>>>           buckets = new HashMap<>();
 	
 	/** The max delta. */
-	private final int                             maxDelta = 30;
+	private final int                             maxDelta;
+	
+	/** The project name. */
+	private final String                          projectName;
 	
 	/**
 	 * Instantiates a new stabilization miner.
 	 *
 	 * @param ipwReader
 	 *            the ipw reader
+	 * @param projectName
+	 *            the project name
+	 * @param maxDelta
+	 *            the max delta
 	 */
-	public StabilizationMiner(final BulkReader<IntegrationsPerTime> ipwReader) {
+	public StabilizationMiner(final BulkReader<IntegrationsPerTime> ipwReader, final String projectName,
+	        final int maxDelta) {
 		Requires.notNull(ipwReader);
 		this.reader = ipwReader;
+		this.projectName = projectName;
+		this.maxDelta = maxDelta;
 	}
 	
 	/**
@@ -145,15 +168,15 @@ public class StabilizationMiner implements Runnable {
 				final ArrayList<List<Integer>> deltas = this.buckets.get(ipt.handleId);
 				
 				for (int i = limit; i <= this.maxDelta; ++i) {
-					list = deltas.get(i - 1);
+					list = deltas.get(i);
 					lastBucketIt = list.listIterator(list.size());
 					lastBucketSize = lastBucketIt.previous();
 					lastBucketIt.set(lastBucketSize + 1);
 				}
 				
 				limit = Math.min(this.maxDelta + 1, days);
-				for (int i = 1; i < limit; ++i) {
-					list = deltas.get(i - 1);
+				for (int i = 0; i < limit; ++i) {
+					list = deltas.get(i);
 					list.add(1);
 				}
 				
@@ -166,7 +189,7 @@ public class StabilizationMiner implements Runnable {
 				// create bucket for for each delta
 				// and add 1 to the bucket
 				this.buckets.put(ipt.handleId, new ArrayList<List<Integer>>());
-				for (int i = 0; i < this.maxDelta; ++i) {
+				for (int i = 0; i <= this.maxDelta; ++i) {
 					list = new LinkedList<Integer>();
 					list.add(1);
 					this.buckets.get(ipt.handleId).add(list);
@@ -177,13 +200,13 @@ public class StabilizationMiner implements Runnable {
 		List<Integer> bList;
 		StringBuilder builder;
 		
-		final File f = new File("aosp_stabilization.csv");
+		final File f = new File(this.projectName + "_stabilization_" + this.maxDelta + ".csv");
 		try (PrintWriter writer = new PrintWriter(f)) {
 			builder = new StringBuilder();
 			builder.append("fileId");
-			builder.append(';').append("delta");
-			builder.append(';').append("measure");
-			builder.append(';').append("value");
+			builder.append(SEP).append("delta");
+			builder.append(SEP).append("measure");
+			builder.append(SEP).append("value");
 			writer.println(builder.toString());
 			
 			for (final Entry<Long, ArrayList<List<Integer>>> entry : this.buckets.entrySet()) {
@@ -196,37 +219,37 @@ public class StabilizationMiner implements Runnable {
 					
 					builder = new StringBuilder();
 					builder.append(entry.getKey());
-					builder.append(';').append(i + 1);
-					builder.append(';').append("min");
-					builder.append(';').append(stats.min);
+					builder.append(SEP).append(i);
+					builder.append(SEP).append("min");
+					builder.append(SEP).append(stats.min);
 					writer.println(builder.toString());
 					
 					builder = new StringBuilder();
 					builder.append(entry.getKey());
-					builder.append(';').append(i + 1);
-					builder.append(';').append("max");
-					builder.append(';').append(stats.max);
+					builder.append(SEP).append(i);
+					builder.append(SEP).append("max");
+					builder.append(SEP).append(stats.max);
 					writer.println(builder.toString());
 					
 					builder = new StringBuilder();
 					builder.append(entry.getKey());
-					builder.append(';').append(i + 1);
-					builder.append(';').append("mean");
-					builder.append(';').append(stats.mean);
+					builder.append(SEP).append(i);
+					builder.append(SEP).append("mean");
+					builder.append(SEP).append(stats.mean);
 					writer.println(builder.toString());
 					
 					builder = new StringBuilder();
 					builder.append(entry.getKey());
-					builder.append(';').append(i + 1);
-					builder.append(';').append("median");
-					builder.append(';').append(stats.median);
+					builder.append(SEP).append(i);
+					builder.append(SEP).append("median");
+					builder.append(SEP).append(stats.median);
 					writer.println(builder.toString());
 					
 					builder = new StringBuilder();
 					builder.append(entry.getKey());
-					builder.append(';').append(i + 1);
-					builder.append(';').append("count");
-					builder.append(';').append(stats.count);
+					builder.append(SEP).append(i);
+					builder.append(SEP).append("count");
+					builder.append(SEP).append(stats.count);
 					writer.println(builder.toString());
 					
 				}

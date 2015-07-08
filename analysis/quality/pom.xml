@@ -39,4 +39,7 @@
 			<version>3.5</version>
 		</dependency>
 	</dependencies>
+	<properties>
+		<mainClass>quality.Main</mainClass>
+	</properties>
 </project>

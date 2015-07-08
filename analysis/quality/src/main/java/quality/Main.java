@@ -38,8 +38,13 @@ public class Main {
 		final Options options = new Options();
 		
 		Option option;
-		option = new Option("dn", "database-name", true, "The name of the database.");
-		option.setArgName("DB_NAME");
+		option = new Option("p", "project", true, "The names of the projects.");
+		option.setArgName("PROJECT1,PROJECT2");
+		option.setRequired(true);
+		options.addOption(option);
+		
+		option = new Option("w", "windows", true, "The size of the largest window.");
+		option.setArgName("30");
 		option.setRequired(true);
 		options.addOption(option);
 		
@@ -85,32 +90,38 @@ public class Main {
 			Logger.error("Database type '%s' is not invalid.", line.getOptionValue("database.type"));
 			System.exit(1);
 		}
-		final String databaseName = line.hasOption("database-name")
-		                                                           ? line.getOptionValue("database-name")
-		                                                           : "mozkito-versions";
 		
-		Logger.info("Establishing database connection and creating pool.");
+		final int maxDelta = Integer.parseInt(line.getOptionValue("windows"));
 		
-		final Database database = new Database(
-		                                       databaseType,
-		                                       databaseName,
-		                                       line.hasOption("database-host")
-		                                                                      ? line.getOptionValue("database-host")
-		                                                                      : null,
-		                                       line.hasOption("database-user")
-		                                                                      ? line.getOptionValue("database-user")
-		                                                                      : null,
-		                                       line.hasOption("database-password")
-		                                                                          ? line.getOptionValue("database-password")
-		                                                                          : null,
-		                                       null,
-		                                       line.hasOption("database-password")
-		                                                                          ? line.getOptionValue("database-args")
-		                                                                          : null);
-		
-		final IntegrationsPerTime ipw = new IntegrationsPerTime(database.getType());
-		final BulkReader<IntegrationsPerTime> ipwReader = new BulkReader<IntegrationsPerTime>(ipw.query(), database,
-		                                                                                      ipw);
-		new StabilizationMiner(ipwReader).run();
+		// for (final String project : new String[] { "roslyn", "corefx", "coreclr", "entityframework" }) {
+		for (final String project : line.getOptionValue("project").trim().split(",")) {
+			final String databaseName = line.hasOption("database-name")
+			                                                           ? line.getOptionValue("database-name")
+			                                                           : "mozkito_" + project;
+			
+			Logger.info("Establishing database connection and creating pool.");
+			
+			final Database database = new Database(
+			                                       databaseType,
+			                                       databaseName,
+			                                       line.hasOption("database-host")
+			                                                                      ? line.getOptionValue("database-host")
+			                                                                      : null,
+			                                       line.hasOption("database-user")
+			                                                                      ? line.getOptionValue("database-user")
+			                                                                      : null,
+			                                       line.hasOption("database-password")
+			                                                                          ? line.getOptionValue("database-password")
+			                                                                          : null,
+			                                       null,
+			                                       line.hasOption("database-password")
+			                                                                          ? line.getOptionValue("database-args")
+			                                                                          : null);
+			
+			final IntegrationsPerTime ipw = new IntegrationsPerTime(database.getType());
+			final BulkReader<IntegrationsPerTime> ipwReader = new BulkReader<IntegrationsPerTime>(ipw.query(),
+			                                                                                      database, ipw);
+			new StabilizationMiner(ipwReader, project, maxDelta).run();
+		}
 	}
 }

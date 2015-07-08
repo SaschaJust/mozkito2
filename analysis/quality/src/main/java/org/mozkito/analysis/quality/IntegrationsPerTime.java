@@ -21,35 +21,64 @@ import org.mozkito.libraries.sequel.DatabaseManager;
 import org.mozkito.libraries.sequel.EntityFactory;
 
 /**
- * @author Sascha Just
+ * The Class IntegrationsPerTime.
  *
+ * @author Sascha Just
  */
 public class IntegrationsPerTime implements EntityFactory<IntegrationsPerTime> {
 	
+	/** The type. */
 	private Type   type;
+	
+	/** The integration time. */
 	public Instant integrationTime;
+	
+	/** The handle id. */
 	public long    handleId;
 	
+	/**
+	 * Instantiates a new integrations per time.
+	 *
+	 * @param type
+	 *            the type
+	 */
 	public IntegrationsPerTime(final Database.Type type) {
 		this.type = type;
 	}
 	
 	/**
+	 * Instantiates a new integrations per time.
+	 *
 	 * @param handle_id
-	 * @param week
-	 * @param effective_integrations
+	 *            the handle_id
+	 * @param commit_time
+	 *            the commit_time
 	 */
 	public IntegrationsPerTime(final long handle_id, final Instant commit_time) {
 		this.handleId = handle_id;
 		this.integrationTime = commit_time;
 	}
 	
+	/**
+	 * Creates the.
+	 *
+	 * @param handle_id
+	 *            the handle_id
+	 * @param commit_time
+	 *            the commit_time
+	 * @return the integrations per time
+	 */
 	public IntegrationsPerTime create(final long handle_id,
 	                                  final Instant commit_time) {
 		return new IntegrationsPerTime(handle_id, commit_time);
 	}
 	
+	/**
+	 * Query.
+	 *
+	 * @return the string
+	 */
 	public String query() {
-		return DatabaseManager.loadStatement(this.type, "query_integrations_per_week");
+		return DatabaseManager.loadStatement(this.type, "query_integrations_per_week_microsoft_internal");
 	}
 }
