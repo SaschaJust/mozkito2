@@ -74,6 +74,7 @@ import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Level;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.libraries.sequel.MozkitoHandler;
@@ -134,6 +135,12 @@ public class Main {
 		option = new Option("du", "database-user", true, "The user to be used to connect to the database.");
 		option.setArgName("DB_USER");
 		option.setRequired(false);
+		options.addOption(option);
+		
+		option = new Option("dx", "database-transaction-mode", true,
+		                    "The transaction mode to be used when writing to the database.");
+		option.setArgName("transaction|batch");
+		option.setRequired(true);
 		options.addOption(option);
 		
 		option = new Option("dp", "database-password", true, "The password to be used to connect to the database.");
@@ -266,6 +273,8 @@ public class Main {
 			                                       line.hasOption("database-port")
 			                                                                      ? Integer.parseInt(line.getOptionValue("database-port"))
 			                                                                      : null,
+			                                       TxMode.valueOf(line.getOptionValue("database-transaction-mode")
+			                                                          .trim().toUpperCase()),
 			                                       line.hasOption("database-args")
 			                                                                      ? line.getOptionValue("database-args")
 			                                                                      : null);

@@ -127,13 +127,16 @@ public class Database implements DataSource, Closeable {
 	 *            the password
 	 * @param port
 	 *            the port
+	 * @param txMode
+	 *            the tx mode
 	 * @param additionalArgs
 	 *            the additional args
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
 	public Database(final Type type, final String name, final String host, final String username,
-	        final String password, final Integer port, final String additionalArgs) throws SQLException {
+	        final String password, final Integer port, final TxMode txMode, final String additionalArgs)
+	        throws SQLException {
 		switch (type) {
 			case POSTGRES:
 				this.dataSource = setupPostgres(name, host, username, password, port, additionalArgs);
@@ -150,7 +153,7 @@ public class Database implements DataSource, Closeable {
 		}
 		
 		this.type = type;
-		this.txMode = TxMode.TRANSACTION;
+		this.txMode = txMode;
 		
 		// this.dataSource.setConnectionTimeout(5000);
 		this.dataSource.setLoginTimeout(3000);

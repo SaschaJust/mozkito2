@@ -203,6 +203,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 			}
 			
 			statement.getConnection().commit();
+			statement.close();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

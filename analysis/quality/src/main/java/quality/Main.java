@@ -26,6 +26,7 @@ import org.mozkito.analysis.quality.IntegrationsPerTime;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.BulkReader;
 import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
 
 /**
@@ -114,9 +115,11 @@ public class Main {
 			                                                                          ? line.getOptionValue("database-password")
 			                                                                          : null,
 			                                       null,
-			                                       line.hasOption("database-password")
-			                                                                          ? line.getOptionValue("database-args")
-			                                                                          : null);
+			                                       TxMode.valueOf(line.getOptionValue("database-transaction-mode")
+			                                                          .trim().toUpperCase()),
+			                                       line.hasOption("database-args")
+			                                                                      ? line.getOptionValue("database-args")
+			                                                                      : null);
 			
 			final IntegrationsPerTime ipw = new IntegrationsPerTime(database.getType());
 			final BulkReader<IntegrationsPerTime> ipwReader = new BulkReader<IntegrationsPerTime>(ipw.query(),
