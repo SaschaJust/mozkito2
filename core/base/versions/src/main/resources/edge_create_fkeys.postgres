@@ -1,4 +1,4 @@
-ALTER TABLE edges ADD CONSTRAINT fk_edges_depot_id FOREIGN KEY (branch_id) REFERENCES refs (id) MATCH FULL;
+ALTER TABLE edges ADD CONSTRAINT fk_edges_depot_id FOREIGN KEY (depot_id) REFERENCES depots (id) MATCH FULL;
 ALTER TABLE edges ADD CONSTRAINT fk_edges_source_id FOREIGN KEY (source_id) REFERENCES changesets (id) MATCH FULL;
 ALTER TABLE edges ADD CONSTRAINT fk_edges_target_id FOREIGN KEY (target_id) REFERENCES changesets (id) MATCH FULL;
 ALTER TABLE edges ADD CONSTRAINT fk_edges_branch_type FOREIGN KEY (branch_type) REFERENCES static_branch_makers (value) MATCH FULL;

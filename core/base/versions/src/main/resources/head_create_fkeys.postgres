@@ -1,2 +1,2 @@
-ALTER TABLE roots ADD CONSTRAINT fk_roots_branch_id FOREIGN KEY (branch_id) REFERENCES refs (id) MATCH FULL;
-ALTER TABLE roots ADD CONSTRAINT fk_roots_changeset_id FOREIGN KEY (changeset_id) REFERENCES changesets (id) MATCH FULL;
+ALTER TABLE heads ADD CONSTRAINT fk_heads_branch_id FOREIGN KEY (branch_id) REFERENCES refs (id) MATCH FULL;
+ALTER TABLE heads ADD CONSTRAINT fk_heads_changeset_id FOREIGN KEY (changeset_id) REFERENCES changesets (id) MATCH FULL;
