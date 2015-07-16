@@ -21,22 +21,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
-import org.mozkito.core.libs.versions.model.enums.IntegrationType;
 import org.mozkito.libraries.sequel.AbstractAdapter;
 import org.mozkito.libraries.sequel.Database;
-import org.mozkito.libraries.sequel.DatabaseManager;
 import org.mozkito.skeleton.contracts.Requires;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ChangeSetIntegrationAdapter.
  *
  * @author Sascha Just
  */
-public class ChangeSetIntegrationAdapter extends AbstractAdapter<ChangeSetIntegration> {
-	
-	/** The type statement. */
-	private final String typeStatement;
+public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> {
 	
 	/**
 	 * Instantiates a new change set integration adapter.
@@ -46,9 +40,8 @@ public class ChangeSetIntegrationAdapter extends AbstractAdapter<ChangeSetIntegr
 	 * @param mode
 	 *            the mode
 	 */
-	public ChangeSetIntegrationAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "changeset_integrationtype");
-		this.typeStatement = DatabaseManager.loadStatement(type, "integration_type_save");
+	public ChangeSetTypeAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "changeset_type");
 	}
 	
 	/**
@@ -61,29 +54,6 @@ public class ChangeSetIntegrationAdapter extends AbstractAdapter<ChangeSetIntegr
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
 		
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.mozkito.libraries.sequel.AbstractAdapter#createScheme(java.sql.Connection)
-	 */
-	@Override
-	public void createScheme(final Connection connection) {
-		super.createScheme(connection);
-		try {
-			final PreparedStatement statement = connection.prepareStatement(this.typeStatement);
-			int index;
-			for (final IntegrationType type : IntegrationType.values()) {
-				index = 0;
-				statement.setShort(++index, type.getValue());
-				statement.setString(++index, type.name());
-				schedule(statement);
-			}
-			execute(statement);
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
 	}
 	
 	/**
