@@ -1,1 +1,1 @@
-ALTER TABLE changeset_integrationtypes ADD FOREIGN KEY (changeset_id) REFERENCES changesets (id);
+ALTER TABLE changeset_types ADD FOREIGN KEY (changeset_id) REFERENCES changesets (id);

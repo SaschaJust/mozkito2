@@ -1,4 +1,4 @@
-CREATE TABLE changeset_integrationtypes (
+CREATE TABLE changeset_types (
 	changeset_id BIGINT NOT NULL,
 	integration_type SMALLINT NOT NULL,
 	CONSTRAINT [PK_changeset_integration_types] PRIMARY KEY CLUSTERED ([changeset_id] ASC)

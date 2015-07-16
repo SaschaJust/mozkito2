@@ -1,2 +1,2 @@
-ALTER TABLE changeset_integrationtypes ALTER COLUMN changeset_id NOT NULL;
-ALTER TABLE changeset_integrationtypes ADD PRIMARY KEY (changeset_id);
+ALTER TABLE changeset_types ALTER COLUMN changeset_id NOT NULL;
+ALTER TABLE changeset_types ADD PRIMARY KEY (changeset_id);

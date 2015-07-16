@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.mozkito.libraries.logging.Logger;
@@ -160,18 +159,17 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 				statement.getConnection().commit();
 				break;
 			case BATCH:
-				final int[] executeBatch = statement.executeBatch();
-				for (final int ret : executeBatch) {
-					if (ret == Statement.EXECUTE_FAILED) {
-						final StringBuilder builder = new StringBuilder();
-						for (final Throwable warning : statement.getWarnings()) {
-							builder.append(warning.getMessage()).append(System.lineSeparator());
-						}
-						throw new RuntimeException("Could not execute batch on the statement: "
-						        + System.lineSeparator() + builder.toString());
-					}
-				}
-				Logger.info("SUCCESS: " + executeBatch.length);
+				statement.executeBatch();
+				// for (final int ret : executeBatch) {
+				// if (ret == Statement.EXECUTE_FAILED) {
+				// final StringBuilder builder = new StringBuilder();
+				// for (final Throwable warning : statement.getWarnings()) {
+				// builder.append(warning.getMessage()).append(System.lineSeparator());
+				// }
+				// throw new RuntimeException("Could not execute batch on the statement: "
+				// + System.lineSeparator() + builder.toString());
+				// }
+				// }
 				break;
 			default:
 				throw new RuntimeException("Unsupported TxMode: " + getTxMode().name());

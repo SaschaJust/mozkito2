@@ -1,4 +1,4 @@
-INSERT INTO changeset_integrationtypes (
+INSERT INTO changeset_types (
 	changeset_id, 
 	integration_type
 ) VALUES (?, ?)
