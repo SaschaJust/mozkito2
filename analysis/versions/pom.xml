@@ -7,10 +7,10 @@
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.mozkito.analysis</groupId>
-	<artifactId>mozkito-quality-analysis</artifactId>
+	<artifactId>mozkito-versions-analysis</artifactId>
 	<packaging>jar</packaging>
 	<name>quality [analysis]</name>
-	<description>Quality analysis.</description>
+	<description>Versions analysis.</description>
 	<dependencies>
 		<dependency>
 			<groupId>org.mozkito.core.base</groupId>

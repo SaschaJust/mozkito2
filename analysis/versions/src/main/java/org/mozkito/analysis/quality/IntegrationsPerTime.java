@@ -79,6 +79,6 @@ public class IntegrationsPerTime implements EntityFactory<IntegrationsPerTime> {
 	 * @return the string
 	 */
 	public String query() {
-		return DatabaseManager.loadStatement(this.type, "query_integrations_per_week_microsoft_internal");
+		return DatabaseManager.loadStatement(this.type, "query_integrations_per_week_chromium_aggregated");
 	}
 }

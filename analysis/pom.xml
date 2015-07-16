@@ -10,7 +10,7 @@
 	<name>analysis [meta]</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>quality</module>
+		<module>versions</module>
 	</modules>
 	<dependencies>
 		<dependency>

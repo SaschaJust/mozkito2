@@ -200,7 +200,7 @@ public class StabilizationMiner implements Runnable {
 		List<Integer> bList;
 		StringBuilder builder;
 		
-		final File f = new File(this.projectName + "_stabilization_" + this.maxDelta + ".csv");
+		final File f = new File(this.projectName + "_stabilization_" + this.maxDelta + "_community.csv");
 		try (PrintWriter writer = new PrintWriter(f)) {
 			builder = new StringBuilder();
 			builder.append("fileId");
