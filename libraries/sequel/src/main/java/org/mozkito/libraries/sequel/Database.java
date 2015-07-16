@@ -227,7 +227,7 @@ public class Database implements DataSource, Closeable {
 	public Connection getConnection() throws SQLException {
 		final Connection connection = this.dataSource.getConnection();
 		connection.setAutoCommit(false);
-		connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+		// connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 		this.connections.add(connection);
 		return connection;
 	}
