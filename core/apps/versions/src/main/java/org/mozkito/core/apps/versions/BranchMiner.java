@@ -50,6 +50,7 @@ public class BranchMiner extends Task implements Runnable {
 	/** The branch dumper. */
 	private final DatabaseDumper<Reference>                referenceDumper;
 	
+	/** The vertices. */
 	private final Map<String, Vertex>                      vertices;
 	
 	/**

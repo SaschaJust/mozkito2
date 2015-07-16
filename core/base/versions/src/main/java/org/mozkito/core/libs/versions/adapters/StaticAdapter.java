@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mozkito.core.libs.versions.model.Static;
 import org.mozkito.core.libs.versions.model.enums.BranchMarker;
 import org.mozkito.core.libs.versions.model.enums.ChangeType;
 import org.mozkito.core.libs.versions.model.enums.IntegrationType;
@@ -28,13 +29,12 @@ import org.mozkito.core.libs.versions.model.enums.ReferenceType;
 import org.mozkito.libraries.sequel.AbstractAdapter;
 import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
-import org.mozkito.libraries.sequel.IEntity;
 
 /**
  * @author Sascha Just
  *
  */
-public class StaticAdapter extends AbstractAdapter {
+public class StaticAdapter extends AbstractAdapter<Static> {
 	
 	/**
 	 * @param type
@@ -49,7 +49,7 @@ public class StaticAdapter extends AbstractAdapter {
 	 * 
 	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
-	public IEntity create(final ResultSet result) {
+	public Static create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -143,7 +143,7 @@ public class StaticAdapter extends AbstractAdapter {
 	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
-	                   final IEntity object) {
+	                   final Static object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -155,7 +155,7 @@ public class StaticAdapter extends AbstractAdapter {
 	 * 
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator load(final Connection connection) {
+	public Iterator<Static> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -167,8 +167,8 @@ public class StaticAdapter extends AbstractAdapter {
 	 * 
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List load(final Connection connection,
-	                 final long... ids) {
+	public List<Static> load(final Connection connection,
+	                         final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -180,8 +180,8 @@ public class StaticAdapter extends AbstractAdapter {
 	 * 
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public IEntity load(final Connection connection,
-	                    final long id) {
+	public Static load(final Connection connection,
+	                   final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -196,7 +196,7 @@ public class StaticAdapter extends AbstractAdapter {
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
-	                 final IEntity entity) {
+	                 final Static entity) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'save' has not yet been implemented."); //$NON-NLS-1$
@@ -209,7 +209,7 @@ public class StaticAdapter extends AbstractAdapter {
 	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void update(final Connection connection,
-	                   final IEntity... objects) {
+	                   final Static... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

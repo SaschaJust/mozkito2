@@ -20,7 +20,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.SignedOff;
+import org.mozkito.core.libs.versions.model.SignOff;
 import org.mozkito.libraries.sequel.AbstractAdapter;
 import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
@@ -31,7 +31,7 @@ import org.mozkito.skeleton.contracts.Requires;
  *
  * @author Sascha Just
  */
-public class SignOffAdapter extends AbstractAdapter<SignedOff> {
+public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	
 	/**
 	 * Instantiates a new signed off adapter.
@@ -50,7 +50,7 @@ public class SignOffAdapter extends AbstractAdapter<SignedOff> {
 	 * 
 	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
 	 */
-	public SignedOff create(final ResultSet result) {
+	public SignOff create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -63,7 +63,7 @@ public class SignOffAdapter extends AbstractAdapter<SignedOff> {
 	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
-	                   final SignedOff object) {
+	                   final SignOff object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -75,7 +75,7 @@ public class SignOffAdapter extends AbstractAdapter<SignedOff> {
 	 * 
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<SignedOff> load(final Connection connection) {
+	public Iterator<SignOff> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -87,7 +87,7 @@ public class SignOffAdapter extends AbstractAdapter<SignedOff> {
 	 * 
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<SignedOff> load(final Connection connection,
+	public List<SignOff> load(final Connection connection,
 	                            final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
@@ -100,7 +100,7 @@ public class SignOffAdapter extends AbstractAdapter<SignedOff> {
 	 * 
 	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
 	 */
-	public SignedOff load(final Connection connection,
+	public SignOff load(final Connection connection,
 	                      final long id) {
 		// TODO Auto-generated method stub
 		// return null;
@@ -116,7 +116,7 @@ public class SignOffAdapter extends AbstractAdapter<SignedOff> {
 	 */
 	public void save(final PreparedStatement statement,
 	                 final long id,
-	                 final SignedOff entity) {
+	                 final SignOff entity) {
 		Requires.notNull(statement);
 		Requires.notNull(entity);
 		
@@ -141,7 +141,7 @@ public class SignOffAdapter extends AbstractAdapter<SignedOff> {
 	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void update(final Connection connection,
-	                   final SignedOff... objects) {
+	                   final SignOff... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

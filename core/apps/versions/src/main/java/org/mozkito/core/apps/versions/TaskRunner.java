@@ -40,7 +40,7 @@ import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.core.libs.versions.model.Root;
-import org.mozkito.core.libs.versions.model.SignedOff;
+import org.mozkito.core.libs.versions.model.SignOff;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.DatabaseDumper;
@@ -148,7 +148,7 @@ public class TaskRunner implements Runnable {
 	
 	private final DatabaseDumper<Root>                 rootDumper;
 	
-	private final DatabaseDumper<SignedOff>            signedOffDumper;
+	private final DatabaseDumper<SignOff>            signedOffDumper;
 	
 	/**
 	 * Instantiates a new task runner.
@@ -198,7 +198,7 @@ public class TaskRunner implements Runnable {
 	        final DatabaseDumper<ChangeSetIntegration> integrationDumper, final DatabaseDumper<Tag> tagDumper,
 	        final DatabaseDumper<GraphEdge> graphEdgeDumper, final DatabaseDumper<BranchEdge> branchEdgeDumper,
 	        final DatabaseDumper<Head> headDumper, final DatabaseDumper<Root> rootDumper,
-	        final DatabaseDumper<ConvergenceEdge> convergenceDumper, final DatabaseDumper<SignedOff> signedOffDumper) {
+	        final DatabaseDumper<ConvergenceEdge> convergenceDumper, final DatabaseDumper<SignOff> signedOffDumper) {
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
 		this.identityDumper = identityDumper;

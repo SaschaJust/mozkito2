@@ -20,7 +20,7 @@ import org.mozkito.libraries.sequel.IEntity;
  *
  * @author Sascha Just
  */
-public class SignedOff implements IEntity {
+public class SignOff implements IEntity {
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -102713467156676248L;
@@ -42,7 +42,7 @@ public class SignedOff implements IEntity {
 	 * @param identityId
 	 *            the identity id
 	 */
-	public SignedOff(final long changeSetId, final long identityId) {
+	public SignOff(final long changeSetId, final long identityId) {
 		this.changeSetId = changeSetId;
 		this.identityId = identityId;
 	}
@@ -63,7 +63,7 @@ public class SignedOff implements IEntity {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final SignedOff other = (SignedOff) obj;
+		final SignOff other = (SignOff) obj;
 		if (this.changeSetId != other.changeSetId) {
 			return false;
 		}

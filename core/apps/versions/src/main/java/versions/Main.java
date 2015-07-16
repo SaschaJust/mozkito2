@@ -54,6 +54,7 @@ import org.mozkito.core.libs.versions.adapters.RenamingAdapter;
 import org.mozkito.core.libs.versions.adapters.RevisionAdapter;
 import org.mozkito.core.libs.versions.adapters.RootAdapter;
 import org.mozkito.core.libs.versions.adapters.SignOffAdapter;
+import org.mozkito.core.libs.versions.adapters.StaticAdapter;
 import org.mozkito.core.libs.versions.adapters.TagAdapter;
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.BranchEdge;
@@ -69,7 +70,8 @@ import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.core.libs.versions.model.Root;
-import org.mozkito.core.libs.versions.model.SignedOff;
+import org.mozkito.core.libs.versions.model.SignOff;
+import org.mozkito.core.libs.versions.model.Static;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Level;
 import org.mozkito.libraries.logging.Logger;
@@ -79,7 +81,6 @@ import org.mozkito.libraries.sequel.Database.Type;
 import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.libraries.sequel.MozkitoHandler;
 
-// TODO: Auto-generated Javadoc
 /**
  * The entry point of app: mozkito-versions.
  *
@@ -343,7 +344,9 @@ public class Main {
 			database.register(ChangeSetIntegration.class,
 			                  new ChangeSetTypeAdapter(database.getType(), database.getTxMode()));
 			database.register(Tag.class, new TagAdapter(database.getType(), database.getTxMode()));
-			database.register(SignedOff.class, new SignOffAdapter(database.getType(), database.getTxMode()));
+			database.register(SignOff.class, new SignOffAdapter(database.getType(), database.getTxMode()));
+			database.register(Static.class, new StaticAdapter(database.getType(), database.getTxMode()));
+			
 			database.createScheme();
 			
 			final DatabaseDumper<Identity> identityDumper = new DatabaseDumper<>(database.getAdapter(Identity.class),
@@ -383,9 +386,8 @@ public class Main {
 			                                                                               database.getAdapter(ConvergenceEdge.class),
 			                                                                               database.getConnection());
 			
-			final DatabaseDumper<SignedOff> signedOffDumper = new DatabaseDumper<>(
-			                                                                       database.getAdapter(SignedOff.class),
-			                                                                       database.getConnection());
+			final DatabaseDumper<SignOff> signedOffDumper = new DatabaseDumper<>(database.getAdapter(SignOff.class),
+			                                                                     database.getConnection());
 			
 			identityDumper.start();
 			changeSetDumper.start();
@@ -468,6 +470,8 @@ public class Main {
 			database.createIndexes();
 			System.out.println("Creating constraints.");
 			database.createConstraints();
+			System.out.println("Creating foreign keys.");
+			database.createForeignKeys();
 			System.out.println("Shutting down database.");
 			database.close();
 			

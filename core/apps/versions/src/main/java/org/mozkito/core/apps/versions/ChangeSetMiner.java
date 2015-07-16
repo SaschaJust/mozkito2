@@ -33,7 +33,7 @@ import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.core.libs.versions.model.Revision;
-import org.mozkito.core.libs.versions.model.SignedOff;
+import org.mozkito.core.libs.versions.model.SignOff;
 import org.mozkito.core.libs.versions.model.enums.ChangeType;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.DatabaseDumper;
@@ -109,7 +109,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 	private final FileCache                 fileCache;
 	
 	/** The signed off dumper. */
-	private final DatabaseDumper<SignedOff> signedOffDumper;
+	private final DatabaseDumper<SignOff> signedOffDumper;
 	
 	/**
 	 * Instantiates a new change set miner.
@@ -141,7 +141,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 	        final FileCache fileCache, final DatabaseDumper<Identity> identityDumper,
 	        final DatabaseDumper<ChangeSet> changeSetDumper, final DatabaseDumper<Revision> revisionDumper,
 	        final DatabaseDumper<Handle> handleDumper, final DatabaseDumper<Renaming> renamingDumper,
-	        final DatabaseDumper<SignedOff> signedOffDumper) {
+	        final DatabaseDumper<SignOff> signedOffDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
 		this.graph = graph;
@@ -449,7 +449,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 			
 			this.changeSetDumper.saveLater(changeSet);
 			for (final Identity signer : signers) {
-				this.signedOffDumper.saveLater(new SignedOff(changeSet.getId(), signer.getId()));
+				this.signedOffDumper.saveLater(new SignOff(changeSet.getId(), signer.getId()));
 			}
 			
 			this.fileCache.beginTransaction();
