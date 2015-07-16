@@ -116,7 +116,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 			
 			this.save.close();
 			
-			this.save.getConnection().close();
+			this.save.getConnection().commit();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
