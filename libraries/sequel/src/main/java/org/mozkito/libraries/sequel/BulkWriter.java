@@ -45,7 +45,7 @@ public class BulkWriter {
 	 *            the database
 	 */
 	public BulkWriter(final String query, final Database database) {
-		this(query, database, 10000);
+		this(query, database, 1000);
 	}
 	
 	/**

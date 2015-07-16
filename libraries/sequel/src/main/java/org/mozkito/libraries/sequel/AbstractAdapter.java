@@ -51,8 +51,10 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/** The type. */
 	private final Type       type;
 	
+	/** The tx mode. */
 	private final TxMode     txMode;
 	
+	/** The current id. */
 	private final AtomicLong currentId = new AtomicLong(0);
 	
 	/**
@@ -149,6 +151,8 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	}
 	
 	/**
+	 * Gets the tx mode.
+	 *
 	 * @return the txMode
 	 */
 	public final TxMode getTxMode() {
@@ -156,6 +160,8 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	}
 	
 	/**
+	 * Gets the type.
+	 *
 	 * @return the type
 	 */
 	public final Type getType() {
