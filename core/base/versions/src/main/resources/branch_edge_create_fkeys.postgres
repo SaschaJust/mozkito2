@@ -1,0 +1,1 @@
+ALTER TABLE branch_edges ADD CONSTRAINT fk_branch_edges_edges FOREIGN KEY (edge_id) REFERENCES edges (id) MATCH FULL;

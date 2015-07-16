@@ -1,0 +1,2 @@
+ALTER TABLE changeset_integrationtypes ADD CONSTRAINT fk_changeset_integrationtypes_changeset_id FOREIGN KEY (changeset_id) REFERENCES changesets (id) MATCH FULL;
+ALTER TABLE changeset_integrationtypes ADD CONSTRAINT fk_changeset_integrationtypes_integration_type FOREIGN KEY (integration_type) REFERENCES integration_types (value) MATCH FULL;

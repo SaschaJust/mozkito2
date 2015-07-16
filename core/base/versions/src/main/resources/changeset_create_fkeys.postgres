@@ -1,0 +1,2 @@
+ALTER TABLE changesets ADD CONSTRAINT fk_changesets_author_id FOREIGN KEY (author_id) REFERENCES identities (id) MATCH FULL;
+ALTER TABLE changesets ADD CONSTRAINT fk_changesets_committer_id FOREIGN KEY (committer_id) REFERENCES identities (id) MATCH FULL;
