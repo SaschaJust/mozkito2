@@ -132,7 +132,7 @@ public class Database implements DataSource, Closeable {
 		this.dataSource.setLoginTimeout(3000);
 		this.connection = this.dataSource.getConnection();
 		this.connection.setAutoCommit(false);
-		this.connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+		// this.connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 	}
 	
 	/**
