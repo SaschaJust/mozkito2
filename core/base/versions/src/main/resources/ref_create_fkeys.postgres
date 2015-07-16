@@ -1,0 +1,1 @@
+ALTER TABLE refs ADD CONSTRAINT fk_refs_depot_id FOREIGN KEY (depot_id) REFERENCES refs (id) MATCH FULL;

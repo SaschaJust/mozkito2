@@ -1,0 +1,78 @@
+CREATE FUNCTION _final_median(anyarray) RETURNS float8 AS $$ 
+  WITH q AS
+  (
+     SELECT val
+     FROM unnest($1) val
+     WHERE VAL IS NOT NULL
+     ORDER BY 1
+  ),
+  cnt AS
+  (
+    SELECT COUNT(*) AS c FROM q
+  )
+  SELECT AVG(val)::float8
+  FROM 
+  (
+    SELECT val FROM q
+    LIMIT  2 - MOD((SELECT c FROM cnt), 2)
+    OFFSET GREATEST(CEIL((SELECT c FROM cnt) / 2.0) - 1,0)  
+  ) q2;
+$$ LANGUAGE SQL IMMUTABLE;
+ 
+CREATE AGGREGATE median(anyelement) (
+  SFUNC=array_append,
+  STYPE=anyarray,
+  FINALFUNC=_final_median,
+  INITCOND='{}'
+);
+
+CREATE OR REPLACE FUNCTION integrations_between(oldref VARCHAR, ref VARCHAR) 
+RETURNS TABLE (
+	changeset_id BIGINT
+)
+AS $$
+	SELECT csc.id
+	FROM branches refs
+	INNER JOIN convergences cv ON (cv.branch_id = refs.id)
+	LEFT JOIN (
+		SELECT converge_id
+		FROM branches refs2
+		INNER JOIN convergences cv2 ON (cv2.branch_id = refs2.id)
+		WHERE refs2.name = $1
+	) AS rhs ON (cv.converge_id = rhs.converge_id)
+	INNER JOIN changesets csc ON (cv.converge_id = csc.id)
+	WHERE refs.name = $2
+	AND rhs.converge_id IS NULL
+$$
+LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION integrations_between(oldref BIGINT, ref BIGINT) 
+RETURNS TABLE (
+	changeset_id BIGINT
+)
+AS $$
+	SELECT csc.id
+	FROM convergences cv
+	LEFT JOIN (
+		SELECT converge_id
+		FROM convergences cv2 
+		WHERE cv2.branch_id = $1
+	) AS rhs ON (cv.branch_id = $2 AND cv.converge_id = rhs.converge_id)
+	INNER JOIN changesets csc ON (cv.converge_id = csc.id)
+	AND rhs.converge_id IS NULL
+$$
+LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION month_series (first DATE, last DATE)
+RETURNS TABLE (
+	month DATE
+) AS 
+$$
+	SELECT ($1 + (INTERVAL '1' month * generate_series(0, month_count::INT)))::DATE
+	FROM (
+		SELECT EXTRACT(YEAR from diff) * 12 + EXTRACT(MONTH from diff) as month_count
+		FROM (
+			SELECT AGE($2, $1) as diff 
+		) td
+	) t
+$$ LANGUAGE SQL;

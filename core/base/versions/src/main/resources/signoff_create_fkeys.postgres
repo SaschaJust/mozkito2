@@ -1,0 +1,2 @@
+ALTER TABLE signoffs ADD CONSTRAINT fk_signoffs_changeset_id FOREIGN KEY (changeset_id) REFERENCES changesets (id) MATCH FULL;
+ALTER TABLE signoffs ADD CONSTRAINT fk_signoffs_identity_id FOREIGN KEY (identity_id) REFERENCES identities (id) MATCH FULL;

@@ -1,0 +1,3 @@
+ALTER TABLE tags ADD CONSTRAINT fk_tags_depot_id FOREIGN KEY (depot_id) REFERENCES depots (id) MATCH FULL;
+ALTER TABLE tags ADD CONSTRAINT fk_tags_changeset_id FOREIGN KEY (changeset_id) REFERENCES changesets (id) MATCH FULL;
+ALTER TABLE tags ADD CONSTRAINT fk_tags_tagger_id FOREIGN KEY (tagger_id) REFERENCES identities (id) MATCH FULL;

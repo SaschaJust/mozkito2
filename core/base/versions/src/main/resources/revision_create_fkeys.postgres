@@ -1,0 +1,5 @@
+ALTER TABLE revisions ADD CONSTRAINT fk_revisions_depot_id FOREIGN KEY (depot_id) REFERENCES depots (id) MATCH FULL;
+ALTER TABLE revisions ADD CONSTRAINT fk_revisions_changeset_id FOREIGN KEY (changeset_id) REFERENCES changesets (id) MATCH FULL;
+ALTER TABLE revisions ADD CONSTRAINT fk_revisions_change_type FOREIGN KEY (change_type) REFERENCES change_types (value) MATCH FULL;
+ALTER TABLE revisions ADD CONSTRAINT fk_revisions_source_id FOREIGN KEY (source_id) REFERENCES handles (id) MATCH FULL;
+ALTER TABLE revisions ADD CONSTRAINT fk_revisions_target_id FOREIGN KEY (target_id) REFERENCES handles (id) MATCH FULL;

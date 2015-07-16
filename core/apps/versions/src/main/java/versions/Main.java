@@ -53,7 +53,7 @@ import org.mozkito.core.libs.versions.adapters.IdentityAdapter;
 import org.mozkito.core.libs.versions.adapters.RenamingAdapter;
 import org.mozkito.core.libs.versions.adapters.RevisionAdapter;
 import org.mozkito.core.libs.versions.adapters.RootAdapter;
-import org.mozkito.core.libs.versions.adapters.SignedOffAdapter;
+import org.mozkito.core.libs.versions.adapters.SignOffAdapter;
 import org.mozkito.core.libs.versions.adapters.TagAdapter;
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.BranchEdge;
@@ -343,7 +343,7 @@ public class Main {
 			database.register(ChangeSetIntegration.class,
 			                  new ChangeSetTypeAdapter(database.getType(), database.getTxMode()));
 			database.register(Tag.class, new TagAdapter(database.getType(), database.getTxMode()));
-			database.register(SignedOff.class, new SignedOffAdapter(database.getType(), database.getTxMode()));
+			database.register(SignedOff.class, new SignOffAdapter(database.getType(), database.getTxMode()));
 			database.createScheme();
 			
 			final DatabaseDumper<Identity> identityDumper = new DatabaseDumper<>(database.getAdapter(Identity.class),

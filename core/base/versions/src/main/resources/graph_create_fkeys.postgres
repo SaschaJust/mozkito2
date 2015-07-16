@@ -1,0 +1,1 @@
+ALTER TABLE graphs ADD CONSTRAINT fk_graphs_depot_id FOREIGN KEY (depot_id) REFERENCES depots (id) MATCH FULL;

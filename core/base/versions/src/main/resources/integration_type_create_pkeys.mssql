@@ -1,2 +1,0 @@
-ALTER TABLE integration_types ALTER COLUMN id BIGINT NOT NULL;
-ALTER TABLE integration_types ADD PRIMARY KEY (id); 

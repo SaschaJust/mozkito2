@@ -1,3 +1,3 @@
-ALTER TABLE convergences ADD CONSTRAINT fk_convergences_branch_id FOREIGN KEY (branch_id) REFERENCES branches (id) MATCH FULL;
+ALTER TABLE convergences ADD CONSTRAINT fk_convergences_branch_id FOREIGN KEY (branch_id) REFERENCES refs (id) MATCH FULL;
 ALTER TABLE convergences ADD CONSTRAINT fk_convergences_source_id FOREIGN KEY (source_id) REFERENCES changesets (id) MATCH FULL;
 ALTER TABLE convergences ADD CONSTRAINT fk_convergences_converge_id FOREIGN KEY (converge_id) REFERENCES changesets (id) MATCH FULL;

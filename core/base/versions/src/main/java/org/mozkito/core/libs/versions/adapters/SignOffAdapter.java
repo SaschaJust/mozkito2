@@ -31,7 +31,7 @@ import org.mozkito.skeleton.contracts.Requires;
  *
  * @author Sascha Just
  */
-public class SignedOffAdapter extends AbstractAdapter<SignedOff> {
+public class SignOffAdapter extends AbstractAdapter<SignedOff> {
 	
 	/**
 	 * Instantiates a new signed off adapter.
@@ -41,8 +41,8 @@ public class SignedOffAdapter extends AbstractAdapter<SignedOff> {
 	 * @param mode
 	 *            the mode
 	 */
-	public SignedOffAdapter(final Type type, final TxMode mode) {
-		super(type, mode, "signedoff");
+	public SignOffAdapter(final Type type, final TxMode mode) {
+		super(type, mode, "signoff");
 	}
 	
 	/**
