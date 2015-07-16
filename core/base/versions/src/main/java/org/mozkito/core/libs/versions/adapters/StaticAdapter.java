@@ -23,6 +23,7 @@ import java.util.List;
 import org.mozkito.core.libs.versions.model.Static;
 import org.mozkito.core.libs.versions.model.enums.BranchMarker;
 import org.mozkito.core.libs.versions.model.enums.ChangeType;
+import org.mozkito.core.libs.versions.model.enums.IntegrationMarker;
 import org.mozkito.core.libs.versions.model.enums.IntegrationType;
 import org.mozkito.core.libs.versions.model.enums.NavigationMarker;
 import org.mozkito.core.libs.versions.model.enums.ReferenceType;
@@ -78,9 +79,9 @@ public class StaticAdapter extends AbstractAdapter<Static> {
 			execute(statement);
 			statement.close();
 			
-			statement = connection.prepareStatement("INSERT INTO static_integration_types (value, name) VALUES (?, ?)");
+			statement = connection.prepareStatement("INSERT INTO static_integration_markers (value, name) VALUES (?, ?)");
 			
-			for (final IntegrationType type : IntegrationType.values()) {
+			for (final IntegrationMarker type : IntegrationMarker.values()) {
 				index = 0;
 				statement.setShort(++index, type.getValue());
 				statement.setString(++index, type.name());
