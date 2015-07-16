@@ -169,6 +169,10 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 						}
 						throw new RuntimeException("Could not execute batch on the statement: "
 						        + System.lineSeparator() + builder.toString());
+					} else if (ret == Statement.SUCCESS_NO_INFO) {
+						Logger.info("SUCCESS NO INFO");
+					} else {
+						Logger.info("SUCCESS " + ret);
 					}
 				}
 				break;
