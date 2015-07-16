@@ -42,7 +42,7 @@ import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.adapters.BranchAdapter;
 import org.mozkito.core.libs.versions.adapters.BranchEdgeAdapter;
 import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
-import org.mozkito.core.libs.versions.adapters.ChangeSetIntegrationAdapter;
+import org.mozkito.core.libs.versions.adapters.ChangeSetTypeAdapter;
 import org.mozkito.core.libs.versions.adapters.ConvergenceEdgeAdapter;
 import org.mozkito.core.libs.versions.adapters.DepotAdapter;
 import org.mozkito.core.libs.versions.adapters.GraphAdapter;
@@ -341,7 +341,7 @@ public class Main {
 			database.register(Handle.class, new HandleAdapter(database.getType(), database.getTxMode()));
 			database.register(Renaming.class, new RenamingAdapter(database.getType(), database.getTxMode()));
 			database.register(ChangeSetIntegration.class,
-			                  new ChangeSetIntegrationAdapter(database.getType(), database.getTxMode()));
+			                  new ChangeSetTypeAdapter(database.getType(), database.getTxMode()));
 			database.register(Tag.class, new TagAdapter(database.getType(), database.getTxMode()));
 			database.register(SignedOff.class, new SignedOffAdapter(database.getType(), database.getTxMode()));
 			database.createScheme();
