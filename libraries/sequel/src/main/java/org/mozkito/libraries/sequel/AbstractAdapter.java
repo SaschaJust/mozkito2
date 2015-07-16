@@ -57,6 +57,8 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/** The current id. */
 	private final AtomicLong currentId = new AtomicLong(0);
 	
+	private final String     createForeignKeysResource;
+	
 	/**
 	 * Instantiates a new abstract sequel adapter.
 	 *
@@ -75,6 +77,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 		this.createIndexesResource = identifier + "_create_indexes";
 		this.createConstraintsResource = identifier + "_create_constraints";
 		this.createPrimaryKeysResource = identifier + "_create_pkeys";
+		this.createForeignKeysResource = identifier + "_create_fkeys";
 	}
 	
 	/**
@@ -85,6 +88,19 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	public void createConstraints(final Connection connection) {
 		try {
 			DatabaseManager.executeSQL(connection, this.type, this.createConstraintsResource, true);
+		} catch (final SQLException | IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.libraries.sequel.IAdapter#createForeignKeys(java.sql.Connection)
+	 */
+	public void createForeignKeys(final Connection connection) {
+		try {
+			DatabaseManager.executeSQL(connection, this.type, this.createForeignKeysResource, true);
 		} catch (final SQLException | IOException e) {
 			throw new RuntimeException(e);
 		}

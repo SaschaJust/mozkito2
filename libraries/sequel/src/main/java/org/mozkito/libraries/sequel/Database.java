@@ -82,33 +82,6 @@ public class Database implements DataSource, Closeable {
 	/** The tx mode. */
 	private final TxMode                     txMode;
 	
-	// /**
-	// * Instantiates a new database.
-	// *
-	// * @param type
-	// * the type
-	// * @param connectionString
-	// * the connection string
-	// * @throws SQLException
-	// * the SQL exception
-	// */
-	// public Database(final Type type, final String connectionString) throws SQLException {
-	// final HikariConfig config = new HikariConfig();
-	// config.setJdbcUrl(connectionString);
-	// config.setAutoCommit(false);
-	//
-	// this.type = type;
-	// this.dataSource =
-	// this.dataSource.setTransactionIsolation("TRANSACTION_READ_UNCOMMITTED");
-	// // this.dataSource.setConnectionTimeout(5000);
-	// this.dataSource.setLoginTimeout(3000);
-	//
-	// this.txMode = TxMode.TRANSACTION;
-	// this.dataSource.setAutoCommit(false);
-	//
-	// this.connection = this.dataSource.getConnection();
-	// }
-	
 	/** The connections. */
 	private final List<Connection>           connections = new LinkedList<>();
 	
@@ -192,6 +165,15 @@ public class Database implements DataSource, Closeable {
 	public void createConstraints() {
 		for (final IAdapter<?> adapter : this.adapters.values()) {
 			adapter.createConstraints(this.connection);
+		}
+	}
+	
+	/**
+	 * Creates the foreign keys.
+	 */
+	public void createForeignKeys() {
+		for (final IAdapter<?> adapter : this.adapters.values()) {
+			adapter.createForeignKeys(this.connection);
 		}
 	}
 	

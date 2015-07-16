@@ -47,6 +47,14 @@ public interface IAdapter<T extends IEntity> {
 	void createConstraints(Connection connection);
 	
 	/**
+	 * Creates the foreign keys.
+	 *
+	 * @param connection
+	 *            the connection
+	 */
+	void createForeignKeys(Connection connection);
+	
+	/**
 	 * Creates the indexes.
 	 *
 	 * @param connection
