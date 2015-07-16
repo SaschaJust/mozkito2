@@ -141,6 +141,7 @@ public class Database implements DataSource, Closeable {
 	public void close() {
 		for (final Connection connection : this.connections) {
 			try {
+				connection.commit();
 				connection.close();
 			} catch (final SQLException e) {
 				Logger.warn(e, "Closing connection failed.");
