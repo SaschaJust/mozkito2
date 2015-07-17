@@ -102,6 +102,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 				if (counter % BATCH_SIZE == 0) {
 					this.adapter.execute(this.save);
 					counter = 0;
+					this.save.getConnection().commit();
 				}
 			}
 			
