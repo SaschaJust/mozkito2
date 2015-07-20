@@ -146,9 +146,13 @@ public class PostgresWriter implements IWriter {
 			}
 			this.builder.append(param == null
 			                                 ? this.nullString
-			                                 : param.toString().replace("\t", TAB_STRING)
-			                                        .replace("\\", BACKSPACE_STRING)
-			                                        .replace(System.lineSeparator(), NEWLINE_STRING));
+			                                 : param.toString().isEmpty()
+			                                                             ? "test"
+			                                                             : param.toString()
+			                                                                    .replace("\t", TAB_STRING)
+			                                                                    .replace("\\", BACKSPACE_STRING)
+			                                                                    .replace(System.lineSeparator(),
+			                                                                             NEWLINE_STRING));
 		}
 		this.builder.append('\n');
 		this.isConstructing = false;
