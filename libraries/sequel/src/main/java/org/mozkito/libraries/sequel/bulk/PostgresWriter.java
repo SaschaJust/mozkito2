@@ -32,46 +32,48 @@ import org.mozkito.skeleton.contracts.Requires;
 public class PostgresWriter implements IWriter {
 	
 	/** The Constant TAB_STRING. */
-	private static final String TAB_STRING       = "\\t";
+	private static final String       TAB_STRING           = "\\t";
 	
 	/** The Constant NEWLINE_STRING. */
-	private static final String NEWLINE_STRING   = "\\n";
+	private static final String       NEWLINE_STRING       = "\\n";
 	
 	/** The Constant BACKSPACE_STRING. */
-	private static final String BACKSPACE_STRING = "\\b";
+	private static final String       BACKSPACE_STRING     = "\\b";
 	
 	/** The null string. */
-	private static final String NULL_STRING      = "\\N";
+	private static final String       NULL_STRING          = "\\N";
 	
 	/** The Constant QUOTE_STRING. */
-	private static final String QUOTE_STRING     = "\"";
+	private static final String       QUOTE_STRING         = "\"";
+	
+	private static final CharSequence ESCAPED_QUOTE_STRING = QUOTE_STRING + QUOTE_STRING;
 	
 	/** The builder. */
-	private final StringBuilder builder;
+	private final StringBuilder       builder;
 	
 	/** The manager. */
-	private CopyManager         manager;
+	private CopyManager               manager;
 	
 	/** The last flush. */
-	private int                 lastFlush        = 0;
+	private int                       lastFlush            = 0;
 	
 	/** The is constructing. */
-	private boolean             isConstructing;
+	private boolean                   isConstructing;
 	
 	/** The copy in. */
-	private CopyIn              copyIn;
+	private CopyIn                    copyIn;
 	
 	/** The statement string. */
-	private final String        statementString;
+	private final String              statementString;
 	
 	/** The writes. */
-	private int                 writes           = 0;
+	private int                       writes               = 0;
 	
 	/** The batch size. */
-	private final int           batchSize;
+	private final int                 batchSize;
 	
 	/** The delimiter char. */
-	private final char          delimiterChar    = '\t';
+	private final char                delimiterChar        = '\t';
 	
 	/**
 	 * Instantiates a new postgres writer.
@@ -156,7 +158,7 @@ public class PostgresWriter implements IWriter {
 			                                         + param.toString().replace("\\", BACKSPACE_STRING)
 			                                                .replace("\t", TAB_STRING)
 			                                                .replace(System.lineSeparator(), NEWLINE_STRING)
-			                                         + QUOTE_STRING);
+			                                                .replace(QUOTE_STRING, ESCAPED_QUOTE_STRING) + QUOTE_STRING);
 		}
 		this.builder.append('\n');
 		this.isConstructing = false;
