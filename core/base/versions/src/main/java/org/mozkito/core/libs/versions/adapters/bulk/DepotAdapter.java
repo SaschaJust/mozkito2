@@ -13,7 +13,6 @@
 
 package org.mozkito.core.libs.versions.adapters.bulk;
 
-import java.sql.Connection;
 import java.sql.Timestamp;
 
 import org.mozkito.core.libs.versions.model.Depot;
@@ -35,11 +34,9 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 	 *            the type
 	 * @param mode
 	 *            the mode
-	 * @param connection
-	 *            the connection
 	 */
-	public DepotAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "depots", connection);
+	public DepotAdapter(final Type type, final TxMode mode) {
+		super(type, mode, "depots");
 	}
 	
 	/**

@@ -13,7 +13,6 @@
 
 package org.mozkito.core.libs.versions.adapters.bulk;
 
-import java.sql.Connection;
 import java.sql.Timestamp;
 
 import org.mozkito.core.libs.versions.model.Tag;
@@ -35,11 +34,9 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 	 *            the type
 	 * @param mode
 	 *            the mode
-	 * @param connection
-	 *            the connection
 	 */
-	public TagAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "tags", connection);
+	public TagAdapter(final Type type, final TxMode mode) {
+		super(type, mode, "tags");
 	}
 	
 	/**

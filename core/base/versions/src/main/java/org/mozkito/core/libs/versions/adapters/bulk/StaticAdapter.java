@@ -42,11 +42,9 @@ public class StaticAdapter extends AbstractAdapter<Static> {
 	 *            the type
 	 * @param mode
 	 *            the mode
-	 * @param connection
-	 *            the connection
 	 */
-	public StaticAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "static", connection);
+	public StaticAdapter(final Type type, final TxMode mode) {
+		super(type, mode, "static");
 	}
 	
 	/**

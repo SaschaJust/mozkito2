@@ -13,8 +13,6 @@
 
 package org.mozkito.core.libs.versions.adapters.bulk;
 
-import java.sql.Connection;
-
 import org.mozkito.core.libs.versions.model.Entry;
 import org.mozkito.core.libs.versions.model.Renaming;
 import org.mozkito.libraries.sequel.Database.TxMode;
@@ -35,11 +33,9 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	 *            the type
 	 * @param mode
 	 *            the mode
-	 * @param connection
-	 *            the connection
 	 */
-	public RenamingAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "renamings", connection);
+	public RenamingAdapter(final Type type, final TxMode mode) {
+		super(type, mode, "renamings");
 	}
 	
 	/**

@@ -36,10 +36,10 @@ import org.mozkito.skeleton.contracts.Requires;
 public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> {
 	
 	/** The copy statement. */
-	private final String     insertStatement;
+	private String           insertStatement;
 	
 	/** The writer. */
-	protected final IWriter  writer;
+	protected IWriter        writer;
 	
 	/** The current id. */
 	private final AtomicLong currentId = new AtomicLong(0);
@@ -62,6 +62,12 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/** The type. */
 	private final Type       type;
 	
+	/** The mode. */
+	private final TxMode     mode;
+	
+	/** The identifier. */
+	private final String     identifier;
+	
 	/**
 	 * Instantiates a new PG branch adapter.
 	 *
@@ -71,25 +77,13 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	 *            the mode
 	 * @param identifier
 	 *            the entity tag
-	 * @param connection
-	 *            the connection
 	 */
-	public AbstractAdapter(final Database.Type type, final Database.TxMode mode, final String identifier,
-	        final Connection connection) {
+	public AbstractAdapter(final Database.Type type, final Database.TxMode mode, final String identifier) {
 		Requires.notNull(type);
 		Requires.notNull(mode);
 		this.type = type;
-		
-		switch (type) {
-			case POSTGRES:
-				assert TxMode.COPY.equals(mode);
-				this.insertStatement = "COPY " + identifier + " FROM STDIN";
-				this.writer = new PostgresWriter(this.insertStatement, connection);
-				break;
-			default:
-				this.insertStatement = DatabaseManager.loadStatement(type, identifier + "_save");
-				this.writer = new BulkWriter(this.insertStatement, connection);
-		}
+		this.mode = mode;
+		this.identifier = identifier;
 		
 		this.createSchemaResource = identifier + "_create_schema";
 		this.createIndexesResource = identifier + "_create_indexes";
@@ -176,6 +170,24 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	@Override
 	public void flush() {
 		this.writer.flush();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.libraries.sequel.bulk.IAdapter#init(java.sql.Connection)
+	 */
+	public void init(final Connection connection) {
+		switch (this.type) {
+			case POSTGRES:
+				assert TxMode.COPY.equals(this.mode);
+				this.insertStatement = "COPY " + this.identifier + " FROM STDIN";
+				this.writer = new PostgresWriter(this.insertStatement, connection);
+				break;
+			default:
+				this.insertStatement = DatabaseManager.loadStatement(this.type, this.identifier + "_save");
+				this.writer = new BulkWriter(this.insertStatement, connection);
+		}
 	}
 	
 	/**

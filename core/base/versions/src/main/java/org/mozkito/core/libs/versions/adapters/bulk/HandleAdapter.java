@@ -13,8 +13,6 @@
 
 package org.mozkito.core.libs.versions.adapters.bulk;
 
-import java.sql.Connection;
-
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
@@ -34,11 +32,9 @@ public class HandleAdapter extends AbstractAdapter<Handle> {
 	 *            the type
 	 * @param mode
 	 *            the mode
-	 * @param connection
-	 *            the connection
 	 */
-	public HandleAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "handles", connection);
+	public HandleAdapter(final Type type, final TxMode mode) {
+		super(type, mode, "handles");
 	}
 	
 	/**

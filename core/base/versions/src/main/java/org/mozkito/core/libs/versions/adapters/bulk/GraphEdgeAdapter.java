@@ -13,8 +13,6 @@
 
 package org.mozkito.core.libs.versions.adapters.bulk;
 
-import java.sql.Connection;
-
 import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
@@ -34,11 +32,9 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	 *            the type
 	 * @param mode
 	 *            the mode
-	 * @param connection
-	 *            the connection
 	 */
-	public GraphEdgeAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "edges", connection);
+	public GraphEdgeAdapter(final Type type, final TxMode mode) {
+		super(type, mode, "edges");
 	}
 	
 	/**

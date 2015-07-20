@@ -13,8 +13,6 @@
 
 package org.mozkito.core.libs.versions.adapters.bulk;
 
-import java.sql.Connection;
-
 import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.bulk.AbstractAdapter;
@@ -32,11 +30,9 @@ public class ReferenceAdapter extends AbstractAdapter<Reference> {
 	 *            the type
 	 * @param mode
 	 *            the mode
-	 * @param connection
-	 *            the connection
 	 */
-	public ReferenceAdapter(final Database.Type type, final Database.TxMode mode, final Connection connection) {
-		super(type, mode, "refs", connection);
+	public ReferenceAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "refs");
 	}
 	
 	/**

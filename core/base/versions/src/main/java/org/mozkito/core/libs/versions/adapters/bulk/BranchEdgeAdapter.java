@@ -13,8 +13,6 @@
 
 package org.mozkito.core.libs.versions.adapters.bulk;
 
-import java.sql.Connection;
-
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
@@ -33,11 +31,9 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	 *            the type
 	 * @param mode
 	 *            the mode
-	 * @param connection
-	 *            the connection
 	 */
-	public BranchEdgeAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "branch_edges", connection);
+	public BranchEdgeAdapter(final Type type, final TxMode mode) {
+		super(type, mode, "branch_edges");
 	}
 	
 	/**

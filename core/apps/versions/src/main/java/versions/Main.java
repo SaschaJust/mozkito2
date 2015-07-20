@@ -337,41 +337,23 @@ public class Main {
 				});
 			}
 			
-			database.register(Depot.class,
-			                  new DepotAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(Identity.class,
-			                  new IdentityAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(ChangeSet.class,
-			                  new ChangeSetAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(Revision.class,
-			                  new RevisionAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(GraphEdge.class,
-			                  new GraphEdgeAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(BranchEdge.class, new BranchEdgeAdapter(database.getType(), database.getTxMode(),
-			                                                          database.getConnection()));
-			database.register(Convergence.class, new ConvergenceAdapter(database.getType(), database.getTxMode(),
-			                                                            database.getConnection()));
-			database.register(Head.class,
-			                  new HeadAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(Root.class,
-			                  new RootAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			
-			database.register(Graph.class,
-			                  new GraphAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(Reference.class,
-			                  new ReferenceAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(Handle.class,
-			                  new HandleAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(Renaming.class,
-			                  new RenamingAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(ChangeSetType.class, new ChangeSetTypeAdapter(database.getType(), database.getTxMode(),
-			                                                                database.getConnection()));
-			database.register(Tag.class,
-			                  new TagAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(SignOff.class,
-			                  new SignOffAdapter(database.getType(), database.getTxMode(), database.getConnection()));
-			database.register(Static.class,
-			                  new StaticAdapter(database.getType(), database.getTxMode(), database.getConnection()));
+			database.register(Depot.class, new DepotAdapter(database.getType(), database.getTxMode()));
+			database.register(Identity.class, new IdentityAdapter(database.getType(), database.getTxMode()));
+			database.register(ChangeSet.class, new ChangeSetAdapter(database.getType(), database.getTxMode()));
+			database.register(Revision.class, new RevisionAdapter(database.getType(), database.getTxMode()));
+			database.register(GraphEdge.class, new GraphEdgeAdapter(database.getType(), database.getTxMode()));
+			database.register(BranchEdge.class, new BranchEdgeAdapter(database.getType(), database.getTxMode()));
+			database.register(Convergence.class, new ConvergenceAdapter(database.getType(), database.getTxMode()));
+			database.register(Head.class, new HeadAdapter(database.getType(), database.getTxMode()));
+			database.register(Root.class, new RootAdapter(database.getType(), database.getTxMode()));
+			database.register(Graph.class, new GraphAdapter(database.getType(), database.getTxMode()));
+			database.register(Reference.class, new ReferenceAdapter(database.getType(), database.getTxMode()));
+			database.register(Handle.class, new HandleAdapter(database.getType(), database.getTxMode()));
+			database.register(Renaming.class, new RenamingAdapter(database.getType(), database.getTxMode()));
+			database.register(ChangeSetType.class, new ChangeSetTypeAdapter(database.getType(), database.getTxMode()));
+			database.register(Tag.class, new TagAdapter(database.getType(), database.getTxMode()));
+			database.register(SignOff.class, new SignOffAdapter(database.getType(), database.getTxMode()));
+			database.register(Static.class, new StaticAdapter(database.getType(), database.getTxMode()));
 			
 			database.createScheme();
 			

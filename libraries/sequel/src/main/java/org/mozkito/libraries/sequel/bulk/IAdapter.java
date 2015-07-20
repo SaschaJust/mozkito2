@@ -70,6 +70,14 @@ public interface IAdapter<T extends IEntity> {
 	public abstract void flush();
 	
 	/**
+	 * Inits the.
+	 *
+	 * @param connection
+	 *            the connection
+	 */
+	public void init(final Connection connection);
+	
+	/**
 	 * Next id.
 	 *
 	 * @return the long
