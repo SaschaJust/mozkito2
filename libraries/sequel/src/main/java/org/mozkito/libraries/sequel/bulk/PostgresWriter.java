@@ -119,7 +119,8 @@ public class PostgresWriter implements IWriter {
 		try {
 			if (this.writes > this.lastFlush) {
 				this.builder.delete(this.builder.length() - 1, this.builder.length());
-				this.copyIn.writeToCopy(this.builder.toString().getBytes("UTF-8"), 0, this.builder.length());
+				final byte[] bytes = this.builder.toString().getBytes("UTF-8");
+				this.copyIn.writeToCopy(bytes, 0, bytes.length);
 				this.copyIn.endCopy();
 				this.copyIn = this.manager.copyIn(this.statementString);
 				this.builder.delete(0, this.builder.length());
