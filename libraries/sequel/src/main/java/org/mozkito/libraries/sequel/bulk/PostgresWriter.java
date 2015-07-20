@@ -30,6 +30,15 @@ import org.mozkito.skeleton.contracts.Requires;
  */
 public class PostgresWriter implements IWriter {
 	
+	/** The Constant TAB_STRING. */
+	private static final String TAB_STRING       = "\\t";
+	
+	/** The Constant NEWLINE_STRING. */
+	private static final String NEWLINE_STRING   = "\\n";
+	
+	/** The Constant BACKSPACE_STRING. */
+	private static final String BACKSPACE_STRING = "\\b";
+	
 	/** The builder. */
 	private final StringBuilder builder;
 	
@@ -37,7 +46,7 @@ public class PostgresWriter implements IWriter {
 	private CopyManager         manager;
 	
 	/** The last flush. */
-	private int                 lastFlush     = 0;
+	private int                 lastFlush        = 0;
 	
 	/** The is constructing. */
 	private boolean             isConstructing;
@@ -49,12 +58,16 @@ public class PostgresWriter implements IWriter {
 	private final String        statementString;
 	
 	/** The writes. */
-	private int                 writes        = 0;
+	private int                 writes           = 0;
 	
 	/** The batch size. */
 	private final int           batchSize;
 	
-	private final char          delimiterChar = '\t';
+	/** The delimiter char. */
+	private final char          delimiterChar    = '\t';
+	
+	/** The null string. */
+	private final String        nullString       = "\\N";
 	
 	/**
 	 * Instantiates a new postgres writer.
@@ -130,8 +143,11 @@ public class PostgresWriter implements IWriter {
 			} else {
 				this.isConstructing = true;
 			}
-			this.builder.append(param.toString().replace("\t", "\\t").replace("\\", "\\b")
-			                         .replace(System.lineSeparator(), "\\n"));
+			this.builder.append(param == null
+			                                 ? this.nullString
+			                                 : param.toString().replace("\t", TAB_STRING)
+			                                        .replace("\\", BACKSPACE_STRING)
+			                                        .replace(System.lineSeparator(), NEWLINE_STRING));
 		}
 		this.builder.append('\n');
 		this.isConstructing = false;
