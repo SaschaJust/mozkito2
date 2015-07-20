@@ -121,7 +121,8 @@ public class PostgresWriter implements IWriter {
 				this.lastFlush = this.writes;
 			}
 		} catch (final SQLException e) {
-			Logger.error(this.builder.toString());
+			Logger.error("Writing " + (this.writes - this.lastFlush) + " entries failed: " + System.lineSeparator()
+			        + this.builder.toString());
 			throw new RuntimeException(e);
 		}
 	}
