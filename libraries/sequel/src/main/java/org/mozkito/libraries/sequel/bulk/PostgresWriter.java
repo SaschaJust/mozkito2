@@ -99,11 +99,13 @@ public class PostgresWriter implements IWriter {
 	@Override
 	public void flush() {
 		try {
-			this.copyIn.writeToCopy(this.builder.toString().getBytes(), 0, this.builder.length());
-			this.copyIn.endCopy();
-			this.copyIn = this.manager.copyIn(this.statementString);
-			this.builder.delete(0, this.builder.length());
-			this.lastFlush = this.writes;
+			if (this.writes > this.lastFlush) {
+				this.copyIn.writeToCopy(this.builder.toString().getBytes(), 0, this.builder.length());
+				this.copyIn.endCopy();
+				this.copyIn = this.manager.copyIn(this.statementString);
+				this.builder.delete(0, this.builder.length());
+				this.lastFlush = this.writes;
+			}
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
