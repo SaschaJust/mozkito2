@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.libraries.sequel;
+package org.mozkito.libraries.sequel.bulk;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.EntityFactory;
 import org.mozkito.skeleton.contracts.Asserts;
 
 /**

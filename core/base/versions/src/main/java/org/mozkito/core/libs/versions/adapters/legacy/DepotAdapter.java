@@ -11,45 +11,47 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.versions.adapters;
+package org.mozkito.core.libs.versions.adapters.legacy;
 
+import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
-import org.mozkito.libraries.sequel.AbstractAdapter;
+import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.libraries.sequel.Database;
-import org.mozkito.skeleton.contracts.Requires;
+import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 
+// TODO: Auto-generated Javadoc
 /**
- * The Class ChangeSetIntegrationAdapter.
+ * The Class DepotAdapter.
  *
  * @author Sascha Just
  */
-public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> {
+public class DepotAdapter extends AbstractAdapter<Depot> {
 	
 	/**
-	 * Instantiates a new change set integration adapter.
+	 * Instantiates a new depot adapter.
 	 *
 	 * @param type
 	 *            the type
 	 * @param mode
 	 *            the mode
 	 */
-	public ChangeSetTypeAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "changeset_type");
+	public DepotAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "depot");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#create(java.sql.ResultSet)
 	 */
-	public ChangeSetIntegration create(final ResultSet result) {
+	public Depot create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -59,10 +61,10 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
 	public void delete(final Connection connection,
-	                   final ChangeSetIntegration object) {
+	                   final Depot object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -72,9 +74,9 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<ChangeSetIntegration> load(final Connection connection) {
+	public Iterator<Depot> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -84,10 +86,10 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<ChangeSetIntegration> load(final Connection connection,
-	                                       final long... ids) {
+	public List<Depot> load(final Connection connection,
+	                        final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -97,10 +99,10 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
-	public ChangeSetIntegration load(final Connection connection,
-	                                 final long id) {
+	public Depot load(final Connection connection,
+	                  final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -110,35 +112,34 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
-	                 final ChangeSetIntegration integration) {
-		Requires.notNull(saveStatement);
-		Requires.notNull(integration);
-		
+	                 final Depot depot) {
 		try {
 			
 			int index = 0;
-			saveStatement.setLong(++index, integration.getId());
-			
-			saveStatement.setShort(++index, integration.getIntegrationType());
-			
+			saveStatement.setLong(++index, id);
+			saveStatement.setString(++index, truncate(depot.getName(), 900));
+			saveStatement.setString(++index, truncate(depot.getOrigin().toURL().toString(), 900));
+			saveStatement.setTimestamp(++index, Timestamp.from(depot.getMined()));
 			schedule(saveStatement);
 			
-		} catch (final SQLException e) {
+			depot.setId(id);
+		} catch (SQLException | MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
+		
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
-	                   final ChangeSetIntegration... objects) {
+	                   final Depot... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

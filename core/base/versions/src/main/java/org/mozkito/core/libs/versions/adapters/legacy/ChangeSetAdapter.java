@@ -11,48 +11,46 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.versions.adapters;
+package org.mozkito.core.libs.versions.adapters.legacy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.Reference;
-import org.mozkito.libraries.sequel.AbstractAdapter;
+import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
 /**
- * The Class BranchAdapter.
+ * The Class ChangeSetAdapter, which is used to load and store {@link ChangeSet} entities from/to a database.
  *
  * @author Sascha Just
  */
-public class BranchAdapter extends AbstractAdapter<Reference> {
-	
-	/** The current id. */
-	public static long currentId = 0l;
+public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 	
 	/**
-	 * Instantiates a new branch adapter.
+	 * Instantiates a new change set adapter.
 	 *
 	 * @param type
 	 *            the type
 	 * @param mode
 	 *            the mode
 	 */
-	public BranchAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "ref");
+	public ChangeSetAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "changeset");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#create(java.sql.ResultSet)
 	 */
-	public Reference create(final ResultSet result) {
+	public ChangeSet create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -62,10 +60,10 @@ public class BranchAdapter extends AbstractAdapter<Reference> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
-	                   final Reference object) {
+	                   final ChangeSet object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -75,9 +73,9 @@ public class BranchAdapter extends AbstractAdapter<Reference> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<Reference> load(final Connection connection) {
+	public Iterator<ChangeSet> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -87,9 +85,9 @@ public class BranchAdapter extends AbstractAdapter<Reference> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<Reference> load(final Connection connection,
+	public List<ChangeSet> load(final Connection connection,
 	                            final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
@@ -100,9 +98,9 @@ public class BranchAdapter extends AbstractAdapter<Reference> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
-	public Reference load(final Connection connection,
+	public ChangeSet load(final Connection connection,
 	                      final long id) {
 		// TODO Auto-generated method stub
 		// return null;
@@ -113,26 +111,36 @@ public class BranchAdapter extends AbstractAdapter<Reference> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long,
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#save(java.sql.PreparedStatement, long,
 	 *      org.mozkito.libraries.sequel.IEntity)
 	 */
-	public void save(final PreparedStatement statement,
+	public void save(final PreparedStatement saveStatement,
 	                 final long id,
-	                 final Reference reference) {
-		Requires.notNull(statement);
-		Requires.notNull(reference);
+	                 final ChangeSet changeSet) {
+		Requires.notNull(saveStatement);
+		Requires.notNull(changeSet);
 		
 		try {
+			
 			int index = 0;
-			statement.setInt(++index, (int) id);
+			saveStatement.setLong(++index, id);
 			
-			statement.setShort(++index, reference.getType().getValue());
-			statement.setLong(++index, reference.getDepotId());
-			statement.setString(++index, truncate(reference.getName(), 900));
+			saveStatement.setString(++index, changeSet.getCommitHash());
 			
-			schedule(statement);
+			saveStatement.setString(++index, changeSet.getTreeHash());
 			
-			reference.setId(id);
+			saveStatement.setTimestamp(++index, Timestamp.from(changeSet.getAuthoredTime()));
+			saveStatement.setLong(++index, changeSet.getAuthorId());
+			
+			saveStatement.setTimestamp(++index, Timestamp.from(changeSet.getCommitTime()));
+			saveStatement.setLong(++index, changeSet.getCommitterId());
+			
+			saveStatement.setString(++index, changeSet.getSubject());
+			saveStatement.setString(++index, changeSet.getBody());
+			
+			schedule(saveStatement);
+			
+			changeSet.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -141,10 +149,10 @@ public class BranchAdapter extends AbstractAdapter<Reference> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void update(final Connection connection,
-	                   final Reference... objects) {
+	                   final ChangeSet... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.libraries.sequel;
+package org.mozkito.libraries.sequel.bulk;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,24 +28,26 @@ public class BulkWriter {
 	private PreparedStatement statement;
 	
 	/** The connection. */
-	private Connection        connection;
+	protected Connection      connection;
 	
 	/** The batch size. */
-	private int               batchSize;
+	protected int             batchSize;
 	
 	/** The writes. */
-	private int               writes = 0;
+	protected int             writes = 0;
+	
+	protected String          query;
 	
 	/**
 	 * Instantiates a new bulk writer.
 	 *
 	 * @param query
 	 *            the query
-	 * @param database
-	 *            the database
+	 * @param connection
+	 *            the connection
 	 */
-	public BulkWriter(final String query, final Database database) {
-		this(query, database, 1000);
+	public BulkWriter(final String query, final Connection connection) {
+		this(query, connection, 10000);
 	}
 	
 	/**
@@ -53,17 +55,18 @@ public class BulkWriter {
 	 *
 	 * @param query
 	 *            the query
-	 * @param database
-	 *            the database
+	 * @param connection
+	 *            the connection
 	 * @param batchSize
 	 *            the batch size
 	 */
-	public BulkWriter(final String query, final Database database, final int batchSize) {
+	public BulkWriter(final String query, final Connection connection, final int batchSize) {
 		try {
 			this.batchSize = batchSize;
-			this.connection = database.getConnection();
+			this.connection = connection;
 			this.connection.setAutoCommit(false);
-			this.statement = this.connection.prepareStatement(query);
+			this.query = query;
+			this.statement = this.connection.prepareStatement(this.query);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

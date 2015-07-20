@@ -1,56 +1,58 @@
 /***********************************************************************************************************************
  * Copyright 2015 mozkito.org
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.versions.adapters;
+package org.mozkito.core.libs.versions.adapters.legacy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.SignOff;
-import org.mozkito.libraries.sequel.AbstractAdapter;
-import org.mozkito.libraries.sequel.Database.TxMode;
-import org.mozkito.libraries.sequel.Database.Type;
+import org.mozkito.core.libs.versions.model.Tag;
+import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
+// TODO: Auto-generated Javadoc
 /**
- * The Class SignedOffAdapter.
+ * The Class TagAdapter.
  *
  * @author Sascha Just
  */
-public class SignOffAdapter extends AbstractAdapter<SignOff> {
+public class TagAdapter extends AbstractAdapter<Tag> {
 	
 	/**
-	 * Instantiates a new signed off adapter.
+	 * Instantiates a new tag adapter.
 	 *
 	 * @param type
-	 *            the type
+	 *            the database
 	 * @param mode
 	 *            the mode
 	 */
-	public SignOffAdapter(final Type type, final TxMode mode) {
-		super(type, mode, "signoff");
+	public TagAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "tag");
 	}
 	
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
+	 *
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#create(java.sql.ResultSet)
 	 */
-	public SignOff create(final ResultSet result) {
+	public Tag create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -59,11 +61,11 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
+	 *
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
 	public void delete(final Connection connection,
-	                   final SignOff object) {
+	                   final Tag object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -72,10 +74,10 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
+	 *
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<SignOff> load(final Connection connection) {
+	public Iterator<Tag> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -84,11 +86,11 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
+	 *
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<SignOff> load(final Connection connection,
-	                            final long... ids) {
+	public List<Tag> load(final Connection connection,
+	                      final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -97,11 +99,11 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
+	 *
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
-	public SignOff load(final Connection connection,
-	                      final long id) {
+	public Tag load(final Connection connection,
+	                final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -110,22 +112,50 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long,
-	 *      org.mozkito.libraries.sequel.IEntity)
+	 *
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement statement,
 	                 final long id,
-	                 final SignOff entity) {
+	                 final Tag entity) {
 		Requires.notNull(statement);
 		Requires.notNull(entity);
 		
 		try {
-			int index;
-			index = 0;
+			int index = 0;
 			statement.setInt(++index, (int) id);
-			statement.setLong(++index, entity.getChangeSetId());
-			statement.setLong(++index, entity.getIdentityId());
+			statement.setLong(++index, entity.getDepotId());
+			statement.setLong(++index, entity.getHeadId());
+			
+			if (entity.getName() == null) {
+				statement.setNull(++index, Types.VARCHAR);
+			} else {
+				statement.setString(++index, truncate(entity.getName(), 900));
+			}
+			
+			if (entity.getHash() == null) {
+				statement.setNull(++index, Types.VARCHAR);
+			} else {
+				statement.setString(++index, entity.getHash());
+			}
+			
+			if (entity.getMessage() == null) {
+				statement.setNull(++index, Types.VARCHAR);
+			} else {
+				statement.setString(++index, entity.getMessage());
+			}
+			
+			if (entity.getIdentityId() == null) {
+				statement.setNull(++index, Types.BIGINT);
+			} else {
+				statement.setLong(++index, entity.getIdentityId());
+			}
+			
+			if (entity.getTimestamp() == null) {
+				statement.setNull(++index, Types.TIMESTAMP);
+			} else {
+				statement.setTimestamp(++index, Timestamp.from(entity.getTimestamp()));
+			}
 			
 			schedule(statement);
 			
@@ -137,11 +167,11 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
+	 *
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
-	                   final SignOff... objects) {
+	                   final Tag... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.versions.adapters;
+package org.mozkito.core.libs.versions.adapters.legacy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,37 +20,37 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.BranchEdge;
-import org.mozkito.libraries.sequel.AbstractAdapter;
+import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class GraphBranchAdapter.
+ * The Class RevisionAdapter.
  *
  * @author Sascha Just
  */
-public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
+public class RevisionAdapter extends AbstractAdapter<Revision> {
 	
 	/**
-	 * Instantiates a new graph branch adapter.
+	 * Instantiates a new revision adapter.
 	 *
 	 * @param type
 	 *            the type
 	 * @param mode
 	 *            the mode
 	 */
-	public BranchEdgeAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "branch_edge");
+	public RevisionAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "revision");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#create(java.sql.ResultSet)
 	 */
-	public BranchEdge create(final ResultSet result) {
+	public Revision create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -60,10 +60,10 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
 	public void delete(final Connection connection,
-	                   final BranchEdge object) {
+	                   final Revision object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -73,9 +73,9 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<BranchEdge> load(final Connection connection) {
+	public Iterator<Revision> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -85,10 +85,10 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<BranchEdge> load(final Connection connection,
-	                             final long... ids) {
+	public List<Revision> load(final Connection connection,
+	                           final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -98,10 +98,10 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
-	public BranchEdge load(final Connection connection,
-	                       final long id) {
+	public Revision load(final Connection connection,
+	                     final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -111,26 +111,33 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
-	                 final BranchEdge edge) {
+	                 final Revision revision) {
 		Requires.notNull(saveStatement);
-		Requires.notNull(edge);
+		Requires.positive(id);
+		Requires.notNull(revision);
 		
 		try {
 			int index = 0;
 			saveStatement.setLong(++index, id);
-			
-			saveStatement.setLong(++index, edge.getEdgeId());
-			saveStatement.setLong(++index, edge.getBranchId());
-			saveStatement.setShort(++index, edge.getNavigationType());
-			saveStatement.setShort(++index, edge.getIntegrationType());
+			saveStatement.setLong(++index, revision.getChangeSetId());
+			saveStatement.setShort(++index, revision.getChangeType());
+			saveStatement.setLong(++index, revision.getSourceId());
+			saveStatement.setLong(++index, revision.getTargetId());
+			saveStatement.setShort(++index, revision.getConfidence());
+			saveStatement.setInt(++index, revision.getOldMode());
+			saveStatement.setInt(++index, revision.getNewMode());
+			saveStatement.setString(++index, revision.getOldHash());
+			saveStatement.setString(++index, revision.getNewHash());
+			saveStatement.setInt(++index, revision.getLinesIn());
+			saveStatement.setInt(++index, revision.getLinesOut());
 			
 			schedule(saveStatement);
 			
-			edge.setId(id);
+			revision.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -139,10 +146,10 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
-	                   final BranchEdge... objects) {
+	                   final Revision... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

@@ -36,7 +36,7 @@ import org.mozkito.core.libs.versions.model.Revision;
 import org.mozkito.core.libs.versions.model.SignOff;
 import org.mozkito.core.libs.versions.model.enums.ChangeType;
 import org.mozkito.libraries.logging.Logger;
-import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.IDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 import org.mozkito.skeleton.exec.Command;
@@ -85,13 +85,13 @@ public class ChangeSetMiner extends Task implements Runnable {
 	private final Map<String, Vertex>       vertexes              = new HashMap<String, Vertex>();
 	
 	/** The change set dumper. */
-	private final DatabaseDumper<ChangeSet> changeSetDumper;
+	private final IDumper<ChangeSet> changeSetDumper;
 	
 	/** The revision dumper. */
-	private final DatabaseDumper<Revision>  revisionDumper;
+	private final IDumper<Revision>  revisionDumper;
 	
 	/** The identity dumper. */
-	private final DatabaseDumper<Identity>  identityDumper;
+	private final IDumper<Identity>  identityDumper;
 	
 	/** The counter. */
 	private long                            counter               = 0;
@@ -100,7 +100,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 	private String                          line;
 	
 	/** The renaming dumper. */
-	private final DatabaseDumper<Renaming>  renamingDumper;
+	private final IDumper<Renaming>  renamingDumper;
 	
 	/** The identity cache. */
 	private final IdentityCache             identityCache;
@@ -109,7 +109,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 	private final FileCache                 fileCache;
 	
 	/** The signed off dumper. */
-	private final DatabaseDumper<SignOff>   signedOffDumper;
+	private final IDumper<SignOff>   signedOffDumper;
 	
 	/**
 	 * Instantiates a new change set miner.
@@ -138,10 +138,10 @@ public class ChangeSetMiner extends Task implements Runnable {
 	 *            the signed off dumper
 	 */
 	public ChangeSetMiner(final File cloneDir, final Depot depot, final Graph graph, final IdentityCache identityCache,
-	        final FileCache fileCache, final DatabaseDumper<Identity> identityDumper,
-	        final DatabaseDumper<ChangeSet> changeSetDumper, final DatabaseDumper<Revision> revisionDumper,
-	        final DatabaseDumper<Handle> handleDumper, final DatabaseDumper<Renaming> renamingDumper,
-	        final DatabaseDumper<SignOff> signedOffDumper) {
+	        final FileCache fileCache, final IDumper<Identity> identityDumper,
+	        final IDumper<ChangeSet> changeSetDumper, final IDumper<Revision> revisionDumper,
+	        final IDumper<Handle> handleDumper, final IDumper<Renaming> renamingDumper,
+	        final IDumper<SignOff> signedOffDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
 		this.graph = graph;

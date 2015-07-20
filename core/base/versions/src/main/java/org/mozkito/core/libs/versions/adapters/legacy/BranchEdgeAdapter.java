@@ -11,48 +11,46 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.versions.adapters;
+package org.mozkito.core.libs.versions.adapters.legacy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.Tag;
-import org.mozkito.libraries.sequel.AbstractAdapter;
+import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class TagAdapter.
+ * The Class GraphBranchAdapter.
  *
  * @author Sascha Just
  */
-public class TagAdapter extends AbstractAdapter<Tag> {
+public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	
 	/**
-	 * Instantiates a new tag adapter.
+	 * Instantiates a new graph branch adapter.
 	 *
 	 * @param type
-	 *            the database
+	 *            the type
 	 * @param mode
 	 *            the mode
 	 */
-	public TagAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "tag");
+	public BranchEdgeAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "branch_edge");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#create(java.sql.ResultSet)
 	 */
-	public Tag create(final ResultSet result) {
+	public BranchEdge create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -62,10 +60,10 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
-	                   final Tag object) {
+	                   final BranchEdge object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -75,9 +73,9 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<Tag> load(final Connection connection) {
+	public Iterator<BranchEdge> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -87,10 +85,10 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<Tag> load(final Connection connection,
-	                      final long... ids) {
+	public List<BranchEdge> load(final Connection connection,
+	                             final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -100,10 +98,10 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
-	public Tag load(final Connection connection,
-	                final long id) {
+	public BranchEdge load(final Connection connection,
+	                       final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -113,53 +111,26 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
-	public void save(final PreparedStatement statement,
+	public void save(final PreparedStatement saveStatement,
 	                 final long id,
-	                 final Tag entity) {
-		Requires.notNull(statement);
-		Requires.notNull(entity);
+	                 final BranchEdge edge) {
+		Requires.notNull(saveStatement);
+		Requires.notNull(edge);
 		
 		try {
 			int index = 0;
-			statement.setInt(++index, (int) id);
-			statement.setLong(++index, entity.getDepotId());
-			statement.setLong(++index, entity.getHeadId());
+			saveStatement.setLong(++index, id);
 			
-			if (entity.getName() == null) {
-				statement.setNull(++index, Types.VARCHAR);
-			} else {
-				statement.setString(++index, truncate(entity.getName(), 900));
-			}
+			saveStatement.setLong(++index, edge.getEdgeId());
+			saveStatement.setLong(++index, edge.getBranchId());
+			saveStatement.setShort(++index, edge.getNavigationType());
+			saveStatement.setShort(++index, edge.getIntegrationType());
 			
-			if (entity.getHash() == null) {
-				statement.setNull(++index, Types.VARCHAR);
-			} else {
-				statement.setString(++index, entity.getHash());
-			}
+			schedule(saveStatement);
 			
-			if (entity.getMessage() == null) {
-				statement.setNull(++index, Types.VARCHAR);
-			} else {
-				statement.setString(++index, entity.getMessage());
-			}
-			
-			if (entity.getIdentityId() == null) {
-				statement.setNull(++index, Types.BIGINT);
-			} else {
-				statement.setLong(++index, entity.getIdentityId());
-			}
-			
-			if (entity.getTimestamp() == null) {
-				statement.setNull(++index, Types.TIMESTAMP);
-			} else {
-				statement.setTimestamp(++index, Timestamp.from(entity.getTimestamp()));
-			}
-			
-			schedule(statement);
-			
-			entity.setId(id);
+			edge.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -168,10 +139,10 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
-	                   final Tag... objects) {
+	                   final BranchEdge... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

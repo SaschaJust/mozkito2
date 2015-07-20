@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.libraries.sequel;
+package org.mozkito.libraries.sequel.legacy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,6 +19,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+
+import org.mozkito.libraries.sequel.IEntity;
 
 /**
  * The Interface ISequelAdapter.
@@ -98,6 +100,13 @@ public interface IAdapter<T extends IEntity> {
 	 *             the SQL exception
 	 */
 	void execute(final PreparedStatement statement) throws SQLException;
+	
+	/**
+	 * Insert query.
+	 *
+	 * @return the string
+	 */
+	String saveStatement();
 	
 	/**
 	 * Load.

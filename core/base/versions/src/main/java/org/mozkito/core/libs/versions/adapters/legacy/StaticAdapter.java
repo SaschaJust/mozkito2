@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.versions.adapters;
+package org.mozkito.core.libs.versions.adapters.legacy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,9 +27,9 @@ import org.mozkito.core.libs.versions.model.enums.IntegrationMarker;
 import org.mozkito.core.libs.versions.model.enums.IntegrationType;
 import org.mozkito.core.libs.versions.model.enums.NavigationMarker;
 import org.mozkito.core.libs.versions.model.enums.ReferenceType;
-import org.mozkito.libraries.sequel.AbstractAdapter;
 import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
+import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 
 /**
  * @author Sascha Just
@@ -48,7 +48,7 @@ public class StaticAdapter extends AbstractAdapter<Static> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#create(java.sql.ResultSet)
 	 */
 	public Static create(final ResultSet result) {
 		// TODO Auto-generated method stub
@@ -60,7 +60,7 @@ public class StaticAdapter extends AbstractAdapter<Static> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.AbstractAdapter#createScheme(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.AbstractAdapter#createScheme(java.sql.Connection)
 	 */
 	@Override
 	public void createScheme(final Connection connection) {
@@ -141,7 +141,7 @@ public class StaticAdapter extends AbstractAdapter<Static> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
 	                   final Static object) {
@@ -154,7 +154,7 @@ public class StaticAdapter extends AbstractAdapter<Static> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection)
 	 */
 	public Iterator<Static> load(final Connection connection) {
 		// TODO Auto-generated method stub
@@ -166,7 +166,7 @@ public class StaticAdapter extends AbstractAdapter<Static> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
 	public List<Static> load(final Connection connection,
 	                         final long... ids) {
@@ -179,7 +179,7 @@ public class StaticAdapter extends AbstractAdapter<Static> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
 	public Static load(final Connection connection,
 	                   final long id) {
@@ -192,7 +192,7 @@ public class StaticAdapter extends AbstractAdapter<Static> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long,
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#save(java.sql.PreparedStatement, long,
 	 *      org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void save(final PreparedStatement saveStatement,
@@ -207,7 +207,7 @@ public class StaticAdapter extends AbstractAdapter<Static> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void update(final Connection connection,
 	                   final Static... objects) {

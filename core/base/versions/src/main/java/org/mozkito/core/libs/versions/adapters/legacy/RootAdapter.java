@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.versions.adapters;
+package org.mozkito.core.libs.versions.adapters.legacy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,134 +20,131 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.GraphEdge;
-import org.mozkito.libraries.sequel.AbstractAdapter;
+import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class GraphEdgeAdapter.
+ * The Class RootAdapter.
  *
  * @author Sascha Just
  */
-public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
-	
+public class RootAdapter extends AbstractAdapter<Root> {
+
 	/**
-	 * Instantiates a new graph edge adapter.
+	 * Instantiates a new Root adapter.
 	 *
 	 * @param type
-	 *            the type
+	 *            the database
 	 * @param mode
 	 *            the mode
 	 */
-	public GraphEdgeAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "edge");
+	public RootAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "root");
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#create(java.sql.ResultSet)
 	 */
-	public GraphEdge create(final ResultSet result) {
+	public Root create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
 	public void delete(final Connection connection,
-	                   final GraphEdge object) {
+	                   final Root object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<GraphEdge> load(final Connection connection) {
+	public Iterator<Root> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<GraphEdge> load(final Connection connection,
-	                            final long... ids) {
+	public List<Root> load(final Connection connection,
+	                       final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
-	public GraphEdge load(final Connection connection,
-	                      final long id) {
+	public Root load(final Connection connection,
+	                 final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
 	 */
-	public void save(final PreparedStatement saveStatement,
+	public void save(final PreparedStatement statement,
 	                 final long id,
-	                 final GraphEdge edge) {
-		Requires.notNull(saveStatement);
-		Requires.notNull(edge);
-		
+	                 final Root root) {
+		Requires.notNull(statement);
+		Requires.notNull(root);
+
 		try {
-			
-			int index = 0;
-			saveStatement.setLong(++index, id);
-			
-			saveStatement.setLong(++index, edge.depotId);
-			saveStatement.setLong(++index, edge.sourceId);
-			saveStatement.setLong(++index, edge.targetId);
-			saveStatement.setShort(++index, edge.marker);
-			
-			schedule(saveStatement);
-			
-			edge.setId(id);
+			int index;
+			index = 0;
+			statement.setInt(++index, (int) id);
+			statement.setLong(++index, root.getBranchId());
+			statement.setLong(++index, root.getChangeSetId());
+
+			schedule(statement);
+
+			root.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
-	                   final GraphEdge... objects) {
+	                   final Root... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
-		
+
 	}
-	
+
 }

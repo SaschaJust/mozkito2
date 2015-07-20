@@ -26,7 +26,7 @@ import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.enums.BranchMarker;
 import org.mozkito.core.libs.versions.model.enums.IntegrationType;
 import org.mozkito.core.libs.versions.model.enums.ReferenceType;
-import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.IDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.exec.Command;
 
@@ -47,13 +47,13 @@ public class GraphMiner extends Task implements Runnable {
 	private final Map<String, Vertex>                  vertices;
 	
 	/** The graph dumper. */
-	private final DatabaseDumper<Graph>                graphDumper;
+	private final IDumper<Graph>                graphDumper;
 	
 	/** The graph edge dumper. */
-	private final DatabaseDumper<GraphEdge>            graphEdgeDumper;
+	private final IDumper<GraphEdge>            graphEdgeDumper;
 	
 	/** The integration dumper. */
-	private final DatabaseDumper<ChangeSetIntegration> integrationDumper;
+	private final IDumper<ChangeSetIntegration> integrationDumper;
 	
 	/**
 	 * Instantiates a new graph miner.
@@ -74,8 +74,8 @@ public class GraphMiner extends Task implements Runnable {
 	 *            the integration dumper
 	 */
 	public GraphMiner(final Depot depot, final File cloneDir, final Graph graph, final Map<String, Vertex> vertices,
-	        final DatabaseDumper<Graph> graphDumper, final DatabaseDumper<GraphEdge> graphEdgeDumper,
-	        final DatabaseDumper<ChangeSetIntegration> integrationDumper) {
+	        final IDumper<Graph> graphDumper, final IDumper<GraphEdge> graphEdgeDumper,
+	        final IDumper<ChangeSetIntegration> integrationDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
 		this.graph = graph;

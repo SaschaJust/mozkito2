@@ -18,7 +18,7 @@ import java.util.Map;
 
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Identity;
-import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.IDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 
@@ -37,7 +37,7 @@ public class IdentityCache {
 	private final Map<Identity, Identity>  identities       = new HashMap<>();
 	
 	/** The dumper. */
-	private final DatabaseDumper<Identity> dumper;
+	private final IDumper<Identity> dumper;
 	
 	/**
 	 * Instantiates a new identity cache.
@@ -45,7 +45,7 @@ public class IdentityCache {
 	 * @param dumper
 	 *            the dumper
 	 */
-	public IdentityCache(final DatabaseDumper<Identity> dumper) {
+	public IdentityCache(final IDumper<Identity> dumper) {
 		Requires.notNull(dumper);
 		this.dumper = dumper;
 		

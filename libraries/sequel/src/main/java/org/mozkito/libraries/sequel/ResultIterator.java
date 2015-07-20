@@ -17,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
+import org.mozkito.libraries.sequel.legacy.IAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
 /**

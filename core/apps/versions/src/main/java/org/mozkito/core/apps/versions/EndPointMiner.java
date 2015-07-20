@@ -27,7 +27,7 @@ import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.core.libs.versions.model.enums.IntegrationType;
 import org.mozkito.core.libs.versions.model.enums.ReferenceType;
-import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.IDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.datastructures.BidirectionalMultiMap;
 import org.mozkito.skeleton.exec.Command;
@@ -52,12 +52,12 @@ public class EndPointMiner extends Task implements Runnable {
 	private final Graph                                    graph;
 	
 	/** The head dumper. */
-	private final DatabaseDumper<Head>                     headDumper;
+	private final IDumper<Head>                            headDumper;
 	
 	/** The root dumper. */
-	private final DatabaseDumper<Root>                     rootDumper;
+	private final IDumper<Root>                            rootDumper;
 	
-	private final DatabaseDumper<ChangeSetIntegration>     integrationDumper;
+	private final IDumper<ChangeSetIntegration>            integrationDumper;
 	
 	/**
 	 * Instantiates a new end point miner.
@@ -80,8 +80,8 @@ public class EndPointMiner extends Task implements Runnable {
 	 *            the integration dumper
 	 */
 	public EndPointMiner(final Depot depot, final File cloneDir, final BidirectionalMultiMap<String, Reference> heads,
-	        final Map<String, Vertex> vertices, final Graph graph, final DatabaseDumper<Head> headDumper,
-	        final DatabaseDumper<Root> rootDumper, final DatabaseDumper<ChangeSetIntegration> integrationDumper) {
+	        final Map<String, Vertex> vertices, final Graph graph, final IDumper<Head> headDumper,
+	        final IDumper<Root> rootDumper, final IDumper<ChangeSetIntegration> integrationDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
 		this.refs = heads;

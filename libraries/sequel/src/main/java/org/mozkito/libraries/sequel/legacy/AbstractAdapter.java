@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.libraries.sequel;
+package org.mozkito.libraries.sequel.legacy;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -20,6 +20,9 @@ import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.mozkito.libraries.logging.Logger;
+import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.DatabaseManager;
+import org.mozkito.libraries.sequel.IEntity;
 import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
 import org.mozkito.skeleton.contracts.Requires;
@@ -57,6 +60,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/** The current id. */
 	private final AtomicLong currentId = new AtomicLong(0);
 	
+	/** The create foreign keys resource. */
 	private final String     createForeignKeysResource;
 	
 	/**
@@ -83,7 +87,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#createConstraints(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#createConstraints(java.sql.Connection)
 	 */
 	public void createConstraints(final Connection connection) {
 		try {
@@ -96,7 +100,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#createForeignKeys(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#createForeignKeys(java.sql.Connection)
 	 */
 	public void createForeignKeys(final Connection connection) {
 		try {
@@ -109,7 +113,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#createIndexes(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#createIndexes(java.sql.Connection)
 	 */
 	public void createIndexes(final Connection connection) {
 		try {
@@ -122,7 +126,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#createPrimaryKeys(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#createPrimaryKeys(java.sql.Connection)
 	 */
 	public void createPrimaryKeys(final Connection connection) {
 		try {
@@ -135,7 +139,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#createScheme(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#createScheme(java.sql.Connection)
 	 */
 	public void createScheme(final Connection connection) {
 		try {
@@ -187,7 +191,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#nextId()
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#nextId()
 	 */
 	public long nextId() {
 		return this.currentId.incrementAndGet();
@@ -196,7 +200,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#prepareSaveStatement(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#prepareSaveStatement(java.sql.Connection)
 	 */
 	public PreparedStatement prepareSaveStatement(final Connection connection) {
 		try {
@@ -209,7 +213,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#save(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void save(final Connection connection,
 	                 @SuppressWarnings ("unchecked") final T... entities) {
@@ -229,6 +233,15 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#saveStatement()
+	 */
+	public String saveStatement() {
+		return this.saveStatement;
 	}
 	
 	/**

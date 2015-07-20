@@ -23,7 +23,7 @@ import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Tag;
-import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.IDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.datastructures.BidirectionalMultiMap;
 import org.mozkito.skeleton.exec.Command;
@@ -81,7 +81,7 @@ public class TagMiner extends Task implements Runnable {
 	private final BidirectionalMultiMap<String, Reference> tags      = new BidirectionalMultiMap<>();
 	
 	/** The branch dumper. */
-	private final DatabaseDumper<Tag>                      tagDumper;
+	private final IDumper<Tag>                      tagDumper;
 	
 	/** The identity cache. */
 	private final IdentityCache                            identityCache;
@@ -90,9 +90,9 @@ public class TagMiner extends Task implements Runnable {
 	private final Map<String, Vertex>                      vertices;
 	
 	/** The reference dumper. */
-	private final DatabaseDumper<Reference>                referenceDumper;
+	private final IDumper<Reference>                referenceDumper;
 	
-	private final DatabaseDumper<Identity>                 identityDumper;
+	private final IDumper<Identity>                 identityDumper;
 	
 	/**
 	 * Instantiates a new branch miner.
@@ -113,8 +113,8 @@ public class TagMiner extends Task implements Runnable {
 	 *            the identity dumper
 	 */
 	public TagMiner(final File cloneDir, final Depot depot, final Map<String, Vertex> vertices,
-	        final IdentityCache identityCache, final DatabaseDumper<Tag> tagDumper,
-	        final DatabaseDumper<Reference> referenceDumper, final DatabaseDumper<Identity> identityDumper) {
+	        final IdentityCache identityCache, final IDumper<Tag> tagDumper,
+	        final IDumper<Reference> referenceDumper, final IDumper<Identity> identityDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
 		this.vertices = vertices;

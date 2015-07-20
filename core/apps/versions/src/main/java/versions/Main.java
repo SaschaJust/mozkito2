@@ -39,23 +39,23 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.mozkito.core.apps.versions.TaskRunner;
 import org.mozkito.core.apps.versions.TaskRunner.Task;
 import org.mozkito.core.libs.versions.IdentityCache;
-import org.mozkito.core.libs.versions.adapters.BranchAdapter;
-import org.mozkito.core.libs.versions.adapters.BranchEdgeAdapter;
-import org.mozkito.core.libs.versions.adapters.ChangeSetAdapter;
-import org.mozkito.core.libs.versions.adapters.ChangeSetTypeAdapter;
-import org.mozkito.core.libs.versions.adapters.ConvergenceEdgeAdapter;
-import org.mozkito.core.libs.versions.adapters.DepotAdapter;
-import org.mozkito.core.libs.versions.adapters.GraphAdapter;
-import org.mozkito.core.libs.versions.adapters.GraphEdgeAdapter;
-import org.mozkito.core.libs.versions.adapters.HandleAdapter;
-import org.mozkito.core.libs.versions.adapters.HeadAdapter;
-import org.mozkito.core.libs.versions.adapters.IdentityAdapter;
-import org.mozkito.core.libs.versions.adapters.RenamingAdapter;
-import org.mozkito.core.libs.versions.adapters.RevisionAdapter;
-import org.mozkito.core.libs.versions.adapters.RootAdapter;
-import org.mozkito.core.libs.versions.adapters.SignOffAdapter;
-import org.mozkito.core.libs.versions.adapters.StaticAdapter;
-import org.mozkito.core.libs.versions.adapters.TagAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.BranchAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.BranchEdgeAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.ChangeSetAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.ChangeSetTypeAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.ConvergenceEdgeAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.DepotAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.GraphAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.GraphEdgeAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.HandleAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.HeadAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.IdentityAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.RenamingAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.RevisionAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.RootAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.SignOffAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.StaticAdapter;
+import org.mozkito.core.libs.versions.adapters.legacy.TagAdapter;
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.ChangeSet;
@@ -78,7 +78,8 @@ import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
-import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.legacy.LegacyDumper;
+import org.mozkito.libraries.sequel.IDumper;
 import org.mozkito.libraries.sequel.MozkitoHandler;
 
 /**
@@ -354,45 +355,41 @@ public class Main {
 			
 			database.createScheme();
 			
-			final DatabaseDumper<Identity> identityDumper = new DatabaseDumper<>(database.getAdapter(Identity.class),
-			                                                                     database.getConnection());
-			final DatabaseDumper<ChangeSet> changeSetDumper = new DatabaseDumper<>(
-			                                                                       database.getAdapter(ChangeSet.class),
-			                                                                       database.getConnection());
-			final DatabaseDumper<Revision> revisionDumper = new DatabaseDumper<>(database.getAdapter(Revision.class),
-			                                                                     database.getConnection());
-			final DatabaseDumper<Reference> branchDumper = new DatabaseDumper<>(database.getAdapter(Reference.class),
-			                                                                    database.getConnection());
-			final DatabaseDumper<Handle> handleDumper = new DatabaseDumper<>(database.getAdapter(Handle.class),
-			                                                                 database.getConnection());
-			final DatabaseDumper<Graph> graphDumper = new DatabaseDumper<>(database.getAdapter(Graph.class),
-			                                                               database.getConnection());
-			final DatabaseDumper<Depot> depotDumper = new DatabaseDumper<>(database.getAdapter(Depot.class),
-			                                                               database.getConnection());
-			final DatabaseDumper<Renaming> renamingDumper = new DatabaseDumper<>(database.getAdapter(Renaming.class),
-			                                                                     database.getConnection());
-			final DatabaseDumper<ChangeSetIntegration> integrationDumper = new DatabaseDumper<>(
-			                                                                                    database.getAdapter(ChangeSetIntegration.class),
-			                                                                                    database.getConnection());
-			final DatabaseDumper<Tag> tagDumper = new DatabaseDumper<>(database.getAdapter(Tag.class),
+			final IDumper<Identity> identityDumper = new LegacyDumper<>(database.getAdapter(Identity.class),
+			                                                            database.getConnection());
+			final IDumper<ChangeSet> changeSetDumper = new LegacyDumper<>(database.getAdapter(ChangeSet.class),
+			                                                              database.getConnection());
+			final IDumper<Revision> revisionDumper = new LegacyDumper<>(database.getAdapter(Revision.class),
+			                                                            database.getConnection());
+			final IDumper<Reference> branchDumper = new LegacyDumper<>(database.getAdapter(Reference.class),
 			                                                           database.getConnection());
+			final IDumper<Handle> handleDumper = new LegacyDumper<>(database.getAdapter(Handle.class),
+			                                                        database.getConnection());
+			final IDumper<Graph> graphDumper = new LegacyDumper<>(database.getAdapter(Graph.class),
+			                                                      database.getConnection());
+			final IDumper<Depot> depotDumper = new LegacyDumper<>(database.getAdapter(Depot.class),
+			                                                      database.getConnection());
+			final IDumper<Renaming> renamingDumper = new LegacyDumper<>(database.getAdapter(Renaming.class),
+			                                                            database.getConnection());
+			final IDumper<ChangeSetIntegration> integrationDumper = new LegacyDumper<>(
+			                                                                           database.getAdapter(ChangeSetIntegration.class),
+			                                                                           database.getConnection());
+			final IDumper<Tag> tagDumper = new LegacyDumper<>(database.getAdapter(Tag.class), database.getConnection());
 			
-			final DatabaseDumper<GraphEdge> graphEdgeDumper = new DatabaseDumper<>(
-			                                                                       database.getAdapter(GraphEdge.class),
-			                                                                       database.getConnection());
-			final DatabaseDumper<BranchEdge> branchEdgeDumper = new DatabaseDumper<>(
-			                                                                         database.getAdapter(BranchEdge.class),
-			                                                                         database.getConnection());
-			final DatabaseDumper<Head> headDumper = new DatabaseDumper<>(database.getAdapter(Head.class),
-			                                                             database.getConnection());
-			final DatabaseDumper<Root> rootDumper = new DatabaseDumper<>(database.getAdapter(Root.class),
-			                                                             database.getConnection());
-			final DatabaseDumper<ConvergenceEdge> convergenceDumper = new DatabaseDumper<>(
-			                                                                               database.getAdapter(ConvergenceEdge.class),
-			                                                                               database.getConnection());
+			final IDumper<GraphEdge> graphEdgeDumper = new LegacyDumper<>(database.getAdapter(GraphEdge.class),
+			                                                              database.getConnection());
+			final IDumper<BranchEdge> branchEdgeDumper = new LegacyDumper<>(database.getAdapter(BranchEdge.class),
+			                                                                database.getConnection());
+			final IDumper<Head> headDumper = new LegacyDumper<>(database.getAdapter(Head.class),
+			                                                    database.getConnection());
+			final IDumper<Root> rootDumper = new LegacyDumper<>(database.getAdapter(Root.class),
+			                                                    database.getConnection());
+			final IDumper<ConvergenceEdge> convergenceDumper = new LegacyDumper<>(
+			                                                                      database.getAdapter(ConvergenceEdge.class),
+			                                                                      database.getConnection());
 			
-			final DatabaseDumper<SignOff> signedOffDumper = new DatabaseDumper<>(database.getAdapter(SignOff.class),
-			                                                                     database.getConnection());
+			final IDumper<SignOff> signedOffDumper = new LegacyDumper<>(database.getAdapter(SignOff.class),
+			                                                            database.getConnection());
 			
 			identityDumper.start();
 			changeSetDumper.start();

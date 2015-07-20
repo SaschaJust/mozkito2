@@ -24,7 +24,7 @@ import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.Database;
-import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.IDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Contract;
 import org.mozkito.skeleton.datastructures.BidirectionalMultiMap;
@@ -48,7 +48,7 @@ public class BranchMiner extends Task implements Runnable {
 	private final BidirectionalMultiMap<String, Reference> branchHeadHashes = new BidirectionalMultiMap<>();
 	
 	/** The branch dumper. */
-	private final DatabaseDumper<Reference>                referenceDumper;
+	private final IDumper<Reference>                referenceDumper;
 	
 	/** The vertices. */
 	private final Map<String, Vertex>                      vertices;
@@ -66,7 +66,7 @@ public class BranchMiner extends Task implements Runnable {
 	 *            the branch dumper
 	 */
 	public BranchMiner(final File cloneDir, final Depot depot, final Map<String, Vertex> changeSets,
-	        final DatabaseDumper<Reference> referenceDumper) {
+	        final IDumper<Reference> referenceDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
 		this.referenceDumper = referenceDumper;

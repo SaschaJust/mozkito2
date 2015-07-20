@@ -11,47 +11,48 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.versions.adapters;
+package org.mozkito.core.libs.versions.adapters.legacy;
 
-import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.Depot;
-import org.mozkito.libraries.sequel.AbstractAdapter;
+import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.libraries.sequel.Database;
+import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
+import org.mozkito.skeleton.contracts.Requires;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class DepotAdapter.
+ * The Class BranchAdapter.
  *
  * @author Sascha Just
  */
-public class DepotAdapter extends AbstractAdapter<Depot> {
+public class BranchAdapter extends AbstractAdapter<Reference> {
+	
+	/** The current id. */
+	public static long currentId = 0l;
 	
 	/**
-	 * Instantiates a new depot adapter.
+	 * Instantiates a new branch adapter.
 	 *
 	 * @param type
 	 *            the type
 	 * @param mode
 	 *            the mode
 	 */
-	public DepotAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "depot");
+	public BranchAdapter(final Database.Type type, final Database.TxMode mode) {
+		super(type, mode, "ref");
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#create(java.sql.ResultSet)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#create(java.sql.ResultSet)
 	 */
-	public Depot create(final ResultSet result) {
+	public Reference create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -61,10 +62,10 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#delete(java.sql.Connection, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
-	                   final Depot object) {
+	                   final Reference object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -74,9 +75,9 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<Depot> load(final Connection connection) {
+	public Iterator<Reference> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -86,10 +87,10 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<Depot> load(final Connection connection,
-	                        final long... ids) {
+	public List<Reference> load(final Connection connection,
+	                            final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -99,10 +100,10 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#load(java.sql.Connection, long)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
-	public Depot load(final Connection connection,
-	                  final long id) {
+	public Reference load(final Connection connection,
+	                      final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -112,34 +113,38 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#save(java.sql.PreparedStatement, long, java.lang.Object)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#save(java.sql.PreparedStatement, long,
+	 *      org.mozkito.libraries.sequel.IEntity)
 	 */
-	public void save(final PreparedStatement saveStatement,
+	public void save(final PreparedStatement statement,
 	                 final long id,
-	                 final Depot depot) {
+	                 final Reference reference) {
+		Requires.notNull(statement);
+		Requires.notNull(reference);
+		
 		try {
-			
 			int index = 0;
-			saveStatement.setLong(++index, id);
-			saveStatement.setString(++index, truncate(depot.getName(), 900));
-			saveStatement.setString(++index, truncate(depot.getOrigin().toURL().toString(), 900));
-			saveStatement.setTimestamp(++index, Timestamp.from(depot.getMined()));
-			schedule(saveStatement);
+			statement.setInt(++index, (int) id);
 			
-			depot.setId(id);
-		} catch (SQLException | MalformedURLException e) {
+			statement.setShort(++index, reference.getType().getValue());
+			statement.setLong(++index, reference.getDepotId());
+			statement.setString(++index, truncate(reference.getName(), 900));
+			
+			schedule(statement);
+			
+			reference.setId(id);
+		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
-		
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.IAdapter#update(java.sql.Connection, java.lang.Object[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void update(final Connection connection,
-	                   final Depot... objects) {
+	                   final Reference... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

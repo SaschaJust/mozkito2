@@ -22,7 +22,7 @@ import org.mozkito.core.libs.versions.graph.Label;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Reference;
-import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.IDumper;
 
 /**
  * The Class IntegrationMiner.
@@ -34,7 +34,7 @@ public class IntegrationMiner extends Task implements Runnable {
 	static final String                      ORIGIN = "origin/";
 	
 	/** The integration type dumper. */
-	private final DatabaseDumper<BranchEdge> branchEdgeDumper;
+	private final IDumper<BranchEdge> branchEdgeDumper;
 	
 	private final Graph                      graph;
 	
@@ -48,7 +48,7 @@ public class IntegrationMiner extends Task implements Runnable {
 	 * @param branchEdgeDumper
 	 *            the branch edge dumper
 	 */
-	public IntegrationMiner(final Depot depot, final Graph graph, final DatabaseDumper<BranchEdge> branchEdgeDumper) {
+	public IntegrationMiner(final Depot depot, final Graph graph, final IDumper<BranchEdge> branchEdgeDumper) {
 		super(depot);
 		this.graph = graph;
 		this.branchEdgeDumper = branchEdgeDumper;

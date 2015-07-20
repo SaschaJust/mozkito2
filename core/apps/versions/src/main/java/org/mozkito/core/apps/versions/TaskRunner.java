@@ -43,7 +43,7 @@ import org.mozkito.core.libs.versions.model.Root;
 import org.mozkito.core.libs.versions.model.SignOff;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.logging.Logger;
-import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.IDumper;
 import org.mozkito.libraries.sequel.MozkitoHandler;
 import org.mozkito.skeleton.commons.URIUtils;
 import org.mozkito.skeleton.datastructures.BidirectionalMultiMap;
@@ -87,68 +87,68 @@ public class TaskRunner implements Runnable {
 	}
 	
 	/** The work dir. */
-	private final File                                 workDir;
+	private final File                          workDir;
 	
 	/** The clone dir. */
-	private final File                                 cloneDir;
+	private final File                          cloneDir;
 	
 	/** The graph. */
-	private final Graph                                graph;
+	private final Graph                         graph;
 	
 	/** The uri. */
-	private final URI                                  uri;
+	private final URI                           uri;
 	
 	/** The tasks. */
-	private final Task[]                               tasks;
+	private final Task[]                        tasks;
 	
 	/** The depot. */
-	private final Depot                                depot;
+	private final Depot                         depot;
 	
 	/** The clone name. */
-	private final String                               cloneName;
+	private final String                        cloneName;
 	
 	/** The change set dumper. */
-	private final DatabaseDumper<ChangeSet>            changeSetDumper;
+	private final IDumper<ChangeSet>            changeSetDumper;
 	
 	/** The identity dumper. */
-	private final DatabaseDumper<Identity>             identityDumper;
+	private final IDumper<Identity>             identityDumper;
 	
 	/** The revision dumper. */
-	private final DatabaseDumper<Revision>             revisionDumper;
+	private final IDumper<Revision>             revisionDumper;
 	
 	/** The branch dumper. */
-	private final DatabaseDumper<Reference>            branchDumper;
+	private final IDumper<Reference>            branchDumper;
 	
 	/** The handle dumper. */
-	private final DatabaseDumper<Handle>               handleDumper;
+	private final IDumper<Handle>               handleDumper;
 	
 	/** The graph dumper. */
-	private final DatabaseDumper<Graph>                graphDumper;
+	private final IDumper<Graph>                graphDumper;
 	
 	/** The depot dumper. */
-	private final DatabaseDumper<Depot>                depotDumper;
+	private final IDumper<Depot>                depotDumper;
 	
-	private final DatabaseDumper<Renaming>             renamingDumper;
+	private final IDumper<Renaming>             renamingDumper;
 	
-	private final IdentityCache                        identityCache;
+	private final IdentityCache                 identityCache;
 	
-	private final FileCache                            fileCache;
+	private final FileCache                     fileCache;
 	
-	private final DatabaseDumper<ChangeSetIntegration> integrationDumper;
+	private final IDumper<ChangeSetIntegration> integrationDumper;
 	
-	private final DatabaseDumper<Tag>                  tagDumper;
+	private final IDumper<Tag>                  tagDumper;
 	
-	private final DatabaseDumper<GraphEdge>            graphEdgeDumper;
+	private final IDumper<GraphEdge>            graphEdgeDumper;
 	
-	private final DatabaseDumper<BranchEdge>           branchEdgeDumper;
+	private final IDumper<BranchEdge>           branchEdgeDumper;
 	
-	private final DatabaseDumper<ConvergenceEdge>      convergenceDumper;
+	private final IDumper<ConvergenceEdge>      convergenceDumper;
 	
-	private final DatabaseDumper<Head>                 headDumper;
+	private final IDumper<Head>                 headDumper;
 	
-	private final DatabaseDumper<Root>                 rootDumper;
+	private final IDumper<Root>                 rootDumper;
 	
-	private final DatabaseDumper<SignOff>              signedOffDumper;
+	private final IDumper<SignOff>              signedOffDumper;
 	
 	/**
 	 * Instantiates a new task runner.
@@ -197,15 +197,14 @@ public class TaskRunner implements Runnable {
 	 *            the signed off dumper
 	 */
 	public TaskRunner(final File baseDir, final File workDir, final URI depotURI, final Task[] tasks,
-	        final IdentityCache identityCache, final DatabaseDumper<Identity> identityDumper,
-	        final DatabaseDumper<ChangeSet> changeSetDumper, final DatabaseDumper<Revision> revisionDumper,
-	        final DatabaseDumper<Reference> branchDumper, final DatabaseDumper<Handle> handleDumper,
-	        final DatabaseDumper<Graph> graphDumper, final DatabaseDumper<Depot> depotDumper,
-	        final DatabaseDumper<Renaming> renamingDumper,
-	        final DatabaseDumper<ChangeSetIntegration> integrationDumper, final DatabaseDumper<Tag> tagDumper,
-	        final DatabaseDumper<GraphEdge> graphEdgeDumper, final DatabaseDumper<BranchEdge> branchEdgeDumper,
-	        final DatabaseDumper<Head> headDumper, final DatabaseDumper<Root> rootDumper,
-	        final DatabaseDumper<ConvergenceEdge> convergenceDumper, final DatabaseDumper<SignOff> signedOffDumper) {
+	        final IdentityCache identityCache, final IDumper<Identity> identityDumper,
+	        final IDumper<ChangeSet> changeSetDumper, final IDumper<Revision> revisionDumper,
+	        final IDumper<Reference> branchDumper, final IDumper<Handle> handleDumper,
+	        final IDumper<Graph> graphDumper, final IDumper<Depot> depotDumper, final IDumper<Renaming> renamingDumper,
+	        final IDumper<ChangeSetIntegration> integrationDumper, final IDumper<Tag> tagDumper,
+	        final IDumper<GraphEdge> graphEdgeDumper, final IDumper<BranchEdge> branchEdgeDumper,
+	        final IDumper<Head> headDumper, final IDumper<Root> rootDumper,
+	        final IDumper<ConvergenceEdge> convergenceDumper, final IDumper<SignOff> signedOffDumper) {
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
 		this.identityDumper = identityDumper;

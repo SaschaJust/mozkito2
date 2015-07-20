@@ -25,7 +25,7 @@ import org.mozkito.core.libs.versions.model.ChangeSet;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Handle;
 import org.mozkito.core.libs.versions.model.Renaming;
-import org.mozkito.libraries.sequel.DatabaseDumper;
+import org.mozkito.libraries.sequel.IDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 
@@ -58,7 +58,7 @@ public class FileCache {
 		public abstract void delete();
 	}
 	
-	private final DatabaseDumper<Handle> dumper;
+	private final IDumper<Handle> dumper;
 	
 	/** The depot. */
 	private final Depot                  depot;
@@ -86,7 +86,7 @@ public class FileCache {
 	 * @param handleDumper
 	 *            the handle dumper
 	 */
-	public FileCache(final Depot depot, final DatabaseDumper<Handle> handleDumper) {
+	public FileCache(final Depot depot, final IDumper<Handle> handleDumper) {
 		this.dumper = handleDumper;
 		this.depot = depot;
 	}

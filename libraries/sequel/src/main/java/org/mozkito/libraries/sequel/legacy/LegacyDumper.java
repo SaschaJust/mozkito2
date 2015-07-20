@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.libraries.sequel;
+package org.mozkito.libraries.sequel.legacy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,6 +19,9 @@ import java.sql.SQLException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mozkito.libraries.logging.Logger;
+import org.mozkito.libraries.sequel.IDumper;
+import org.mozkito.libraries.sequel.IEntity;
+import org.mozkito.libraries.sequel.MozkitoHandler;
 
 /**
  * The Class DatabaseDumper.
@@ -27,7 +30,7 @@ import org.mozkito.libraries.logging.Logger;
  * @param <T>
  *            the generic type
  */
-public class DatabaseDumper<T extends IEntity> extends Thread {
+public class LegacyDumper<T extends IEntity> extends Thread implements IDumper<T> {
 	
 	/** The batch size. */
 	private static int                     BATCH_SIZE = 1000;
@@ -44,7 +47,16 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 	/** The terminate. */
 	private volatile boolean               terminate  = false;
 	
+	/** The processed. */
 	private long                           processed  = 0;
+	
+	/**
+	 * Instantiates a new database dumper.
+	 */
+	protected LegacyDumper() {
+		this.adapter = null;
+		this.save = null;
+	}
 	
 	/**
 	 * Instantiates a new database dumper.
@@ -54,7 +66,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 	 * @param connection
 	 *            the connection
 	 */
-	public DatabaseDumper(final IAdapter<T> adapter, final Connection connection) {
+	public LegacyDumper(final IAdapter<T> adapter, final Connection connection) {
 		super(adapter.getClass().getSimpleName() + "->DatabaseDumper");
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
@@ -65,7 +77,7 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see java.lang.Thread#run()
+	 * @see org.mozkito.libraries.sequel.IDumper#run()
 	 */
 	@Override
 	public void run() {
@@ -124,19 +136,22 @@ public class DatabaseDumper<T extends IEntity> extends Thread {
 	}
 	
 	/**
-	 * Save later.
-	 *
-	 * @param entity
-	 *            the entity
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.libraries.sequel.IDumper#saveLater(org.mozkito.libraries.sequel.IEntity)
 	 */
+	@Override
 	public void saveLater(final T entity) {
 		entity.setId(this.adapter.nextId());
 		this.queue.add(entity);
 	}
 	
 	/**
-	 * Terminate.
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.libraries.sequel.IDumper#terminate()
 	 */
+	@Override
 	public void terminate() {
 		this.terminate = true;
 	}
