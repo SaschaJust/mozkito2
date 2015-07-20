@@ -47,9 +47,9 @@ public class IdentityCache {
 	 */
 	public IdentityCache(final DatabaseDumper<Identity> dumper) {
 		Requires.notNull(dumper);
+		this.dumper = dumper;
 		
 		getUnknown();
-		this.dumper = dumper;
 	}
 	
 	/**
