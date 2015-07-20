@@ -101,6 +101,7 @@ public class PostgresWriter implements IWriter {
 	public void flush() {
 		try {
 			if (this.writes > this.lastFlush) {
+				this.builder.append("\\.\n");
 				this.copyIn.writeToCopy(this.builder.toString().getBytes(), 0, this.builder.length());
 				this.copyIn.endCopy();
 				this.copyIn = this.manager.copyIn(this.statementString);
@@ -130,7 +131,8 @@ public class PostgresWriter implements IWriter {
 			} else {
 				this.isConstructing = true;
 			}
-			this.builder.append(param.toString().replace("\\", "\\b").replace(System.lineSeparator(), "\\n"));
+			this.builder.append(param.toString().replace("\t", "\\t").replace("\\", "\\b")
+			                         .replace(System.lineSeparator(), "\\n"));
 		}
 		this.builder.append('\n');
 		this.isConstructing = false;
