@@ -17,7 +17,6 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.regex.Pattern;
 
 import org.postgresql.PGConnection;
@@ -98,7 +97,7 @@ public class PostgresWriter implements IWriter {
 	 *            the connection
 	 */
 	public PostgresWriter(final String query, final Connection connection) {
-		this(query, connection, 1);
+		this(query, connection, 10000);
 		// COPY measurement FROM STDIN WITH CSV
 	}
 	
@@ -171,14 +170,11 @@ public class PostgresWriter implements IWriter {
 			if (param == null) {
 				entry = NULL_STRING;
 			} else {
-				final Instant start = Instant.now();
 				entry = param.toString();
 				entry = BACKSPACE_PATTERN.matcher(entry).replaceAll(BACKSPACE_STRING);
 				entry = TAB_PATTERN.matcher(entry).replaceAll(TAB_STRING);
 				entry = NEWLINE_PATTERN.matcher(entry).replaceAll(NEWLINE_STRING);
 				entry = QUOTE_PATTERN.matcher(entry).replaceAll(ESCAPED_QUOTE_STRING);
-				this.spent.plus(Duration.between(start, Instant.now()));
-				System.err.println(this.spent);
 			}
 			entry = QUOTE_STRING + entry + QUOTE_STRING;
 			this.builder.append(entry);
