@@ -40,6 +40,9 @@ public class PostgresWriter implements IWriter {
 	/** The Constant BACKSPACE_STRING. */
 	private static final String BACKSPACE_STRING = "\\b";
 	
+	/** The null string. */
+	private static final String NULL_STRING      = "\\N";
+	
 	/** The builder. */
 	private final StringBuilder builder;
 	
@@ -66,9 +69,6 @@ public class PostgresWriter implements IWriter {
 	
 	/** The delimiter char. */
 	private final char          delimiterChar    = '\t';
-	
-	/** The null string. */
-	private final String        nullString       = "\\N";
 	
 	/**
 	 * Instantiates a new postgres writer.
@@ -115,6 +115,7 @@ public class PostgresWriter implements IWriter {
 	public void flush() {
 		try {
 			if (this.writes > this.lastFlush) {
+				this.builder.delete(this.builder.length() - 1, this.builder.length());
 				this.copyIn.writeToCopy(this.builder.toString().getBytes("UTF-8"), 0, this.builder.length());
 				this.copyIn.endCopy();
 				this.copyIn = this.manager.copyIn(this.statementString);
@@ -146,9 +147,9 @@ public class PostgresWriter implements IWriter {
 				this.isConstructing = true;
 			}
 			this.builder.append(param == null
-			                                 ? this.nullString
-			                                 : param.toString().replace("\t", TAB_STRING)
-			                                        .replace("\\", BACKSPACE_STRING)
+			                                 ? PostgresWriter.NULL_STRING
+			                                 : param.toString().replace("\\", BACKSPACE_STRING)
+			                                        .replace("\t", TAB_STRING)
 			                                        .replace(System.lineSeparator(), NEWLINE_STRING));
 		}
 		this.builder.append('\n');
