@@ -27,7 +27,7 @@ import org.mozkito.skeleton.contracts.Requires;
  *
  * @author Sascha Just
  */
-public class PostgresWriter extends BulkWriter {
+public class PostgresWriter implements IWriter {
 	
 	/** The builder. */
 	private final StringBuilder builder;
@@ -43,6 +43,15 @@ public class PostgresWriter extends BulkWriter {
 	
 	/** The copy in. */
 	private CopyIn              copyIn;
+	
+	/** The statement string. */
+	private final String        statementString;
+	
+	/** The writes. */
+	private int                 writes    = 0;
+	
+	/** The batch size. */
+	private final int           batchSize;
 	
 	/**
 	 * Instantiates a new postgres writer.
@@ -68,12 +77,13 @@ public class PostgresWriter extends BulkWriter {
 	 *            the batch size
 	 */
 	public PostgresWriter(final String query, final Connection connection, final int batchSize) {
-		super(query, connection, batchSize);
 		this.builder = new StringBuilder();
+		this.statementString = query;
+		this.batchSize = batchSize;
 		
 		try {
 			this.manager = ((PGConnection) connection).getCopyAPI();
-			this.copyIn = this.manager.copyIn(query);
+			this.copyIn = this.manager.copyIn(this.statementString);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -89,7 +99,7 @@ public class PostgresWriter extends BulkWriter {
 		try {
 			this.copyIn.writeToCopy(this.builder.toString().getBytes(), 0, this.builder.length());
 			this.copyIn.endCopy();
-			this.copyIn = this.manager.copyIn(this.query);
+			this.copyIn = this.manager.copyIn(this.statementString);
 			this.builder.delete(0, this.builder.length());
 			this.lastFlush = this.writes;
 		} catch (final SQLException e) {

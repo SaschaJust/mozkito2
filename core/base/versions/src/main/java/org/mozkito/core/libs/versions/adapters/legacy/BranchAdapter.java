@@ -44,7 +44,7 @@ public class BranchAdapter extends AbstractAdapter<Reference> {
 	 *            the mode
 	 */
 	public BranchAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "ref");
+		super(type, mode, "refs");
 	}
 	
 	/**
@@ -62,7 +62,8 @@ public class BranchAdapter extends AbstractAdapter<Reference> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection,
+	 *      org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
 	                   final Reference object) {
@@ -141,7 +142,8 @@ public class BranchAdapter extends AbstractAdapter<Reference> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection,
+	 *      org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void update(final Connection connection,
 	                   final Reference... objects) {

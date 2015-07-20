@@ -38,7 +38,7 @@ public class RevisionAdapter extends AbstractAdapter<Revision> {
 	 *            the connection
 	 */
 	public RevisionAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "revision", connection);
+		super(type, mode, "revisions", connection);
 	}
 	
 	/**

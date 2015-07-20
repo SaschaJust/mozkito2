@@ -39,7 +39,7 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 	 *            the connection
 	 */
 	public ChangeSetAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "changeset", connection);
+		super(type, mode, "changesets", connection);
 	}
 	
 	/**

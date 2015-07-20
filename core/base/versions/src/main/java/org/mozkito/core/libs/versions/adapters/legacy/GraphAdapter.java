@@ -42,7 +42,7 @@ public class GraphAdapter extends AbstractAdapter<Graph> {
 	 *            the mode
 	 */
 	public GraphAdapter(final Database.Type type, final TxMode mode) {
-		super(type, mode, "graph");
+		super(type, mode, "graphs");
 		
 	}
 	

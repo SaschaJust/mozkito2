@@ -38,7 +38,7 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 	 *            the connection
 	 */
 	public IdentityAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "identity", connection);
+		super(type, mode, "identityies", connection);
 	}
 	
 	/**

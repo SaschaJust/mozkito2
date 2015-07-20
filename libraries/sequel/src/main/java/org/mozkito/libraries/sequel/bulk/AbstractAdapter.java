@@ -36,31 +36,31 @@ import org.mozkito.skeleton.contracts.Requires;
 public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> {
 	
 	/** The copy statement. */
-	private final String       insertStatement;
+	private final String     insertStatement;
 	
 	/** The writer. */
-	protected final BulkWriter writer;
+	protected final IWriter  writer;
 	
 	/** The current id. */
-	private final AtomicLong   currentId = new AtomicLong(0);
+	private final AtomicLong currentId = new AtomicLong(0);
 	
 	/** The create schema resource. */
-	private final String       createSchemaResource;
+	private final String     createSchemaResource;
 	
 	/** The create indexes resource. */
-	private final String       createIndexesResource;
+	private final String     createIndexesResource;
 	
 	/** The create constraints resource. */
-	private final String       createConstraintsResource;
+	private final String     createConstraintsResource;
 	
 	/** The create primary keys resource. */
-	private final String       createPrimaryKeysResource;
+	private final String     createPrimaryKeysResource;
 	
 	/** The create foreign keys resource. */
-	private final String       createForeignKeysResource;
+	private final String     createForeignKeysResource;
 	
 	/** The type. */
-	private final Type         type;
+	private final Type       type;
 	
 	/**
 	 * Instantiates a new PG branch adapter.
@@ -79,14 +79,15 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 		Requires.notNull(type);
 		Requires.notNull(mode);
 		this.type = type;
-		this.insertStatement = DatabaseManager.loadStatement(type, identifier + "_save");
 		
 		switch (type) {
 			case POSTGRES:
 				assert TxMode.COPY.equals(mode);
+				this.insertStatement = "COPY " + identifier + " FROM STDIN";
 				this.writer = new PostgresWriter(this.insertStatement, connection);
 				break;
 			default:
+				this.insertStatement = DatabaseManager.loadStatement(type, identifier + "_save");
 				this.writer = new BulkWriter(this.insertStatement, connection);
 		}
 		

@@ -38,7 +38,7 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 	 *            the connection
 	 */
 	public HeadAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "head", connection);
+		super(type, mode, "heads", connection);
 	}
 	
 	/**

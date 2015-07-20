@@ -27,7 +27,6 @@ import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class TagAdapter.
  *
@@ -44,7 +43,7 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 	 *            the mode
 	 */
 	public TagAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "tag");
+		super(type, mode, "tags");
 	}
 	
 	/**

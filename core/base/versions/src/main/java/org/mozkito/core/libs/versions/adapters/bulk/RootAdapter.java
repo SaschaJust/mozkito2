@@ -38,7 +38,7 @@ public class RootAdapter extends AbstractAdapter<Root> {
 	 *            the connection
 	 */
 	public RootAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "root", connection);
+		super(type, mode, "roots", connection);
 	}
 	
 	/**

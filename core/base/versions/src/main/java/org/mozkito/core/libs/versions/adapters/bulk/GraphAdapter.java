@@ -38,7 +38,7 @@ public class GraphAdapter extends AbstractAdapter<Graph> {
 	 *            the connection
 	 */
 	public GraphAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "graph", connection);
+		super(type, mode, "graphs", connection);
 	}
 	
 	/**

@@ -42,7 +42,7 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	 *            the mode
 	 */
 	public SignOffAdapter(final Type type, final TxMode mode) {
-		super(type, mode, "signoff");
+		super(type, mode, "signoffs");
 	}
 	
 	/**
@@ -60,7 +60,8 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection,
+	 *      org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
 	                   final SignOff object) {
@@ -88,7 +89,7 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
 	public List<SignOff> load(final Connection connection,
-	                            final long... ids) {
+	                          final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -101,7 +102,7 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
 	public SignOff load(final Connection connection,
-	                      final long id) {
+	                    final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -138,7 +139,8 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection,
+	 *      org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void update(final Connection connection,
 	                   final SignOff... objects) {

@@ -26,14 +26,13 @@ import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class RenamingAdapter.
  *
  * @author Sascha Just
  */
 public class RenamingAdapter extends AbstractAdapter<Renaming> {
-
+	
 	/**
 	 * Instantiates a new renaming adapter.
 	 *
@@ -43,9 +42,9 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	 *            the mode
 	 */
 	public RenamingAdapter(final Database.Type database, final Database.TxMode mode) {
-		super(database, mode, "renaming");
+		super(database, mode, "renamings");
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -55,9 +54,9 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -68,9 +67,9 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -80,9 +79,9 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -93,9 +92,9 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -106,9 +105,9 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -120,7 +119,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 		Requires.notNull(saveStatement);
 		Requires.positive(id);
 		Requires.notNull(renaming);
-
+		
 		try {
 			int index;
 			for (final Entry entry : renaming.getEntries()) {
@@ -132,13 +131,13 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 				saveStatement.setLong(++index, entry.getWhere());
 				schedule(saveStatement);
 			}
-
+			
 			renaming.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -149,7 +148,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 }

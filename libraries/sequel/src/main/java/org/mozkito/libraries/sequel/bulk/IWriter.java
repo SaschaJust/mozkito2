@@ -11,42 +11,25 @@
  * specific language governing permissions and limitations under the License.
  **********************************************************************************************************************/
 
-package org.mozkito.core.libs.versions.adapters.bulk;
-
-import java.sql.Connection;
-
-import org.mozkito.core.libs.versions.model.Branch;
-import org.mozkito.libraries.sequel.Database;
-import org.mozkito.libraries.sequel.bulk.AbstractAdapter;
+package org.mozkito.libraries.sequel.bulk;
 
 /**
  * @author Sascha Just
  *
  */
-public class BranchAdapter extends AbstractAdapter<Branch> {
+public interface IWriter {
 	
 	/**
-	 * Instantiates a new PG branch adapter.
-	 *
-	 * @param type
-	 *            the type
-	 * @param mode
-	 *            the mode
-	 * @param connection
-	 *            the connection
+	 * Flush.
 	 */
-	public BranchAdapter(final Database.Type type, final Database.TxMode mode, final Connection connection) {
-		super(type, mode, "refs", connection);
-	}
+	public abstract void flush();
 	
 	/**
-	 * Save.
+	 * Write.
 	 *
-	 * @param branch
-	 *            the branch
+	 * @param params
+	 *            the params
 	 */
-	@Override
-	public void save(final Branch branch) {
-		this.writer.write(branch.getId(), branch.getType(), branch.getDepotId(), branch.getName());
-	}
+	public abstract void write(Object... params);
+	
 }

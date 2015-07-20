@@ -37,7 +37,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	 *            the connection
 	 */
 	public BranchEdgeAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "branch_edge", connection);
+		super(type, mode, "branch_edges", connection);
 	}
 	
 	/**

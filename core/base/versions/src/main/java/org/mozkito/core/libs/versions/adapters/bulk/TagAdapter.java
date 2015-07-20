@@ -39,7 +39,7 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 	 *            the connection
 	 */
 	public TagAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "tag", connection);
+		super(type, mode, "tags", connection);
 	}
 	
 	/**

@@ -42,7 +42,7 @@ public class ConvergenceAdapter extends AbstractAdapter<Convergence> {
 	 *            the mode
 	 */
 	public ConvergenceAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "convergence");
+		super(type, mode, "convergences");
 	}
 	
 	/**
@@ -88,7 +88,7 @@ public class ConvergenceAdapter extends AbstractAdapter<Convergence> {
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
 	public List<Convergence> load(final Connection connection,
-	                                  final long... ids) {
+	                              final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -101,7 +101,7 @@ public class ConvergenceAdapter extends AbstractAdapter<Convergence> {
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
 	public Convergence load(final Connection connection,
-	                            final long id) {
+	                        final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$

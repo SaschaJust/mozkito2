@@ -38,7 +38,7 @@ public class HandleAdapter extends AbstractAdapter<Handle> {
 	 *            the connection
 	 */
 	public HandleAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "handle", connection);
+		super(type, mode, "handles", connection);
 	}
 	
 	/**

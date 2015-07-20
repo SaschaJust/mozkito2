@@ -41,7 +41,7 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetType> {
 	 *            the mode
 	 */
 	public ChangeSetTypeAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "changeset_type");
+		super(type, mode, "changeset_types");
 	}
 	
 	/**
@@ -87,7 +87,7 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetType> {
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
 	public List<ChangeSetType> load(final Connection connection,
-	                                       final long... ids) {
+	                                final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -100,7 +100,7 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetType> {
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
 	public ChangeSetType load(final Connection connection,
-	                                 final long id) {
+	                          final long id) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$

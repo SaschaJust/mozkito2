@@ -38,7 +38,7 @@ public class ConvergenceAdapter extends AbstractAdapter<Convergence> {
 	 *            the connection
 	 */
 	public ConvergenceAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "convergence", connection);
+		super(type, mode, "convergences", connection);
 	}
 	
 	/**

@@ -42,7 +42,7 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	 *            the mode
 	 */
 	public BranchEdgeAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "branch_edge");
+		super(type, mode, "branch_edges");
 	}
 	
 	/**
@@ -60,7 +60,8 @@ public class BranchEdgeAdapter extends AbstractAdapter<BranchEdge> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection,
+	 *      org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
 	                   final BranchEdge object) {

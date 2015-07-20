@@ -38,7 +38,7 @@ public class SignOffAdapter extends AbstractAdapter<SignOff> {
 	 *            the connection
 	 */
 	public SignOffAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "signoff", connection);
+		super(type, mode, "signoffs", connection);
 	}
 	
 	/**

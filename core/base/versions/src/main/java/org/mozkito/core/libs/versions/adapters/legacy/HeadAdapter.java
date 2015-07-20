@@ -31,7 +31,7 @@ import org.mozkito.skeleton.contracts.Requires;
  * @author Sascha Just
  */
 public class HeadAdapter extends AbstractAdapter<Head> {
-
+	
 	/**
 	 * Instantiates a new head adapter.
 	 *
@@ -41,9 +41,9 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 	 *            the mode
 	 */
 	public HeadAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "head");
+		super(type, mode, "heads");
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -53,9 +53,9 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -66,9 +66,9 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -78,9 +78,9 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -91,9 +91,9 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -104,9 +104,9 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -117,20 +117,20 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 	                 final Head head) {
 		Requires.notNull(statement);
 		Requires.notNull(head);
-
+		
 		try {
 			int index = 0;
 			statement.setInt(++index, (int) id);
 			statement.setLong(++index, head.getBranchId());
 			statement.setLong(++index, head.getChangeSetId());
 			schedule(statement);
-
+			
 			head.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -141,7 +141,7 @@ public class HeadAdapter extends AbstractAdapter<Head> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 }

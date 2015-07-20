@@ -43,7 +43,7 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 	 *            the mode
 	 */
 	public DepotAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "depot");
+		super(type, mode, "depots");
 	}
 	
 	/**

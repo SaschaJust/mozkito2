@@ -25,7 +25,6 @@ import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class GraphEdgeAdapter.
  *
@@ -42,7 +41,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	 *            the mode
 	 */
 	public GraphEdgeAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "edge");
+		super(type, mode, "edges");
 	}
 	
 	/**

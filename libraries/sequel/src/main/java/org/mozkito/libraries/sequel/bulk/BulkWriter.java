@@ -22,7 +22,7 @@ import java.sql.SQLException;
  *
  * @author Sascha Just
  */
-public class BulkWriter {
+public class BulkWriter implements IWriter {
 	
 	/** The statement. */
 	private PreparedStatement statement;
@@ -85,9 +85,11 @@ public class BulkWriter {
 	}
 	
 	/**
-	 * Flush.
+	 * {@inheritDoc}
+	 * @see org.mozkito.libraries.sequel.bulk.IWriter#flush()
 	 */
-	public void flush() {
+	@Override
+    public void flush() {
 		if (this.writes > 0) {
 			try {
 				this.statement.executeBatch();
@@ -98,12 +100,11 @@ public class BulkWriter {
 	}
 	
 	/**
-	 * Write.
-	 *
-	 * @param params
-	 *            the params
+	 * {@inheritDoc}
+	 * @see org.mozkito.libraries.sequel.bulk.IWriter#write(java.lang.Object)
 	 */
-	public void write(final Object... params) {
+	@Override
+    public void write(final Object... params) {
 		try {
 			for (int i = 0; i < params.length; ++i) {
 				this.statement.setObject(i, params[i]);

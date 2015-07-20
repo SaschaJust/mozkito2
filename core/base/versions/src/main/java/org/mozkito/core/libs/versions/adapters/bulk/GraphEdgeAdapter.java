@@ -38,7 +38,7 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 	 *            the connection
 	 */
 	public GraphEdgeAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "edge", connection);
+		super(type, mode, "edges", connection);
 	}
 	
 	/**

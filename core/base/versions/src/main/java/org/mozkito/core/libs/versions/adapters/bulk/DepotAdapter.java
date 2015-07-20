@@ -39,7 +39,7 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 	 *            the connection
 	 */
 	public DepotAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "depot", connection);
+		super(type, mode, "depots", connection);
 	}
 	
 	/**

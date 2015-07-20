@@ -39,7 +39,7 @@ public class RenamingAdapter extends AbstractAdapter<Renaming> {
 	 *            the connection
 	 */
 	public RenamingAdapter(final Type type, final TxMode mode, final Connection connection) {
-		super(type, mode, "renaming", connection);
+		super(type, mode, "renamings", connection);
 	}
 	
 	/**

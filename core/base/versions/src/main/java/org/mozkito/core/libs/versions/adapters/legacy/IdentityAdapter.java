@@ -26,14 +26,13 @@ import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class UserSequelAdapter.
  *
  * @author Sascha Just
  */
 public class IdentityAdapter extends AbstractAdapter<Identity> {
-
+	
 	/**
 	 * Instantiates a new user sequel adapter.
 	 *
@@ -43,9 +42,9 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 	 *            the mode
 	 */
 	public IdentityAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "identity");
+		super(type, mode, "identities");
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -61,7 +60,7 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -72,9 +71,9 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -84,9 +83,9 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -97,9 +96,9 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -110,9 +109,9 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -123,24 +122,24 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 	                 final Identity identity) {
 		Requires.notNull(statement);
 		Requires.notNull(identity);
-
+		
 		try {
-
+			
 			int index = 0;
 			statement.setLong(++index, id);
-
+			
 			statement.setString(++index, truncate(identity.getEmail(), 900));
 			statement.setString(++index, truncate(identity.getFullName(), 900));
-
+			
 			schedule(statement);
-
+			
 			identity.setId(id);
 			Asserts.positive(identity.getId());
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -151,7 +150,7 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 }

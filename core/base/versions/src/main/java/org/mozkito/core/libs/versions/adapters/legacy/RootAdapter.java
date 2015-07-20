@@ -25,14 +25,13 @@ import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class RootAdapter.
  *
  * @author Sascha Just
  */
 public class RootAdapter extends AbstractAdapter<Root> {
-
+	
 	/**
 	 * Instantiates a new Root adapter.
 	 *
@@ -42,9 +41,9 @@ public class RootAdapter extends AbstractAdapter<Root> {
 	 *            the mode
 	 */
 	public RootAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "root");
+		super(type, mode, "roots");
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -54,9 +53,9 @@ public class RootAdapter extends AbstractAdapter<Root> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -67,9 +66,9 @@ public class RootAdapter extends AbstractAdapter<Root> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -79,9 +78,9 @@ public class RootAdapter extends AbstractAdapter<Root> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -92,9 +91,9 @@ public class RootAdapter extends AbstractAdapter<Root> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -105,9 +104,9 @@ public class RootAdapter extends AbstractAdapter<Root> {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -118,22 +117,22 @@ public class RootAdapter extends AbstractAdapter<Root> {
 	                 final Root root) {
 		Requires.notNull(statement);
 		Requires.notNull(root);
-
+		
 		try {
 			int index;
 			index = 0;
 			statement.setInt(++index, (int) id);
 			statement.setLong(++index, root.getBranchId());
 			statement.setLong(++index, root.getChangeSetId());
-
+			
 			schedule(statement);
-
+			
 			root.setId(id);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -144,7 +143,7 @@ public class RootAdapter extends AbstractAdapter<Root> {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$
-
+		
 	}
-
+	
 }

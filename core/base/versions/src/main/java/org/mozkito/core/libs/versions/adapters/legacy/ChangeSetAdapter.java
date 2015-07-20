@@ -42,7 +42,7 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 	 *            the mode
 	 */
 	public ChangeSetAdapter(final Database.Type type, final Database.TxMode mode) {
-		super(type, mode, "changeset");
+		super(type, mode, "changesets");
 	}
 	
 	/**
@@ -60,7 +60,8 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, org.mozkito.libraries.sequel.IEntity)
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection,
+	 *      org.mozkito.libraries.sequel.IEntity)
 	 */
 	public void delete(final Connection connection,
 	                   final ChangeSet object) {
@@ -149,7 +150,8 @@ public class ChangeSetAdapter extends AbstractAdapter<ChangeSet> {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection,
+	 *      org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void update(final Connection connection,
 	                   final ChangeSet... objects) {
