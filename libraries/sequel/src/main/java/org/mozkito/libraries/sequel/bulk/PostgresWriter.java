@@ -13,6 +13,7 @@
 
 package org.mozkito.libraries.sequel.bulk;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -114,13 +115,13 @@ public class PostgresWriter implements IWriter {
 	public void flush() {
 		try {
 			if (this.writes > this.lastFlush) {
-				this.copyIn.writeToCopy(this.builder.toString().getBytes(), 0, this.builder.length());
+				this.copyIn.writeToCopy(this.builder.toString().getBytes("UTF-8"), 0, this.builder.length());
 				this.copyIn.endCopy();
 				this.copyIn = this.manager.copyIn(this.statementString);
 				this.builder.delete(0, this.builder.length());
 				this.lastFlush = this.writes;
 			}
-		} catch (final SQLException e) {
+		} catch (final SQLException | UnsupportedEncodingException e) {
 			Logger.error("Writing " + (this.writes - this.lastFlush) + " entries failed: " + System.lineSeparator()
 			        + this.builder.toString());
 			throw new RuntimeException(e);
@@ -146,13 +147,9 @@ public class PostgresWriter implements IWriter {
 			}
 			this.builder.append(param == null
 			                                 ? this.nullString
-			                                 : param.toString().isEmpty()
-			                                                             ? "test"
-			                                                             : param.toString()
-			                                                                    .replace("\t", TAB_STRING)
-			                                                                    .replace("\\", BACKSPACE_STRING)
-			                                                                    .replace(System.lineSeparator(),
-			                                                                             NEWLINE_STRING));
+			                                 : param.toString().replace("\t", TAB_STRING)
+			                                        .replace("\\", BACKSPACE_STRING)
+			                                        .replace(System.lineSeparator(), NEWLINE_STRING));
 		}
 		this.builder.append('\n');
 		this.isConstructing = false;
