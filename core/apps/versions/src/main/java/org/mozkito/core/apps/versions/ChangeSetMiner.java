@@ -109,7 +109,7 @@ public class ChangeSetMiner extends Task implements Runnable {
 	private final FileCache                 fileCache;
 	
 	/** The signed off dumper. */
-	private final DatabaseDumper<SignOff> signedOffDumper;
+	private final DatabaseDumper<SignOff>   signedOffDumper;
 	
 	/**
 	 * Instantiates a new change set miner.
@@ -378,10 +378,6 @@ public class ChangeSetMiner extends Task implements Runnable {
 			                                                       : idEmail, idName.isEmpty()
 			                                                                                  ? null
 			                                                                                  : idName);
-			
-			if (identity.getId() <= 0) {
-				this.identityDumper.saveLater(identity);
-			}
 			Asserts.positive(identity.getId());
 			changeSetBuilder.authorId(identity);
 			
@@ -398,9 +394,6 @@ public class ChangeSetMiner extends Task implements Runnable {
 			Asserts.notNull(this.line, "Awaiting committer email.");
 			idEmail = this.line;
 			identity = this.identityCache.request(idEmail, idName);
-			if (identity.getId() <= 0) {
-				this.identityDumper.saveLater(identity);
-			}
 			Asserts.positive(identity.getId());
 			changeSetBuilder.committerId(identity);
 			
@@ -430,9 +423,6 @@ public class ChangeSetMiner extends Task implements Runnable {
 						} else {
 							identity = this.identityCache.request(null, this.line.substring(SIGNED_OFF_TAG.length())
 							                                                     .trim());
-						}
-						if (identity.getId() <= 0) {
-							this.identityDumper.saveLater(identity);
 						}
 						signers.add(identity);
 					} else {

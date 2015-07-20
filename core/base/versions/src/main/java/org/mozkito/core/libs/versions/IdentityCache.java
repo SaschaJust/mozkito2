@@ -18,7 +18,9 @@ import java.util.Map;
 
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Identity;
+import org.mozkito.libraries.sequel.DatabaseDumper;
 import org.mozkito.skeleton.contracts.Asserts;
+import org.mozkito.skeleton.contracts.Requires;
 
 /**
  * The IdentityCache is a cache that maps <code>email</code> and <code>fullname</code> of a user in a version control
@@ -29,16 +31,25 @@ import org.mozkito.skeleton.contracts.Asserts;
 public class IdentityCache {
 	
 	/** The Constant UNKNOWN_IDENTITY. */
-	private static final String           UNKNOWN_IDENTITY = "<UNKNOWN>";
+	private static final String            UNKNOWN_IDENTITY = "<UNKNOWN>";
 	
 	/** The identities. */
-	private final Map<Identity, Identity> identities       = new HashMap<>();
+	private final Map<Identity, Identity>  identities       = new HashMap<>();
+	
+	/** The dumper. */
+	private final DatabaseDumper<Identity> dumper;
 	
 	/**
 	 * Instantiates a new identity cache.
+	 *
+	 * @param dumper
+	 *            the dumper
 	 */
-	public IdentityCache() {
+	public IdentityCache(final DatabaseDumper<Identity> dumper) {
+		Requires.notNull(dumper);
+		
 		getUnknown();
+		this.dumper = dumper;
 	}
 	
 	/**
@@ -76,6 +87,7 @@ public class IdentityCache {
 			synchronized (this.identities) {
 				if (!this.identities.containsKey(identity)) {
 					this.identities.put(identity, identity);
+					this.dumper.saveLater(identity);
 				}
 			}
 		}

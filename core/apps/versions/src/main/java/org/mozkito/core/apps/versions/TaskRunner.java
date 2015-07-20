@@ -148,7 +148,7 @@ public class TaskRunner implements Runnable {
 	
 	private final DatabaseDumper<Root>                 rootDumper;
 	
-	private final DatabaseDumper<SignOff>            signedOffDumper;
+	private final DatabaseDumper<SignOff>              signedOffDumper;
 	
 	/**
 	 * Instantiates a new task runner.
@@ -183,11 +183,18 @@ public class TaskRunner implements Runnable {
 	 *            the integration dumper
 	 * @param tagDumper
 	 *            the tag dumper
-	 * @param convergenceDumper
-	 * @param rootDumper
-	 * @param headDumper
-	 * @param branchEdgeDumper
 	 * @param graphEdgeDumper
+	 *            the graph edge dumper
+	 * @param branchEdgeDumper
+	 *            the branch edge dumper
+	 * @param headDumper
+	 *            the head dumper
+	 * @param rootDumper
+	 *            the root dumper
+	 * @param convergenceDumper
+	 *            the convergence dumper
+	 * @param signedOffDumper
+	 *            the signed off dumper
 	 */
 	public TaskRunner(final File baseDir, final File workDir, final URI depotURI, final Task[] tasks,
 	        final IdentityCache identityCache, final DatabaseDumper<Identity> identityDumper,
@@ -306,7 +313,7 @@ public class TaskRunner implements Runnable {
 			Logger.info("Spawning TagMiner");
 			final BidirectionalMultiMap<String, Reference> tagRefs;
 			final TagMiner tagMiner = new TagMiner(this.cloneDir, this.depot, vertices, this.identityCache,
-			                                       this.tagDumper, this.branchDumper);
+			                                       this.tagDumper, this.branchDumper, this.identityDumper);
 			tagMiner.run();
 			resetName();
 			tagRefs = tagMiner.getTagRefs();

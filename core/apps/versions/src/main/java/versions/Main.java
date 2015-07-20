@@ -174,6 +174,11 @@ public class Main {
 		option = new Option("ti", "mine-integration", false, "Mine integration.");
 		options.addOption(option);
 		
+		option = new Option("p", "parallelism", true, "Number of tasks to be run in parallel. Default MAX(CORES-2, 1).");
+		option.setArgName("TASK_COUNT");
+		option.setRequired(false);
+		options.addOption(option);
+		
 		option = new Option(null, "skip", true, "Skip depots.");
 		option.setArgName("repo/manifests");
 		options.addOption(option);
@@ -406,12 +411,15 @@ public class Main {
 			convergenceDumper.start();
 			signedOffDumper.start();
 			
-			final IdentityCache identityCache = new IdentityCache();
+			final IdentityCache identityCache = new IdentityCache(identityDumper);
 			
 			System.out.println("Database setup complete.");
 			
-			final ExecutorService es = Executors.newWorkStealingPool(Math.max(Runtime.getRuntime()
-			                                                                         .availableProcessors() - 2, 1));
+			final ExecutorService es = Executors.newWorkStealingPool(line.hasOption("parallelism")
+			                                                                                      ? Integer.parseInt(line.getOptionValue("parallelism"))
+			                                                                                      : Math.max(Runtime.getRuntime()
+			                                                                                                        .availableProcessors() - 2,
+			                                                                                                 1));
 			
 			for (final File cloneDir : depotDirs) {
 				final URI depotURI = cloneDir.toURI();

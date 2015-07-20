@@ -20,6 +20,7 @@ import java.util.Map;
 import org.mozkito.core.libs.versions.IdentityCache;
 import org.mozkito.core.libs.versions.graph.Vertex;
 import org.mozkito.core.libs.versions.model.Depot;
+import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Tag;
 import org.mozkito.libraries.sequel.DatabaseDumper;
@@ -91,6 +92,8 @@ public class TagMiner extends Task implements Runnable {
 	/** The reference dumper. */
 	private final DatabaseDumper<Reference>                referenceDumper;
 	
+	private final DatabaseDumper<Identity>                 identityDumper;
+	
 	/**
 	 * Instantiates a new branch miner.
 	 *
@@ -106,16 +109,19 @@ public class TagMiner extends Task implements Runnable {
 	 *            the tag dumper
 	 * @param referenceDumper
 	 *            the reference dumper
+	 * @param identityDumper
+	 *            the identity dumper
 	 */
 	public TagMiner(final File cloneDir, final Depot depot, final Map<String, Vertex> vertices,
 	        final IdentityCache identityCache, final DatabaseDumper<Tag> tagDumper,
-	        final DatabaseDumper<Reference> referenceDumper) {
+	        final DatabaseDumper<Reference> referenceDumper, final DatabaseDumper<Identity> identityDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
 		this.vertices = vertices;
 		this.identityCache = identityCache;
 		this.tagDumper = tagDumper;
 		this.referenceDumper = referenceDumper;
+		this.identityDumper = identityDumper;
 	}
 	
 	/**
@@ -147,6 +153,7 @@ public class TagMiner extends Task implements Runnable {
 		String name, email;
 		StringBuilder messageBuilder;
 		Instant timestamp;
+		Identity tagger;
 		
 		RESULTS: while ((line = command.nextOutput()) != null) {
 			Asserts.equalTo(START_TAG, line);
@@ -214,8 +221,12 @@ public class TagMiner extends Task implements Runnable {
 					while ((line = command.nextOutput()) != null && !END_TAG.equals(line)) {
 						messageBuilder.append(line).append(LS);
 					}
+					
+					tagger = this.identityCache.request(email, name);
+					Asserts.positive(tagger.getId());
+					
 					tag = new Tag(this.depot, this.vertices.get(targetHash).getId(), tagName, tagHash,
-					              messageBuilder.toString(), this.identityCache.request(email, name), timestamp);
+					              messageBuilder.toString(), tagger, timestamp);
 					
 					this.tagDumper.saveLater(tag);
 					this.referenceDumper.saveLater(tag);
