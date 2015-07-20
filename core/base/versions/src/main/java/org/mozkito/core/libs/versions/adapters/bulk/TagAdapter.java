@@ -47,7 +47,10 @@ public class TagAdapter extends AbstractAdapter<Tag> {
 	@Override
 	public void save(final Tag entity) {
 		this.writer.write(entity.getId(), entity.getDepotId(), entity.getHeadId(), entity.getName(), entity.getHash(),
-		                  entity.getMessage(), entity.getIdentityId(), Timestamp.from(entity.getTimestamp()));
+		                  entity.getMessage(), entity.getIdentityId(),
+		                  entity.getTimestamp() != null
+		                                               ? Timestamp.from(entity.getTimestamp())
+		                                               : null);
 	}
 	
 }

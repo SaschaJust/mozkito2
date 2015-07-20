@@ -20,6 +20,7 @@ import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyIn;
 import org.postgresql.copy.CopyManager;
 
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.skeleton.contracts.Requires;
 
 /**
@@ -107,6 +108,7 @@ public class PostgresWriter implements IWriter {
 				this.lastFlush = this.writes;
 			}
 		} catch (final SQLException e) {
+			Logger.error(this.builder.toString());
 			throw new RuntimeException(e);
 		}
 	}
