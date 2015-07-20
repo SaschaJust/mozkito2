@@ -50,6 +50,7 @@ public class BulkDumper<T extends IEntity> extends Thread implements IDumper<T> 
 	 *            the connection
 	 */
 	public BulkDumper(final IAdapter<T> adapter, final Connection connection) {
+		super(adapter.getClass().getSimpleName() + "->" + BulkDumper.class.getSimpleName());
 		this.adapter = adapter;
 		adapter.init(connection);
 	}
