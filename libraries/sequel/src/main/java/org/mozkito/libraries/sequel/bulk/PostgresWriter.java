@@ -78,7 +78,7 @@ public class PostgresWriter implements IWriter {
 	 *            the connection
 	 */
 	public PostgresWriter(final String query, final Connection connection) {
-		this(query, connection, 10000);
+		this(query, connection, 1);
 		// COPY measurement FROM STDIN WITH CSV
 	}
 	
