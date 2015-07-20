@@ -175,8 +175,8 @@ public class PostgresWriter implements IWriter {
 				entry = TAB_PATTERN.matcher(entry).replaceAll(TAB_STRING);
 				entry = NEWLINE_PATTERN.matcher(entry).replaceAll(NEWLINE_STRING);
 				entry = QUOTE_PATTERN.matcher(entry).replaceAll(ESCAPED_QUOTE_STRING);
+				entry = QUOTE_STRING + entry + QUOTE_STRING;
 			}
-			entry = QUOTE_STRING + entry + QUOTE_STRING;
 			this.builder.append(entry);
 		}
 		this.builder.append('\n');

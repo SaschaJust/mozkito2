@@ -183,7 +183,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 				assert TxMode.COPY.equals(this.mode);
 				// WITH CSV WITH DELIMITER '\t' NULL 'null' HEADER false
 				this.insertStatement = "COPY " + this.identifier
-				        + " FROM STDIN WITH CSV ENCODING 'UTF-8' DELIMITER E'\\t' QUOTE '\"'";
+				        + " FROM STDIN WITH CSV ENCODING 'UTF-8' DELIMITER E'\\t' QUOTE '\"' NULL '\\N'";
 				this.writer = new PostgresWriter(this.insertStatement, connection);
 				break;
 			default:
