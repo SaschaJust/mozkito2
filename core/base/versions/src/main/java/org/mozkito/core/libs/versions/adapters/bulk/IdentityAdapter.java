@@ -34,7 +34,7 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 	 *            the mode
 	 */
 	public IdentityAdapter(final Type type, final TxMode mode) {
-		super(type, mode, "identityies");
+		super(type, mode, "identities");
 	}
 	
 	/**
