@@ -43,6 +43,7 @@ public class ReferenceAdapter extends AbstractAdapter<Reference> {
 	 */
 	@Override
 	public void save(final Reference reference) {
-		this.writer.write(reference.getId(), reference.getType(), reference.getDepotId(), reference.getName());
+		this.writer.write(reference.getId(), reference.getType().getValue(), reference.getDepotId(),
+		                  truncate(reference.getName(), 900));
 	}
 }

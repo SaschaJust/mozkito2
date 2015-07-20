@@ -44,7 +44,7 @@ public class HandleAdapter extends AbstractAdapter<Handle> {
 	 */
 	@Override
 	public void save(final Handle entity) {
-		this.writer.write(entity.getId(), entity.getDepotId(), entity.getPath());
+		this.writer.write(entity.getId(), entity.getDepotId(), truncate(entity.getPath(), 900));
 	}
 	
 }

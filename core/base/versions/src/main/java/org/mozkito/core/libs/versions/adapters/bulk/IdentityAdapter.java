@@ -44,7 +44,7 @@ public class IdentityAdapter extends AbstractAdapter<Identity> {
 	 */
 	@Override
 	public void save(final Identity entity) {
-		this.writer.write(entity.getId(), entity.getEmail(), entity.getFullName());
+		this.writer.write(entity.getId(), truncate(entity.getEmail(), 900), truncate(entity.getFullName(), 900));
 	}
 	
 }

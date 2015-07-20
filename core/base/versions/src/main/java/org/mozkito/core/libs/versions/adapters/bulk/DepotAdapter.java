@@ -13,6 +13,7 @@
 
 package org.mozkito.core.libs.versions.adapters.bulk;
 
+import java.net.MalformedURLException;
 import java.sql.Timestamp;
 
 import org.mozkito.core.libs.versions.model.Depot;
@@ -46,7 +47,12 @@ public class DepotAdapter extends AbstractAdapter<Depot> {
 	 */
 	@Override
 	public void save(final Depot entity) {
-		this.writer.write(entity.getId(), entity.getName(), entity.getOrigin(), Timestamp.from(entity.getMined()));
+		try {
+			this.writer.write(entity.getId(), truncate(entity.getName(), 900),
+			                  truncate(entity.getOrigin().toURL().toString(), 900), Timestamp.from(entity.getMined()));
+		} catch (final MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 }
