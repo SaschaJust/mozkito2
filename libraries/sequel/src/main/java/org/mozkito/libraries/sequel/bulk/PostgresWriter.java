@@ -130,7 +130,7 @@ public class PostgresWriter implements IWriter {
 			} else {
 				this.isConstructing = true;
 			}
-			this.builder.append(param.toString().replace(System.lineSeparator(), "\\n"));
+			this.builder.append(param.toString().replace("\\", "\\b").replace(System.lineSeparator(), "\\n"));
 		}
 		this.builder.append('\n');
 		this.isConstructing = false;
