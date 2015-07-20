@@ -24,10 +24,10 @@ import org.apache.commons.cli.ParseException;
 
 import org.mozkito.analysis.quality.IntegrationsPerTime;
 import org.mozkito.libraries.logging.Logger;
-import org.mozkito.libraries.sequel.BulkReader;
 import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
+import org.mozkito.libraries.sequel.bulk.BulkReader;
 
 /**
  * @author Sascha Just

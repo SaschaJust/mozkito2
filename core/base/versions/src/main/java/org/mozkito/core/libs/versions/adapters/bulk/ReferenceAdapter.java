@@ -15,7 +15,7 @@ package org.mozkito.core.libs.versions.adapters.bulk;
 
 import java.sql.Connection;
 
-import org.mozkito.core.libs.versions.model.Branch;
+import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.bulk.AbstractAdapter;
 
@@ -23,7 +23,7 @@ import org.mozkito.libraries.sequel.bulk.AbstractAdapter;
  * @author Sascha Just
  *
  */
-public class BranchAdapter extends AbstractAdapter<Branch> {
+public class ReferenceAdapter extends AbstractAdapter<Reference> {
 	
 	/**
 	 * Instantiates a new PG branch adapter.
@@ -35,18 +35,18 @@ public class BranchAdapter extends AbstractAdapter<Branch> {
 	 * @param connection
 	 *            the connection
 	 */
-	public BranchAdapter(final Database.Type type, final Database.TxMode mode, final Connection connection) {
+	public ReferenceAdapter(final Database.Type type, final Database.TxMode mode, final Connection connection) {
 		super(type, mode, "refs", connection);
 	}
 	
 	/**
 	 * Save.
 	 *
-	 * @param branch
-	 *            the branch
+	 * @param reference
+	 *            the reference
 	 */
 	@Override
-	public void save(final Branch branch) {
-		this.writer.write(branch.getId(), branch.getType(), branch.getDepotId(), branch.getName());
+	public void save(final Reference reference) {
+		this.writer.write(reference.getId(), reference.getType(), reference.getDepotId(), reference.getName());
 	}
 }

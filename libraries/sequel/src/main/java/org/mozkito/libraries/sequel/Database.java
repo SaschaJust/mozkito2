@@ -31,7 +31,7 @@ import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import org.mozkito.libraries.logging.Logger;
-import org.mozkito.libraries.sequel.legacy.IAdapter;
+import org.mozkito.libraries.sequel.bulk.IAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
 /**

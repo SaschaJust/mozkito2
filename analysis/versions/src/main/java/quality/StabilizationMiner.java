@@ -28,11 +28,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.mozkito.analysis.quality.IntegrationsPerTime;
-import org.mozkito.libraries.sequel.BulkReader;
+import org.mozkito.libraries.sequel.bulk.BulkReader;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.contracts.Requires;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class StabilizationMiner.
  *
