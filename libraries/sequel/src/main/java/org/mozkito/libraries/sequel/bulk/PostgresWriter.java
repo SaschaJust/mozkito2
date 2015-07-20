@@ -43,6 +43,9 @@ public class PostgresWriter implements IWriter {
 	/** The null string. */
 	private static final String NULL_STRING      = "\\N";
 	
+	/** The Constant QUOTE_STRING. */
+	private static final String QUOTE_STRING     = "\"";
+	
 	/** The builder. */
 	private final StringBuilder builder;
 	
@@ -148,9 +151,11 @@ public class PostgresWriter implements IWriter {
 			}
 			this.builder.append(param == null
 			                                 ? PostgresWriter.NULL_STRING
-			                                 : param.toString().replace("\\", BACKSPACE_STRING)
-			                                        .replace("\t", TAB_STRING)
-			                                        .replace(System.lineSeparator(), NEWLINE_STRING));
+			                                 : QUOTE_STRING
+			                                         + param.toString().replace("\\", BACKSPACE_STRING)
+			                                                .replace("\t", TAB_STRING)
+			                                                .replace(System.lineSeparator(), NEWLINE_STRING)
+			                                         + QUOTE_STRING);
 		}
 		this.builder.append('\n');
 		this.isConstructing = false;

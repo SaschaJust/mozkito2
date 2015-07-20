@@ -182,7 +182,7 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 			case POSTGRES:
 				assert TxMode.COPY.equals(this.mode);
 				// WITH CSV WITH DELIMITER '\t' NULL 'null' HEADER false
-				this.insertStatement = "COPY " + this.identifier + " FROM STDIN WITH ENCODING 'UTF-8'";
+				this.insertStatement = "COPY " + this.identifier + " FROM STDIN WITH CSV HEADER FALSE ENCODING 'UTF-8'";
 				this.writer = new PostgresWriter(this.insertStatement, connection);
 				break;
 			default:
