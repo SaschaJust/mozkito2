@@ -16,6 +16,9 @@ package org.mozkito.libraries.sequel.bulk;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.regex.Pattern;
 
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyIn;
@@ -32,48 +35,59 @@ import org.mozkito.skeleton.contracts.Requires;
 public class PostgresWriter implements IWriter {
 	
 	/** The Constant TAB_STRING. */
-	private static final String       TAB_STRING           = "\\t";
+	private static final String  TAB_STRING           = "\\t";
 	
 	/** The Constant NEWLINE_STRING. */
-	private static final String       NEWLINE_STRING       = "\\n";
+	private static final String  NEWLINE_STRING       = "\\n";
 	
 	/** The Constant BACKSPACE_STRING. */
-	private static final String       BACKSPACE_STRING     = "\\b";
+	private static final String  BACKSPACE_STRING     = "\\b";
 	
 	/** The null string. */
-	private static final String       NULL_STRING          = "\\N";
+	private static final String  NULL_STRING          = "\\N";
 	
 	/** The Constant QUOTE_STRING. */
-	private static final String       QUOTE_STRING         = "\"";
+	private static final String  QUOTE_STRING         = "\"";
 	
-	private static final CharSequence ESCAPED_QUOTE_STRING = QUOTE_STRING + QUOTE_STRING;
+	/** The Constant ESCAPED_QUOTE_STRING. */
+	private static final String  ESCAPED_QUOTE_STRING = QUOTE_STRING + QUOTE_STRING;
+	
+	private static final Pattern BACKSPACE_PATTERN    = Pattern.compile("\\", Pattern.LITERAL);
+	
+	private static final Pattern TAB_PATTERN          = Pattern.compile("\t", Pattern.LITERAL);
+	
+	private static final Pattern NEWLINE_PATTERN      = Pattern.compile(System.lineSeparator(), Pattern.LITERAL);
+	
+	private static final Pattern QUOTE_PATTERN        = Pattern.compile(QUOTE_STRING, Pattern.LITERAL);
 	
 	/** The builder. */
-	private final StringBuilder       builder;
+	private final StringBuilder  builder;
 	
 	/** The manager. */
-	private CopyManager               manager;
+	private CopyManager          manager;
 	
 	/** The last flush. */
-	private int                       lastFlush            = 0;
+	private int                  lastFlush            = 0;
 	
 	/** The is constructing. */
-	private boolean                   isConstructing;
+	private boolean              isConstructing;
 	
 	/** The copy in. */
-	private CopyIn                    copyIn;
+	private CopyIn               copyIn;
 	
 	/** The statement string. */
-	private final String              statementString;
+	private final String         statementString;
 	
 	/** The writes. */
-	private int                       writes               = 0;
+	private int                  writes               = 0;
 	
 	/** The batch size. */
-	private final int                 batchSize;
+	private final int            batchSize;
 	
 	/** The delimiter char. */
-	private final char                delimiterChar        = '\t';
+	private final char           delimiterChar        = '\t';
+	
+	Duration                     spent                = Duration.ZERO;
 	
 	/**
 	 * Instantiates a new postgres writer.
@@ -145,6 +159,7 @@ public class PostgresWriter implements IWriter {
 		Requires.notNull(params);
 		
 		this.isConstructing = false;
+		String entry;
 		
 		for (final Object param : params) {
 			if (this.isConstructing) {
@@ -152,13 +167,21 @@ public class PostgresWriter implements IWriter {
 			} else {
 				this.isConstructing = true;
 			}
-			this.builder.append(param == null
-			                                 ? PostgresWriter.NULL_STRING
-			                                 : QUOTE_STRING
-			                                         + param.toString().replace("\\", BACKSPACE_STRING)
-			                                                .replace("\t", TAB_STRING)
-			                                                .replace(System.lineSeparator(), NEWLINE_STRING)
-			                                                .replace(QUOTE_STRING, ESCAPED_QUOTE_STRING) + QUOTE_STRING);
+			
+			if (param == null) {
+				entry = NULL_STRING;
+			} else {
+				final Instant start = Instant.now();
+				entry = param.toString();
+				entry = BACKSPACE_PATTERN.matcher(entry).replaceAll(BACKSPACE_STRING);
+				entry = TAB_PATTERN.matcher(entry).replaceAll(TAB_STRING);
+				entry = NEWLINE_PATTERN.matcher(entry).replaceAll(NEWLINE_STRING);
+				entry = QUOTE_PATTERN.matcher(entry).replaceAll(ESCAPED_QUOTE_STRING);
+				this.spent.plus(Duration.between(start, Instant.now()));
+				System.err.println(this.spent);
+			}
+			entry = QUOTE_STRING + entry + QUOTE_STRING;
+			this.builder.append(entry);
 		}
 		this.builder.append('\n');
 		this.isConstructing = false;
