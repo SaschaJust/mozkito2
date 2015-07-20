@@ -68,7 +68,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<extraJvmArguments>-Xms4096m -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -ea -d64</extraJvmArguments>
+					<!-- <extraJvmArguments>-Xms4096m -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -ea -d64</extraJvmArguments> -->
+					<extraJvmArguments>-Xms4096m -ea</extraJvmArguments>
 					<programs>
 						<program>
 							<mainClass>${mainClass}</mainClass>
