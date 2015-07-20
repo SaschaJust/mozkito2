@@ -36,7 +36,7 @@ public class PostgresWriter implements IWriter {
 	private CopyManager         manager;
 	
 	/** The last flush. */
-	private int                 lastFlush = 0;
+	private int                 lastFlush     = 0;
 	
 	/** The is constructing. */
 	private boolean             isConstructing;
@@ -48,10 +48,12 @@ public class PostgresWriter implements IWriter {
 	private final String        statementString;
 	
 	/** The writes. */
-	private int                 writes    = 0;
+	private int                 writes        = 0;
 	
 	/** The batch size. */
 	private final int           batchSize;
+	
+	private final char          delimiterChar = '\t';
 	
 	/**
 	 * Instantiates a new postgres writer.
@@ -120,7 +122,7 @@ public class PostgresWriter implements IWriter {
 		
 		for (final Object param : params) {
 			if (this.isConstructing) {
-				this.builder.append(',');
+				this.builder.append(this.delimiterChar);
 			} else {
 				this.isConstructing = true;
 			}
