@@ -19,7 +19,7 @@ import java.util.Map;
 import org.mozkito.core.libs.versions.graph.Edge;
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.graph.Vertex;
-import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
+import org.mozkito.core.libs.versions.model.ChangeSetType;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.core.libs.versions.model.Reference;
@@ -53,7 +53,7 @@ public class GraphMiner extends Task implements Runnable {
 	private final IDumper<GraphEdge>            graphEdgeDumper;
 	
 	/** The integration dumper. */
-	private final IDumper<ChangeSetIntegration> integrationDumper;
+	private final IDumper<ChangeSetType> integrationDumper;
 	
 	/**
 	 * Instantiates a new graph miner.
@@ -75,7 +75,7 @@ public class GraphMiner extends Task implements Runnable {
 	 */
 	public GraphMiner(final Depot depot, final File cloneDir, final Graph graph, final Map<String, Vertex> vertices,
 	        final IDumper<Graph> graphDumper, final IDumper<GraphEdge> graphEdgeDumper,
-	        final IDumper<ChangeSetIntegration> integrationDumper) {
+	        final IDumper<ChangeSetType> integrationDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
 		this.graph = graph;
@@ -93,7 +93,7 @@ public class GraphMiner extends Task implements Runnable {
 	public void run() {
 		
 		Vertex current;
-		ChangeSetIntegration csi;
+		ChangeSetType csi;
 		String line, currentHash, parentHash;
 		int length;
 		Edge edge;
@@ -142,10 +142,10 @@ public class GraphMiner extends Task implements Runnable {
 						edge.setId(gEdge.getId());
 						
 						if (line.length() >= 122) {
-							csi = new ChangeSetIntegration(current.getId(), IntegrationType.MERGE);
+							csi = new ChangeSetType(current.getId(), IntegrationType.MERGE);
 							
 						} else {
-							csi = new ChangeSetIntegration(current.getId(), IntegrationType.EDIT);
+							csi = new ChangeSetType(current.getId(), IntegrationType.EDIT);
 						}
 						this.integrationDumper.saveLater(csi);
 					}

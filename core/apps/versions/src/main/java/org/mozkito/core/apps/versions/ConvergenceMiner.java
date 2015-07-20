@@ -14,7 +14,7 @@
 package org.mozkito.core.apps.versions;
 
 import org.mozkito.core.libs.versions.graph.Graph;
-import org.mozkito.core.libs.versions.model.ConvergenceEdge;
+import org.mozkito.core.libs.versions.model.Convergence;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.libraries.logging.Logger;
@@ -27,7 +27,7 @@ import org.mozkito.libraries.sequel.IDumper;
 public class ConvergenceMiner extends Task implements Runnable {
 	
 	private final Graph                           graph;
-	private final IDumper<ConvergenceEdge> convergenceDumper;
+	private final IDumper<Convergence> convergenceDumper;
 	
 	/**
 	 * Instantiates a new integration miner.
@@ -40,7 +40,7 @@ public class ConvergenceMiner extends Task implements Runnable {
 	 *            the convergence dumper
 	 */
 	public ConvergenceMiner(final Depot depot, final Graph graph,
-	        final IDumper<ConvergenceEdge> convergenceDumper) {
+	        final IDumper<Convergence> convergenceDumper) {
 		super(depot);
 		this.graph = graph;
 		this.convergenceDumper = convergenceDumper;
@@ -57,7 +57,7 @@ public class ConvergenceMiner extends Task implements Runnable {
 			this.graph.computeConvergence(reference);
 		}
 		
-		for (final ConvergenceEdge edge : this.graph.getConvergence()) {
+		for (final Convergence edge : this.graph.getConvergence()) {
 			this.convergenceDumper.saveLater(edge);
 		}
 	}

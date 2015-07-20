@@ -20,7 +20,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
+import org.mozkito.core.libs.versions.model.ChangeSetType;
 import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
@@ -30,7 +30,7 @@ import org.mozkito.skeleton.contracts.Requires;
  *
  * @author Sascha Just
  */
-public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> {
+public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetType> {
 	
 	/**
 	 * Instantiates a new change set integration adapter.
@@ -49,7 +49,7 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	 *
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#create(java.sql.ResultSet)
 	 */
-	public ChangeSetIntegration create(final ResultSet result) {
+	public ChangeSetType create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -62,7 +62,7 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
 	public void delete(final Connection connection,
-	                   final ChangeSetIntegration object) {
+	                   final ChangeSetType object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -74,7 +74,7 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	 *
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<ChangeSetIntegration> load(final Connection connection) {
+	public Iterator<ChangeSetType> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -86,7 +86,7 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	 *
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<ChangeSetIntegration> load(final Connection connection,
+	public List<ChangeSetType> load(final Connection connection,
 	                                       final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
@@ -99,7 +99,7 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	 *
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
-	public ChangeSetIntegration load(final Connection connection,
+	public ChangeSetType load(final Connection connection,
 	                                 final long id) {
 		// TODO Auto-generated method stub
 		// return null;
@@ -114,7 +114,7 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
-	                 final ChangeSetIntegration integration) {
+	                 final ChangeSetType integration) {
 		Requires.notNull(saveStatement);
 		Requires.notNull(integration);
 		
@@ -138,7 +138,7 @@ public class ChangeSetTypeAdapter extends AbstractAdapter<ChangeSetIntegration> 
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
-	                   final ChangeSetIntegration... objects) {
+	                   final ChangeSetType... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

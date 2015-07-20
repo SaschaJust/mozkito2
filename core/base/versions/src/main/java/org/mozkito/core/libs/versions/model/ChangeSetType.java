@@ -13,46 +13,37 @@
 
 package org.mozkito.core.libs.versions.model;
 
+import org.mozkito.core.libs.versions.model.enums.IntegrationType;
 import org.mozkito.libraries.sequel.IEntity;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class ConvergenceEdge.
+ * The Class ChangeSetIntegration.
  *
  * @author Sascha Just
  */
-public class ConvergenceEdge implements IEntity {
+public class ChangeSetType implements IEntity {
 	
 	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 3190680196331117675L;
+	private static final long serialVersionUID = -5384066977342816045L;
 	
-	/** The id. */
-	private long              id;
+	/** The change set id. */
+	private long              changeSetId;
 	
-	/** The branch id. */
-	private final long        branchId;
-	
-	/** The source id. */
-	private final long        sourceId;
-	
-	/** The converge id. */
-	private final long        convergeId;
+	/** The integration type. */
+	private final short       integrationType;
 	
 	/**
-	 * Instantiates a new convergence edge.
+	 * Instantiates a new change set integration.
 	 *
-	 * @param branchId
-	 *            the branch id
-	 * @param sourceId
-	 *            the source id
-	 * @param convergeId
-	 *            the converge id
+	 * @param changeSetId
+	 *            the change set id
+	 * @param integrationType
+	 *            the integration type
 	 */
-	public ConvergenceEdge(final long branchId, final long sourceId, final long convergeId) {
+	public ChangeSetType(final long changeSetId, final IntegrationType integrationType) {
 		super();
-		this.branchId = branchId;
-		this.sourceId = sourceId;
-		this.convergeId = convergeId;
+		this.changeSetId = changeSetId;
+		this.integrationType = integrationType.getValue();
 	}
 	
 	/**
@@ -71,44 +62,21 @@ public class ConvergenceEdge implements IEntity {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final ConvergenceEdge other = (ConvergenceEdge) obj;
-		if (this.branchId != other.branchId) {
+		final ChangeSetType other = (ChangeSetType) obj;
+		if (this.changeSetId != other.changeSetId) {
 			return false;
 		}
-		if (this.convergeId != other.convergeId) {
-			return false;
-		}
-		if (this.sourceId != other.sourceId) {
+		if (this.integrationType != other.integrationType) {
 			return false;
 		}
 		return true;
 	}
 	
 	/**
-	 * Gets the branch id.
-	 *
-	 * @return the branchId
+	 * @return the integrationType
 	 */
-	public final long getBranchId() {
-		return this.branchId;
-	}
-	
-	/**
-	 * Gets the converge id.
-	 *
-	 * @return the convergeId
-	 */
-	public final long getConvergeId() {
-		return this.convergeId;
-	}
-	
-	/**
-	 * Gets the source id.
-	 *
-	 * @return the sourceId
-	 */
-	public final long getSourceId() {
-		return this.sourceId;
+	public final short getIntegrationType() {
+		return this.integrationType;
 	}
 	
 	/**
@@ -120,9 +88,8 @@ public class ConvergenceEdge implements IEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (this.branchId ^ this.branchId >>> 32);
-		result = prime * result + (int) (this.convergeId ^ this.convergeId >>> 32);
-		result = prime * result + (int) (this.sourceId ^ this.sourceId >>> 32);
+		result = prime * result + (int) (this.changeSetId ^ this.changeSetId >>> 32);
+		result = prime * result + this.integrationType;
 		return result;
 	}
 	
@@ -132,7 +99,7 @@ public class ConvergenceEdge implements IEntity {
 	 * @see org.mozkito.libraries.sequel.IEntity#getId()
 	 */
 	public long getId() {
-		return this.id;
+		return this.changeSetId;
 	}
 	
 	/**
@@ -141,7 +108,7 @@ public class ConvergenceEdge implements IEntity {
 	 * @see org.mozkito.libraries.sequel.IEntity#setId(long)
 	 */
 	public void setId(final long id) {
-		this.id = id;
+		this.changeSetId = id;
 	}
 	
 }

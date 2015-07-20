@@ -41,7 +41,7 @@ import org.jgrapht.graph.MaskSubgraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.GraphIterator;
 
-import org.mozkito.core.libs.versions.model.ConvergenceEdge;
+import org.mozkito.core.libs.versions.model.Convergence;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.Reference;
@@ -198,7 +198,7 @@ public class Graph implements IEntity {
 	private final BidirectionalMultiMap<String, Reference> references  = new BidirectionalMultiMap<>();
 	
 	/** The convergence. */
-	private final List<ConvergenceEdge>                    convergence = new LinkedList<ConvergenceEdge>();
+	private final List<Convergence>                    convergence = new LinkedList<Convergence>();
 	
 	/**
 	 * Instantiates a new depot graph.
@@ -381,7 +381,7 @@ public class Graph implements IEntity {
 			
 			while (revIterator.hasNext()) {
 				pointer = revIterator.next();
-				this.convergence.add(new ConvergenceEdge(reference.getId(), pointer.getId(), current.getId()));
+				this.convergence.add(new Convergence(reference.getId(), pointer.getId(), current.getId()));
 				blackList.add(pointer);
 			}
 			
@@ -390,6 +390,16 @@ public class Graph implements IEntity {
 		}
 		Logger.info("Convergence computation duration: " + (Instant.now().getEpochSecond() - start.getEpochSecond())
 		        + "s.");
+	}
+	
+	/**
+     * 
+     */
+	public void computeFiles() {
+		// TODO Auto-generated method stub
+		//
+		throw new RuntimeException("Method 'computeFiles' has not yet been implemented."); //$NON-NLS-1$
+		
 	}
 	
 	/**
@@ -569,7 +579,7 @@ public class Graph implements IEntity {
 	 *
 	 * @return the convergence
 	 */
-	public List<ConvergenceEdge> getConvergence() {
+	public List<Convergence> getConvergence() {
 		return UnmodifiableList.unmodifiableList(this.convergence);
 	}
 	

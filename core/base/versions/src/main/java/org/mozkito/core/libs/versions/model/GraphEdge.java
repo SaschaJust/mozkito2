@@ -22,22 +22,23 @@ import org.mozkito.libraries.sequel.IEntity;
  */
 public class GraphEdge implements IEntity {
 	
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -8396062311825539087L;
 	
 	/** The id. */
-	public long               id;
+	private long              id;
 	
 	/** The depot_id. */
-	public final long         depotId;
+	private final long        depotId;
 	
 	/** The source_id. */
-	public final long         sourceId;
+	private final long        sourceId;
 	
 	/** The target_id. */
-	public final long         targetId;
+	private final long        targetId;
 	
 	/** The marker. */
-	public short              marker;
+	private final short       marker;
 	
 	/**
 	 * Instantiates a new graph edge.
@@ -60,12 +61,48 @@ public class GraphEdge implements IEntity {
 	}
 	
 	/**
+	 * Gets the depot id.
+	 *
+	 * @return the depotId
+	 */
+	public final long getDepotId() {
+		return this.depotId;
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 * 
 	 * @see org.mozkito.libraries.sequel.IEntity#getId()
 	 */
 	public long getId() {
 		return this.id;
+	}
+	
+	/**
+	 * Gets the marker.
+	 *
+	 * @return the marker
+	 */
+	public final short getMarker() {
+		return this.marker;
+	}
+	
+	/**
+	 * Gets the source id.
+	 *
+	 * @return the sourceId
+	 */
+	public final long getSourceId() {
+		return this.sourceId;
+	}
+	
+	/**
+	 * Gets the target id.
+	 *
+	 * @return the targetId
+	 */
+	public final long getTargetId() {
+		return this.targetId;
 	}
 	
 	/**

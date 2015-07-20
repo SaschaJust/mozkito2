@@ -20,7 +20,7 @@ import java.util.Set;
 
 import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.graph.Vertex;
-import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
+import org.mozkito.core.libs.versions.model.ChangeSetType;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Head;
 import org.mozkito.core.libs.versions.model.Reference;
@@ -57,7 +57,7 @@ public class EndPointMiner extends Task implements Runnable {
 	/** The root dumper. */
 	private final IDumper<Root>                            rootDumper;
 	
-	private final IDumper<ChangeSetIntegration>            integrationDumper;
+	private final IDumper<ChangeSetType>            integrationDumper;
 	
 	/**
 	 * Instantiates a new end point miner.
@@ -81,7 +81,7 @@ public class EndPointMiner extends Task implements Runnable {
 	 */
 	public EndPointMiner(final Depot depot, final File cloneDir, final BidirectionalMultiMap<String, Reference> heads,
 	        final Map<String, Vertex> vertices, final Graph graph, final IDumper<Head> headDumper,
-	        final IDumper<Root> rootDumper, final IDumper<ChangeSetIntegration> integrationDumper) {
+	        final IDumper<Root> rootDumper, final IDumper<ChangeSetType> integrationDumper) {
 		super(depot);
 		this.cloneDir = cloneDir;
 		this.refs = heads;
@@ -126,7 +126,7 @@ public class EndPointMiner extends Task implements Runnable {
 		}
 		
 		for (final Vertex vertex : rootVertices) {
-			this.integrationDumper.saveLater(new ChangeSetIntegration(vertex.getId(), IntegrationType.EDIT));
+			this.integrationDumper.saveLater(new ChangeSetType(vertex.getId(), IntegrationType.EDIT));
 		}
 	}
 }

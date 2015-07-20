@@ -33,7 +33,7 @@ import org.mozkito.libraries.sequel.MozkitoHandler;
 public class LegacyDumper<T extends IEntity> extends Thread implements IDumper<T> {
 	
 	/** The batch size. */
-	private static int                     BATCH_SIZE = 1000;
+	private static int                     BATCH_SIZE = 10000;
 	
 	/** The adapter. */
 	private final IAdapter<T>              adapter;

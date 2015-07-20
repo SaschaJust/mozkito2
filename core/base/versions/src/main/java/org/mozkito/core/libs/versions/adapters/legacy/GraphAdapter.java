@@ -26,7 +26,6 @@ import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class GraphAdapter.
  *

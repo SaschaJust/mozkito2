@@ -20,7 +20,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mozkito.core.libs.versions.model.ConvergenceEdge;
+import org.mozkito.core.libs.versions.model.Convergence;
 import org.mozkito.libraries.sequel.Database;
 import org.mozkito.libraries.sequel.legacy.AbstractAdapter;
 import org.mozkito.skeleton.contracts.Requires;
@@ -31,7 +31,7 @@ import org.mozkito.skeleton.contracts.Requires;
  *
  * @author Sascha Just
  */
-public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
+public class ConvergenceAdapter extends AbstractAdapter<Convergence> {
 	
 	/**
 	 * Instantiates a new convergence edge adapter.
@@ -41,7 +41,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	 * @param mode
 	 *            the mode
 	 */
-	public ConvergenceEdgeAdapter(final Database.Type type, final Database.TxMode mode) {
+	public ConvergenceAdapter(final Database.Type type, final Database.TxMode mode) {
 		super(type, mode, "convergence");
 	}
 	
@@ -50,7 +50,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	 *
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#create(java.sql.ResultSet)
 	 */
-	public ConvergenceEdge create(final ResultSet result) {
+	public Convergence create(final ResultSet result) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'create' has not yet been implemented."); //$NON-NLS-1$
@@ -63,7 +63,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#delete(java.sql.Connection, java.lang.Object)
 	 */
 	public void delete(final Connection connection,
-	                   final ConvergenceEdge object) {
+	                   final Convergence object) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'delete' has not yet been implemented."); //$NON-NLS-1$
@@ -75,7 +75,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	 *
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection)
 	 */
-	public Iterator<ConvergenceEdge> load(final Connection connection) {
+	public Iterator<Convergence> load(final Connection connection) {
 		// TODO Auto-generated method stub
 		// return null;
 		throw new RuntimeException("Method 'load' has not yet been implemented."); //$NON-NLS-1$
@@ -87,7 +87,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	 *
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long[])
 	 */
-	public List<ConvergenceEdge> load(final Connection connection,
+	public List<Convergence> load(final Connection connection,
 	                                  final long... ids) {
 		// TODO Auto-generated method stub
 		// return null;
@@ -100,7 +100,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	 *
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#load(java.sql.Connection, long)
 	 */
-	public ConvergenceEdge load(final Connection connection,
+	public Convergence load(final Connection connection,
 	                            final long id) {
 		// TODO Auto-generated method stub
 		// return null;
@@ -115,7 +115,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	 */
 	public void save(final PreparedStatement saveStatement,
 	                 final long id,
-	                 final ConvergenceEdge edge) {
+	                 final Convergence edge) {
 		Requires.notNull(saveStatement);
 		Requires.notNull(edge);
 		
@@ -142,7 +142,7 @@ public class ConvergenceEdgeAdapter extends AbstractAdapter<ConvergenceEdge> {
 	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#update(java.sql.Connection, java.lang.Object[])
 	 */
 	public void update(final Connection connection,
-	                   final ConvergenceEdge... objects) {
+	                   final Convergence... objects) {
 		// TODO Auto-generated method stub
 		//
 		throw new RuntimeException("Method 'update' has not yet been implemented."); //$NON-NLS-1$

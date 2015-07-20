@@ -124,10 +124,10 @@ public class GraphEdgeAdapter extends AbstractAdapter<GraphEdge> {
 			int index = 0;
 			saveStatement.setLong(++index, id);
 			
-			saveStatement.setLong(++index, edge.depotId);
-			saveStatement.setLong(++index, edge.sourceId);
-			saveStatement.setLong(++index, edge.targetId);
-			saveStatement.setShort(++index, edge.marker);
+			saveStatement.setLong(++index, edge.getDepotId());
+			saveStatement.setLong(++index, edge.getSourceId());
+			saveStatement.setLong(++index, edge.getTargetId());
+			saveStatement.setShort(++index, edge.getMarker());
 			
 			schedule(saveStatement);
 			

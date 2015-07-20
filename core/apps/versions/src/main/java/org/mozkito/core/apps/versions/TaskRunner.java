@@ -29,8 +29,8 @@ import org.mozkito.core.libs.versions.graph.Graph;
 import org.mozkito.core.libs.versions.graph.Vertex;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.ChangeSet;
-import org.mozkito.core.libs.versions.model.ChangeSetIntegration;
-import org.mozkito.core.libs.versions.model.ConvergenceEdge;
+import org.mozkito.core.libs.versions.model.ChangeSetType;
+import org.mozkito.core.libs.versions.model.Convergence;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.GraphEdge;
 import org.mozkito.core.libs.versions.model.Handle;
@@ -134,7 +134,7 @@ public class TaskRunner implements Runnable {
 	
 	private final FileCache                     fileCache;
 	
-	private final IDumper<ChangeSetIntegration> integrationDumper;
+	private final IDumper<ChangeSetType> integrationDumper;
 	
 	private final IDumper<Tag>                  tagDumper;
 	
@@ -142,7 +142,7 @@ public class TaskRunner implements Runnable {
 	
 	private final IDumper<BranchEdge>           branchEdgeDumper;
 	
-	private final IDumper<ConvergenceEdge>      convergenceDumper;
+	private final IDumper<Convergence>      convergenceDumper;
 	
 	private final IDumper<Head>                 headDumper;
 	
@@ -201,10 +201,10 @@ public class TaskRunner implements Runnable {
 	        final IDumper<ChangeSet> changeSetDumper, final IDumper<Revision> revisionDumper,
 	        final IDumper<Reference> branchDumper, final IDumper<Handle> handleDumper,
 	        final IDumper<Graph> graphDumper, final IDumper<Depot> depotDumper, final IDumper<Renaming> renamingDumper,
-	        final IDumper<ChangeSetIntegration> integrationDumper, final IDumper<Tag> tagDumper,
+	        final IDumper<ChangeSetType> integrationDumper, final IDumper<Tag> tagDumper,
 	        final IDumper<GraphEdge> graphEdgeDumper, final IDumper<BranchEdge> branchEdgeDumper,
 	        final IDumper<Head> headDumper, final IDumper<Root> rootDumper,
-	        final IDumper<ConvergenceEdge> convergenceDumper, final IDumper<SignOff> signedOffDumper) {
+	        final IDumper<Convergence> convergenceDumper, final IDumper<SignOff> signedOffDumper) {
 		Thread.setDefaultUncaughtExceptionHandler(new MozkitoHandler());
 		
 		this.identityDumper = identityDumper;
