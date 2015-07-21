@@ -32,6 +32,11 @@ import org.mozkito.libraries.sequel.IEntity;
 public interface IAdapter<T extends IEntity> {
 	
 	/**
+	 * Voidclose.
+	 */
+	void close();
+	
+	/**
 	 * Creates the.
 	 *
 	 * @param result
@@ -100,13 +105,6 @@ public interface IAdapter<T extends IEntity> {
 	 *             the SQL exception
 	 */
 	void execute(final PreparedStatement statement) throws SQLException;
-	
-	/**
-	 * Insert query.
-	 *
-	 * @return the string
-	 */
-	String saveStatement();
 	
 	/**
 	 * Load.
@@ -181,6 +179,13 @@ public interface IAdapter<T extends IEntity> {
 	void save(PreparedStatement saveStatement,
 	          long id,
 	          T entity);
+	
+	/**
+	 * Insert query.
+	 *
+	 * @return the string
+	 */
+	String saveStatement();
 	
 	/**
 	 * Update.

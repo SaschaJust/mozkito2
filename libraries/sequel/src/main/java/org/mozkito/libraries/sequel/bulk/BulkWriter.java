@@ -75,6 +75,19 @@ public class BulkWriter implements IWriter {
 	/**
 	 * {@inheritDoc}
 	 * 
+	 * @see org.mozkito.libraries.sequel.bulk.IWriter#close()
+	 */
+	public void close() {
+		try {
+			this.statement.close();
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
 	 * @see java.lang.Object#finalize()
 	 */
 	@Override
@@ -86,10 +99,11 @@ public class BulkWriter implements IWriter {
 	
 	/**
 	 * {@inheritDoc}
+	 * 
 	 * @see org.mozkito.libraries.sequel.bulk.IWriter#flush()
 	 */
 	@Override
-    public void flush() {
+	public void flush() {
 		if (this.writes > 0) {
 			try {
 				this.statement.executeBatch();
@@ -101,10 +115,11 @@ public class BulkWriter implements IWriter {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see org.mozkito.libraries.sequel.bulk.IWriter#write(java.lang.Object)
+	 * 
+	 * @see org.mozkito.libraries.sequel.bulk.IWriter#write(java.lang.Object[])
 	 */
 	@Override
-    public void write(final Object... params) {
+	public void write(final Object... params) {
 		try {
 			for (int i = 0; i < params.length; ++i) {
 				this.statement.setObject(i, params[i]);

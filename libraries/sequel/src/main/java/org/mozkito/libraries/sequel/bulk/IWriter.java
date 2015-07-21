@@ -14,15 +14,21 @@
 package org.mozkito.libraries.sequel.bulk;
 
 /**
- * @author Sascha Just
+ * The Interface IWriter.
  *
+ * @author Sascha Just
  */
 public interface IWriter {
 	
 	/**
+	 * Close.
+	 */
+	void close();
+	
+	/**
 	 * Flush.
 	 */
-	public abstract void flush();
+	void flush();
 	
 	/**
 	 * Write.
@@ -30,6 +36,5 @@ public interface IWriter {
 	 * @param params
 	 *            the params
 	 */
-	public abstract void write(Object... params);
-	
+	void write(Object... params);
 }

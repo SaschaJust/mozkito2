@@ -95,6 +95,15 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/**
 	 * {@inheritDoc}
 	 * 
+	 * @see org.mozkito.libraries.sequel.bulk.IAdapter#close()
+	 */
+	public void close() {
+		this.writer.close();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
 	 * @see org.mozkito.libraries.sequel.bulk.IAdapter#createConstraints(java.sql.Connection)
 	 */
 	@Override

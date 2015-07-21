@@ -99,7 +99,7 @@ public class BulkDumper<T extends IEntity> extends Thread implements IDumper<T> 
 			++this.processed;
 			this.adapter.save(entity2);
 		}
-		this.adapter.flush();
+		this.adapter.close();
 		Logger.info("Processed " + this.processed + " entities.");
 	}
 	

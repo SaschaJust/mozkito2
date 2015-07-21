@@ -51,12 +51,16 @@ public class PostgresWriter implements IWriter {
 	/** The Constant ESCAPED_QUOTE_STRING. */
 	private static final String  ESCAPED_QUOTE_STRING = QUOTE_STRING + QUOTE_STRING;
 	
+	/** The Constant BACKSPACE_PATTERN. */
 	private static final Pattern BACKSPACE_PATTERN    = Pattern.compile("\\", Pattern.LITERAL);
 	
+	/** The Constant TAB_PATTERN. */
 	private static final Pattern TAB_PATTERN          = Pattern.compile("\t", Pattern.LITERAL);
 	
+	/** The Constant NEWLINE_PATTERN. */
 	private static final Pattern NEWLINE_PATTERN      = Pattern.compile(System.lineSeparator(), Pattern.LITERAL);
 	
+	/** The Constant QUOTE_PATTERN. */
 	private static final Pattern QUOTE_PATTERN        = Pattern.compile(QUOTE_STRING, Pattern.LITERAL);
 	
 	/** The builder. */
@@ -86,7 +90,10 @@ public class PostgresWriter implements IWriter {
 	/** The delimiter char. */
 	private final char           delimiterChar        = '\t';
 	
+	/** The spent. */
 	Duration                     spent                = Duration.ZERO;
+	
+	private Connection           connection;
 	
 	/**
 	 * Instantiates a new postgres writer.
@@ -118,7 +125,21 @@ public class PostgresWriter implements IWriter {
 		
 		try {
 			this.manager = ((PGConnection) connection).getCopyAPI();
+			this.connection = connection;
 			this.copyIn = this.manager.copyIn(this.statementString);
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * Close.
+	 */
+	public void close() {
+		try {
+			flush();
+			this.copyIn.cancelCopy();
+			this.connection.commit();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

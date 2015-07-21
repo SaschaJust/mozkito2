@@ -18,11 +18,18 @@ import java.sql.Connection;
 import org.mozkito.libraries.sequel.IEntity;
 
 /**
- * @author Sascha Just
+ * The Interface IAdapter.
  *
+ * @author Sascha Just
  * @param <T>
+ *            the generic type
  */
 public interface IAdapter<T extends IEntity> {
+	
+	/**
+	 * Close.
+	 */
+	public abstract void close();
 	
 	/**
 	 * Creates the constraints.

@@ -21,10 +21,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.Database;
-import org.mozkito.libraries.sequel.DatabaseManager;
-import org.mozkito.libraries.sequel.IEntity;
 import org.mozkito.libraries.sequel.Database.TxMode;
 import org.mozkito.libraries.sequel.Database.Type;
+import org.mozkito.libraries.sequel.DatabaseManager;
+import org.mozkito.libraries.sequel.IEntity;
 import org.mozkito.skeleton.contracts.Requires;
 
 /**
@@ -82,6 +82,15 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 		this.createConstraintsResource = identifier + "_create_constraints";
 		this.createPrimaryKeysResource = identifier + "_create_pkeys";
 		this.createForeignKeysResource = identifier + "_create_fkeys";
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#close()
+	 */
+	public void close() {
+		// stub
 	}
 	
 	/**
@@ -213,7 +222,8 @@ public abstract class AbstractAdapter<T extends IEntity> implements IAdapter<T> 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#save(java.sql.Connection, org.mozkito.libraries.sequel.IEntity[])
+	 * @see org.mozkito.libraries.sequel.legacy.IAdapter#save(java.sql.Connection,
+	 *      org.mozkito.libraries.sequel.IEntity[])
 	 */
 	public void save(final Connection connection,
 	                 @SuppressWarnings ("unchecked") final T... entities) {
