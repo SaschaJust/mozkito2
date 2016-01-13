@@ -13,8 +13,8 @@
 
 package org.mozkito.core.libs.versions;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Identity;
@@ -34,7 +34,7 @@ public class IdentityCache {
 	private static final String            UNKNOWN_IDENTITY = "<UNKNOWN>";
 	
 	/** The identities. */
-	private final Map<Identity, Identity>  identities       = new HashMap<>();
+	private final ConcurrentMap<Identity, Identity>  identities       = new ConcurrentHashMap<>();
 	
 	/** The dumper. */
 	private final IDumper<Identity> dumper;
@@ -63,6 +63,17 @@ public class IdentityCache {
 	}
 	
 	/**
+	 * New identity helper function to work around broken DCL.
+	 *
+	 * @param identity the identity
+	 * @return the identity
+	 */
+	private final Identity newIdentity(Identity identity) {
+		dumper.saveLater(identity);
+		return identity;
+	}
+	
+	/**
 	 * Looks up and returns the identity represented by <code>email</code> and <code>fullname</code> in the local cash.
 	 * If both arguments are <code>null</code>, the default <code>UNKNOWN_IDENTIY</code> is returned. If the identity is
 	 * not known to the cash, a new identity will be created and stored in the cache.
@@ -83,16 +94,8 @@ public class IdentityCache {
 		
 		Asserts.notNull(this.identities);
 		
-		if (!this.identities.containsKey(identity)) {
-			synchronized (this.identities) {
-				if (!this.identities.containsKey(identity)) {
-					this.identities.put(identity, identity);
-					this.dumper.saveLater(identity);
-				}
-			}
-		}
+		identity = this.identities.computeIfAbsent(identity, k -> newIdentity(k));
 		
-		identity = this.identities.get(identity);
 		Asserts.notNull(identity);
 		return identity;
 	}
