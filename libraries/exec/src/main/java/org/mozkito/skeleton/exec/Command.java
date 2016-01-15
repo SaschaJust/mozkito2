@@ -124,6 +124,13 @@ public class Command {
 							}
 						} catch (final IOException e2) {
 							Runner.this.command.errors.add(e2);
+							Runner.this.process.destroy();
+							try {
+								Runner.this.process.waitFor();
+							} catch (InterruptedException e) {
+								Runner.this.command.errors.add(e);
+								throw new RuntimeException(e);
+							}
 						}
 					}
 				};
@@ -152,6 +159,13 @@ public class Command {
 							}
 						} catch (final IOException e2) {
 							Runner.this.command.errors.add(e2);
+							Runner.this.process.destroy();
+							try {
+								Runner.this.process.waitFor();
+							} catch (InterruptedException e) {
+								Runner.this.command.errors.add(e);
+								throw new RuntimeException(e);
+							}
 						}
 					}
 				};
@@ -161,7 +175,12 @@ public class Command {
 				this.command.terminated = true;
 			} catch (final IOException | InterruptedException e) {
 				this.command.errors.add(e);
-				process.destroyForcibly();
+				try {
+					this.process.waitFor();
+				} catch (InterruptedException e1) {
+					this.command.errors.add(e);
+					process.destroyForcibly();
+				}
 				this.command.terminated = true;
 			}
 		}
