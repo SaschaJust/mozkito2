@@ -161,6 +161,8 @@ public class Command {
 				this.command.terminated = true;
 			} catch (final IOException | InterruptedException e) {
 				this.command.errors.add(e);
+				process.destroyForcibly();
+				this.command.terminated = true;
 			}
 		}
 	}
@@ -423,6 +425,12 @@ public class Command {
 				this.runner.join();
 			} catch (final InterruptedException e) {
 				throw new RuntimeException(e);
+			}
+		} else {
+			try {
+				runner.process.waitFor();
+			} catch (InterruptedException e) {
+				runner.process.destroyForcibly();
 			}
 		}
 	}
