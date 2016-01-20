@@ -88,7 +88,7 @@ public class BulkDumper<T extends IEntity> extends Thread implements IDumper<T> 
 				++this.processed;
 				this.adapter.save(entity);
 			} catch (final Throwable e) {
-				Logger.error("Could not save '%s'.", entity);
+				Logger.error(e, "Could not save '%s'.", entity);
 				throw e;
 			}
 		}
