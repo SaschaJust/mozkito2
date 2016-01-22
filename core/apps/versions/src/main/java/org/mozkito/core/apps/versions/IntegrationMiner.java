@@ -22,6 +22,7 @@ import org.mozkito.core.libs.versions.graph.Label;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Reference;
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.IDumper;
 
 /**
@@ -73,8 +74,14 @@ public class IntegrationMiner extends Task implements Runnable {
 		for (final Edge edge : edges) {
 			for (final Entry<Long, Label> entry : edge.getLabels().entrySet()) {
 				label = entry.getValue();
+				
+				try {
 				bEdge = new BranchEdge(edge.getId(), entry.getKey(), label.navigationMarker, label.integrationMarker);
 				this.branchEdgeDumper.saveLater(bEdge);
+			} catch (RuntimeException e) {
+				Logger.error(e, "Can not create branch edge '%s' using navigation marker '%s' and integration marker '%s'.", edge, label.navigationMarker, label.integrationMarker);
+				throw new RuntimeException(e);
+			}
 			}
 		}
 		

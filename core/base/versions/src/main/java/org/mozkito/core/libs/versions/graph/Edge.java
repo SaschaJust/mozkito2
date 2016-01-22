@@ -317,12 +317,12 @@ public class Edge {
 		
 		final StringBuilder builder = new StringBuilder();
 		builder.append("Edge [");
-		builder.append(this.branchMarker.name()).append(" ");
-		builder.append(this.labels.get(reference.getId()).navigationMarker.name()).append(" ");
-		builder.append(this.labels.get(reference.getId()).integrationMarker.name()).append(" ");
-		builder.append(this.child.getHash());
+		builder.append(this.branchMarker != null ? this.branchMarker.name() : null).append(" ");
+		builder.append(labels.containsKey(reference.getId()) && labels.get(reference.getId()).navigationMarker != null ? this.labels.get(reference.getId()).navigationMarker.name(): null).append(" ");
+		builder.append(labels.containsKey(reference.getId()) && labels.get(reference.getId()).integrationMarker != null ? this.labels.get(reference.getId()).integrationMarker.name(): null).append(" ");
+		builder.append(child != null ? this.child.getHash() : null);
 		builder.append(" -> ");
-		builder.append(this.parent.getHash());
+		builder.append(parent != null ? this.parent.getHash() : "null");
 		builder.append("]");
 		return builder.toString();
 	}

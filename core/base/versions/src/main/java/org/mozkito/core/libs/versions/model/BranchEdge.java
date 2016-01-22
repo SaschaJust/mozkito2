@@ -16,6 +16,8 @@ package org.mozkito.core.libs.versions.model;
 import org.mozkito.core.libs.versions.model.enums.IntegrationMarker;
 import org.mozkito.core.libs.versions.model.enums.NavigationMarker;
 import org.mozkito.libraries.sequel.IEntity;
+import org.mozkito.skeleton.contracts.Contract;
+import org.mozkito.skeleton.contracts.Requires;
 
 /**
  * The Class BranchEdge.
@@ -55,6 +57,9 @@ public class BranchEdge implements IEntity {
 	public BranchEdge(final long edgeId, final long branchId, final NavigationMarker navigationMarker,
 	        final IntegrationMarker integrationMarker) {
 		super();
+		Requires.notNull(navigationMarker);
+		Requires.notNull(integrationMarker);
+		
 		this.edgeId = edgeId;
 		this.branchId = branchId;
 		this.navigationType = (short) navigationMarker.ordinal();
