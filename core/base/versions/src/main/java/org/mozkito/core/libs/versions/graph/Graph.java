@@ -479,8 +479,8 @@ public class Graph implements IEntity {
 			}
 		}
 		
-		Logger.info("Integration computation duration: " + (Instant.now().getEpochSecond() - start.getEpochSecond())
-		        + "s.");
+		Logger.info("Integration graph computation duration (ref %s): %ss.", reference.getName(),
+		        (Instant.now().getEpochSecond() - start.getEpochSecond()));
 	}
 	
 	/**
@@ -551,8 +551,8 @@ public class Graph implements IEntity {
 			} while (!outgoingEdges.isEmpty());
 		}
 		
-		Logger.info("Navigation graph computation duration: "
-		        + (Instant.now().getEpochSecond() - start.getEpochSecond()) + "s.");
+		Logger.info("Navigation graph computation duration (ref %s): %ss.", reference.getName(),
+		        (Instant.now().getEpochSecond() - start.getEpochSecond()));
 	}
 	
 	/**

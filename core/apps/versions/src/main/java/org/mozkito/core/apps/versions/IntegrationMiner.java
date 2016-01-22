@@ -15,6 +15,7 @@ package org.mozkito.core.apps.versions;
 
 import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.mozkito.core.libs.versions.graph.Edge;
 import org.mozkito.core.libs.versions.graph.Graph;
@@ -22,7 +23,6 @@ import org.mozkito.core.libs.versions.graph.Label;
 import org.mozkito.core.libs.versions.model.BranchEdge;
 import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Reference;
-import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.IDumper;
 
 /**
@@ -76,12 +76,17 @@ public class IntegrationMiner extends Task implements Runnable {
 				label = entry.getValue();
 				
 				try {
-				bEdge = new BranchEdge(edge.getId(), entry.getKey(), label.navigationMarker, label.integrationMarker);
-				this.branchEdgeDumper.saveLater(bEdge);
-			} catch (RuntimeException e) {
-				Logger.error(e, "Can not create branch edge '%s' using navigation marker '%s' and integration marker '%s'.", edge, label.navigationMarker, label.integrationMarker);
-				throw new RuntimeException(e);
-			}
+					bEdge = new BranchEdge(edge.getId(), entry.getKey(), label.navigationMarker, label.integrationMarker);
+					this.branchEdgeDumper.saveLater(bEdge);
+				} catch (RuntimeException e) {
+					Optional<Reference> oRef = graph.getReferences().stream().filter(x -> entry.getKey() == x.getId()).findFirst();
+					if (!oRef.isPresent()) {
+						throw new RuntimeException(String.format("Invalid reference id '%s'. Your data is corrupted.", entry.getKey()), e);
+					} else {
+						throw new RuntimeException(String.format("Can not create branch edge '%s' using navigation marker '%s' and integration marker '%s'.", 
+						edge.toString(oRef.get()), label.navigationMarker, label.integrationMarker), e);
+					}
+				}
 			}
 		}
 		
