@@ -138,8 +138,10 @@ public class PostgresWriter implements IWriter {
 	public void close() {
 		try {
 			flush();
-			this.copyIn.cancelCopy();
+			this.copyIn.flushCopy();
+			this.copyIn.endCopy();
 			this.connection.commit();
+			this.connection.close();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
