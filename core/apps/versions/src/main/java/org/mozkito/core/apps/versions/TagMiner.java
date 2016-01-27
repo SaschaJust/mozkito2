@@ -221,7 +221,7 @@ public class TagMiner extends Task implements Runnable {
 					try {
 						timestamp = Instant.ofEpochSecond(Long.parseLong(line.substring(0, line.indexOf(' '))));
 					} catch (NumberFormatException|StringIndexOutOfBoundsException|NullPointerException nfe) {
-						Logger.warn(nfe, "Tag '%s' in depot '%s' does not have a valid timestamp: '%s'.", name, depot.getName(), line);
+						Logger.warn(nfe, "Tag '%s' in depot '%s' does not have a valid timestamp: '%s'.", tagName, depot.getName(), line);
 						timestamp = null;
 					}
 					
