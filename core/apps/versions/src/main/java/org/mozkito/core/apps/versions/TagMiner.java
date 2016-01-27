@@ -23,6 +23,7 @@ import org.mozkito.core.libs.versions.model.Depot;
 import org.mozkito.core.libs.versions.model.Identity;
 import org.mozkito.core.libs.versions.model.Reference;
 import org.mozkito.core.libs.versions.model.Tag;
+import org.mozkito.libraries.logging.Logger;
 import org.mozkito.libraries.sequel.IDumper;
 import org.mozkito.skeleton.contracts.Asserts;
 import org.mozkito.skeleton.datastructures.BidirectionalMultiMap;
@@ -92,7 +93,7 @@ public class TagMiner extends Task implements Runnable {
 	/** The reference dumper. */
 	private final IDumper<Reference>                referenceDumper;
 	
-	private final IDumper<Identity>                 identityDumper;
+//	private final IDumper<Identity>                 identityDumper;
 	
 	/**
 	 * Instantiates a new branch miner.
@@ -121,7 +122,7 @@ public class TagMiner extends Task implements Runnable {
 		this.identityCache = identityCache;
 		this.tagDumper = tagDumper;
 		this.referenceDumper = referenceDumper;
-		this.identityDumper = identityDumper;
+//		this.identityDumper = identityDumper;
 	}
 	
 	/**
@@ -216,7 +217,14 @@ public class TagMiner extends Task implements Runnable {
 					                         ? line.substring(1, line.length() - 1)
 					                         : "";
 					line = command.nextOutput();
-					timestamp = Instant.ofEpochSecond(Long.parseLong(line.substring(0, line.indexOf(' '))));
+					
+					try {
+						timestamp = Instant.ofEpochSecond(Long.parseLong(line.substring(0, line.indexOf(' '))));
+					} catch (NumberFormatException|StringIndexOutOfBoundsException|NullPointerException nfe) {
+						Logger.warn(nfe, "Tag '%s' in depot '%s' does not have a valid timestamp: '%s'.", name, depot.getName(), line);
+						timestamp = null;
+					}
+					
 					messageBuilder = new StringBuilder();
 					while ((line = command.nextOutput()) != null && !END_TAG.equals(line)) {
 						messageBuilder.append(line).append(LS);
